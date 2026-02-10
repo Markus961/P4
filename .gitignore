@@ -416,3 +416,14 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# OCaml
+*.cmo
+*.cmi
+*.cmx
+*.cma
+*.cmxa
+*.o
+*.a
+_build/
+.opam/
