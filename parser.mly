@@ -22,3 +22,10 @@
 
 (* The rules of the grammar *)
 
+action:
+  | LPAREN ACTION name = NAME action_list RPAREN { Action name }
+  | PARAMETERS LPAREN object_list RPAREN  { Parameters $3 } 
+;
+action_list:
+  | action_list { $1 :: $2 }
+  | 
