@@ -13,10 +13,9 @@ rule token = parse
   | ":requirements" {REQUIREMENTS}
   | ":derived-predicates" {DPREDICATES}
   | ":strips" {STRIPS}
-  | ['a' - 'z' 'A' - 'z'] ['a' - 'z' 'A' - 'Z' '0' - '9' '_']* as id { NAME id }
-   
-  (*
-  | "?" {QUESTIONMARK} 
+  | ['a' - 'z' 'A' - 'z'] ['a' - 'z' 'A' - 'Z' '0' - '9' '_']* as id { NAME id }  
+  | '?' ['a' - 'z' 'A' - 'z'] ['a' - 'z' 'A' - 'Z' '0' - '9' '_']* as id { VAR id } (* Because all variables start with '?' *)
+  (* 
   | "-" {DASH}
   | "symbol" {SYMBOL}
   | "predicates" {PREDICATES}

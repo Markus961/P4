@@ -7,7 +7,19 @@ type features =
 | DerivedPredicates
 
 (* Requirements is a list of features *)
-type requirements = {	features : features list;}
+type requirements = {	features : features list}
+
+
+(* the below code is for :predicates *)
+type variable = string
+
+type variables = variable list
+
+type pdefinitions = {pname : string; variables : variables} 
+
+type predicates = { pdefinitions : pdefinitions list }
+
+
 
 (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define; main : requirements}
