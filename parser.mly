@@ -5,7 +5,7 @@
 %}
 
 %token LPAREN RPAREN COLON
-%token DEFINE REQUIREMENTS
+%token DEFINE REQUIREMENTS DPREDICATES STRIPS
 %token <string> NAME
 %token EOF
 
@@ -22,10 +22,13 @@ prog:
 EOF 
 { {defs = defs; main = main} }
 
-(* Parse  requirement names (seperated by COLON)  into a list(lst). *)
+(* Parse  requirement features into a list(lst). *)
 params:
-| lst = separated_list(COLON, n = NAME {n}) {lst}
+| lst = list(features) {lst}
 
+features: 
+| STRIPS {Strips} 
+| DPREDICATES {DerivedPredicates}
 
 (* _  before 'keyword' tells ocaml 'we dont need this for anything' 
 we will hovever need 'domain name' for connection to problem.pddl later on*)
@@ -35,7 +38,7 @@ define:
 
 (*  above, params gets defined as a list, sepereted by ':' *)
 requirements:
-| LPAREN; COLON; REQUIREMENTS; COLON; features = params; RPAREN
+| LPAREN; REQUIREMENTS; features = params; RPAREN
     { { features = features } }
 
 

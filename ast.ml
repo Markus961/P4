@@ -2,8 +2,12 @@
 
 type define = { domain_name : string;}
 
+type features = 
+| Strips
+| DerivedPredicates
 
-type requirements = {	features : string list;}
+(* Requirements is a list of features *)
+type requirements = {	features : features list;}
 
 (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define; main : requirements}

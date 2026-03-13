@@ -10,9 +10,10 @@ rule token = parse
   | "(" {LPAREN}
   | ")" {RPAREN}
   | "define" {DEFINE}
-  | "requirements" {REQUIREMENTS}
+  | ":requirements" {REQUIREMENTS}
+  | ":derived-predicates" {DPREDICATES}
+  | ":strips" {STRIPS}
   | ['a' - 'z' 'A' - 'z'] ['a' - 'z' 'A' - 'Z' '0' - '9' '_']* as id { NAME id }
-  | ":" {COLON}
    
   (*
   | "?" {QUESTIONMARK} 
