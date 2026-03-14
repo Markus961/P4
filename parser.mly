@@ -34,7 +34,6 @@ define:
     { { domain = d; requirements = r; predicates = [p] }  }
 ;
 
-(* NAME-token takes name as parameter XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXHVORFOR GRID OG IKKE BARE NAME*)
 domain:
 | LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } }
 
