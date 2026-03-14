@@ -14,8 +14,9 @@ let () =
   (* it parses using the parser entrypoint and lexer token . *)
   match Parser.prog Lexer.token lexbuf with
   | result ->
-    Printf.printf "Parsed domain: %s\n" result.defs.domain_name;
-    Printf.printf "Requirements: %s\n" (String.concat ", " (List.map string_of_feature result.main.features));
+    Printf.printf "Parsed domain: %s\n" result.defs.domain.domain_name;
+    Printf.printf "Requirements: %s\n" (String.concat ", " (List.map string_of_feature result.defs.requirements.features));
+
     close_in input_channel
   | exception Failure msg ->
     Printf.printf "Parse error: %s\n" msg;

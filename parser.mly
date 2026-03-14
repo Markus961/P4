@@ -5,7 +5,7 @@
 %}
 
 %token LPAREN RPAREN
-%token DEFINE REQUIREMENTS DPREDICATES STRIPS
+%token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES 
 %token <string> VAR
 %token <string> NAME
@@ -19,10 +19,29 @@
 
 %%
 (* grammar rules *)
+(* the program starts by evaluating define *)
 prog:
-| defs = define; main = requirements
+| defs = define;
 EOF 
-{ {defs = defs; main = main} }
+{ {defs = defs} }
+;
+
+(* domain = d, requirements = r, predicates = p are children of define *)
+(* therefore we make an ocaml record/datastructure to store them *)
+(* this corresponds to a tree where parent is define and domain etc. are children *)
+define:
+| LPAREN DEFINE d = domain r = requirements p = predicates RPAREN 
+    { { domain = d; requirements = r; predicates = [p] }  }
+;
+
+(* NAME-token takes name as parameter XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXHVORFOR GRID OG IKKE BARE NAME*)
+domain:
+| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } }
+
+(*  below, params gets defined as a list *)
+requirements:
+| LPAREN; REQUIREMENTS; f = params; RPAREN
+    { { features = f } }
 ;
 
 (* Parse  requirement features into a list(lst). *)
@@ -35,36 +54,23 @@ features:
 | DPREDICATES {DerivedPredicates}
 ;
 
-(* _  before 'keyword' tells ocaml 'we dont need this for anything' 
-we will hovever need 'domain name' for connection to problem.pddl later on*)
-define:
-| LPAREN; DEFINE; LPAREN; _keyword = NAME; name = NAME; RPAREN; RPAREN 
-    { { domain_name = name }  }
-;
-
-(*  above, params gets defined as a list, sepereted by ':' *)
-requirements:
-| LPAREN; REQUIREMENTS; features = params; RPAREN
-    { { features = features } }
-;
-
 predicates:
-| LPAREN; PREDICATES; pdefinitions; RPAREN
+| LPAREN; PREDICATES; pdefinitions = pdefinitions; RPAREN
     { pdefinitions }
 ;
 
 pdefinitions:
-| LPAREN NAME vars = variable_list RPAREN {pname = name; variables = vars} 
+| LPAREN name = NAME vars = variable_list RPAREN { { pname = name; variables = vars } } 
 ;
 
 variable_list:
-| {[]}
-| variable variable_list { variable :: variable_list }
+| lst = list(variable) {lst}
 ;
 
 variable:
-| VAR {VAR id} (* VAR means "?", id is the variable's name *)
+| v = VAR {v} (* VAR means "?", id is the variable's name *)
 ;
+
 
 
 
