@@ -1,5 +1,5 @@
 (define (domain grid)
-(:requirements :strips :derivedpredicates)
+(:requirements :strips :derived-predicates)
 (:predicates (conn ?x ?y)
              (key-shape ?k ?s)
              (lock-shape ?x ?s)

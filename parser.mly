@@ -21,8 +21,7 @@
 (* grammar rules *)
 (* the program starts by evaluating define *)
 prog:
-| defs = define;
-EOF 
+| defs = define EOF 
 { {defs = defs} }
 ;
 
@@ -31,7 +30,7 @@ EOF
 (* this corresponds to a tree where parent is define and domain etc. are children *)
 define:
 | LPAREN DEFINE d = domain r = requirements p = predicates RPAREN 
-    { { domain = d; requirements = r; predicates = [p] }  }
+    { { domain = d; requirements = r; predicates = p }  }
 ;
 
 domain:
@@ -39,14 +38,17 @@ domain:
 
 (*  below, params gets defined as a list *)
 requirements:
-| LPAREN; REQUIREMENTS; f = params; RPAREN
+| LPAREN REQUIREMENTS f = params RPAREN
     { { features = f } }
 ;
 
 (* Parse  requirement features into a list(lst). *)
 params:
-| lst = list(features) {lst}
-;
+| lst = feature_list { lst }
+
+feature_list:
+| { [] }
+| f = features rest = feature_list { f :: rest }
 
 features: 
 | STRIPS {Strips} 
@@ -54,8 +56,13 @@ features:
 ;
 
 predicates:
-| LPAREN; PREDICATES; pdefinitions = pdefinitions; RPAREN
-    { pdefinitions }
+| LPAREN PREDICATES pdefs = pdefinition_list RPAREN
+    { pdefs }
+;
+
+pdefinition_list:
+| { [] }
+| d = pdefinitions rest = pdefinition_list { d :: rest }
 ;
 
 pdefinitions:
@@ -63,14 +70,10 @@ pdefinitions:
 ;
 
 variable_list:
-| lst = list(variable) {lst}
+| { [] }
+| v = variable rest = variable_list { v :: rest }
 ;
 
 variable:
 | v = VAR {v} (* VAR means "?", id is the variable's name *)
 ;
-
-
-
-
-
