@@ -38,8 +38,8 @@ define:
 
 (*  above, params gets defined as a list, sepereted by ':' *)
 requirements:
-| LPAREN; REQUIREMENTS; features = params; RPAREN
-    { { features = features } }
+| LPAREN; REQUIREMENTS; f = params; RPAREN
+    { { features = f } }
 
 
 
