@@ -1,3 +1,10 @@
+open Ast
+
+(* Converts features from the parser into strings *)
+let string_of_feature = function
+  | Strips -> ":strips"
+  | DerivedPredicates -> ":derived-predicates"
+
 let () =
   (* opens a little snippet of the domain.pddl *)
   let filename = "domain-mini.pddl" in
@@ -8,7 +15,7 @@ let () =
   match Parser.prog Lexer.token lexbuf with
   | result ->
     Printf.printf "Parsed domain: %s\n" result.defs.domain_name;
-    Printf.printf "Requirements: %s\n" (String.concat ", " result.main.features);
+    Printf.printf "Requirements: %s\n" (String.concat ", " (List.map string_of_feature result.main.features));
     close_in input_channel
   | exception Failure msg ->
     Printf.printf "Parse error: %s\n" msg;
