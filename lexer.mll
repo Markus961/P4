@@ -17,6 +17,7 @@ rule token = parse
   | ":strips" {STRIPS}
   | ":derived" {DERIVED}
   | "and" {AND}
+  | "exists" {EXISTS}
   | ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   (* 

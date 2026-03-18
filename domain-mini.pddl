@@ -17,4 +17,14 @@
 (:derived (reachable ?to)
 	(and (place ?to) 
 		(at-robot ?to)))
+
+(:derived (reachable ?to)
+	(and 
+		(place ?to)
+		(open ?to)
+		(exists (?from)
+			(and
+				(place ?from) 
+				(reachable ?from) 
+				(conn ?from ?to) ))))
 )

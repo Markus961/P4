@@ -15,30 +15,22 @@ type variable = string
 
 type pdefinition = {pname : string; variables : variable list} 
 
-type logic = {pdef_list : pdefinition list}
+type expr = 
+| Epdef of pdefinition
+| Eand of expr list
+| Eexists of variable list * expr
 
-type derived = {pdef : pdefinition; logic : logic}
+type derived = {header : pdefinition; body : expr}
 
 (* the below code is for define *)
 (* the parameters can be used only because they are derived above *)
-type define = { domain : domain; requirements : requirements; predicates : pdefinition list; derived : derived}
+type define = {
+  domain : domain; 
+  requirements : requirements; 
+  predicates : pdefinition list; 
+  derived : derived list}
 
 (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define}
-(*
-type symbol = {name : string;}
 
-type predicates = {
-  pred_name : string;
-	pred_params : symbol list;
-} 
-
-type derived = { 
-  derived_conditions : predicates;
-  derived_stmt : string list;
-}
-
-type stmt = {
-  name : string list;
-} *)
 
