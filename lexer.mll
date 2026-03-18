@@ -15,6 +15,8 @@ rule token = parse
   | ":derived-predicates" {DPREDICATES}
   | ":predicates" {PREDICATES}
   | ":strips" {STRIPS}
+  | ":derived" {DERIVED}
+  | "and" {AND}
   | ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   (* 

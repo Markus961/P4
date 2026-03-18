@@ -6,7 +6,7 @@
 
 %token LPAREN RPAREN
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
-%token PREDICATES 
+%token PREDICATES DERIVED AND
 %token <string> VAR
 %token <string> NAME
 %token EOF
@@ -29,12 +29,19 @@ prog:
 (* therefore we make an ocaml record/datastructure to store them *)
 (* this corresponds to a tree where parent is define and domain etc. are children *)
 define:
-| LPAREN DEFINE d = domain r = requirements p = predicates RPAREN 
-    { { domain = d; requirements = r; predicates = p }  }
+| LPAREN DEFINE d = domain r = requirements p = predicates de = derived RPAREN 
+    { { domain = d; requirements = r; predicates = p; derived = de}  }
+;
+
+derived:
+| LPAREN DERIVED p = pdefinitions l = logic  RPAREN { { pdef = p; logic = l } }
 ;
 
 domain:
 | LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } }
+
+logic:
+| LPAREN AND pdef = pdefinition_list RPAREN { { pdef_list = pdef } }
 
 (*  below, params gets defined as a list *)
 requirements:

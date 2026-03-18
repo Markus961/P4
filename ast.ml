@@ -15,10 +15,13 @@ type variable = string
 
 type pdefinition = {pname : string; variables : variable list} 
 
+type logic = {pdef_list : pdefinition list}
+
+type derived = {pdef : pdefinition; logic : logic}
 
 (* the below code is for define *)
 (* the parameters can be used only because they are derived above *)
-type define = { domain : domain; requirements : requirements; predicates : pdefinition list}
+type define = { domain : domain; requirements : requirements; predicates : pdefinition list; derived : derived}
 
 (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define}
