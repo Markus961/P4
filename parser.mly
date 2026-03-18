@@ -21,20 +21,20 @@
 (* grammar rules *)
 (* the program starts by evaluating define *)
 prog:
-| defs = define EOF 
-{ {defs = defs} }
+| defs = define EOF (*men det program start it reads the define block in the domain file, and when its done with it, it is done=EOF*)
+{ {defs = defs} } (*record, is used for ast. The purple bracket is a node/ocaml record for our ast*)
 ;
 
 (* domain = d, requirements = r, predicates = p are children of define *)
 (* therefore we make an ocaml record/datastructure to store them *)
 (* this corresponds to a tree where parent is define and domain etc. are children *)
 define:
-| LPAREN DEFINE d = domain r = requirements p = predicates RPAREN 
-    { { domain = d; requirements = r; predicates = p }  }
+| LPAREN DEFINE d = domain r = requirements p = predicates RPAREN (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
+    { { domain = d; requirements = r; predicates = p }  } (*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
 ;
 
 domain:
-| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } }
+| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } } (*reasds domain part of domain file, and adds node to ast*)
 
 (*  below, params gets defined as a list *)
 requirements:
