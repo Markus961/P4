@@ -15,17 +15,15 @@ rule token = parse
   | ":derived-predicates" {DPREDICATES}
   | ":predicates" {PREDICATES}
   | ":strips" {STRIPS}
+  | ":action" {ACTION}
+  | ":parameters" {PARAMETERS}
+  | ":precondition" {PRECONDITION}
+  | ":effect"  {EFFECT}
+  | "not" {NOT} 
+  | "and" {AND}
   | ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
-  (* 
-  | "-" {DASH}
-  | "symbol" {SYMBOL}
-  | "predicates" {PREDICATES}
-  | "action" {ACTION}
-  | "parameters" {PARAMETERS}
-  | "precondition" {PRECONDITION}
-  | "effect"  {EFFECT}
-  | "not" {NOT} *)
+  
   | space+ { token lexbuf }
   | _ as c { raise (Lexing_error (Printf.sprintf "Unexpected character: %c" c)) } (* Golden *)
 
