@@ -46,7 +46,7 @@
             [0 0 T T 0 0]
             ])
             ;;this way it is possible to have different kind of lock shapes for the locked nodes
-
+          
           ;;Key location Diamond, Circle, Triangle, Square
           (keylocation grid [
             [- - - C - T]
