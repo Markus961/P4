@@ -22,9 +22,31 @@ type expr =
 
 type action = { aname : string; parameters : variable list; precondition : expr; effects : expr; }
 
+(*Problem File AST*)
+
+type problem = {problem_name : string;}
+
+type problemdomain = {problemdomain_name : string;}
+
+type odef = { oname : string }
+type objects = odef list
+
+type argument = string
+
+type state = {
+  sname : string;
+  arguments : argument list;
+}
+
+type init = state list
+
+type goal = expr
+
 (* the below code is for define *)
 (* the parameters can be used only because they are derived above *)
-type define = { domain : domain; requirements : requirements; predicates : pdefinition list; actions : action list;}
+type define =
+  | DomainDef of { domain : domain; requirements : requirements; predicates : pdefinition list; actions : action list;}
+  | ProblemDef of { problem : problem; problemdomain : problemdomain; objects : odef list; init : state list; goal : expr;}
 
 (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define} (*in the parser we said that the program is "defs", so here we declare the type, which is define, which is declared above*)
@@ -44,4 +66,3 @@ type derived = {
 type stmt = {
   name : string list;
 } *)
-

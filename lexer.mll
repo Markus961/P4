@@ -7,9 +7,11 @@
 (*   (:requirements :strips :derived-predicates) *)
 let space = [' ' '\t' '\r' '\n']
 rule token = parse
+  (*General*)
   | "(" {LPAREN}
   | ")" {RPAREN}
   | "define" {DEFINE}
+  (*Domain File*)
   | "domain" {DOMAIN}
   | ":requirements" {REQUIREMENTS}
   | ":derived-predicates" {DPREDICATES}
@@ -19,6 +21,13 @@ rule token = parse
   | ":parameters" {PARAMETERS}
   | ":precondition" {PRECONDITION}
   | ":effect"  {EFFECT}
+  (*Problem File*)
+  | "problem" {PROBLEM}
+  | ":domain" {PROBLEMDOMAIN}
+  | ":objects" {OBJECTS}
+  | ":init" {INIT}
+  | ":goal" {GOAL}
+  (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
   | ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  

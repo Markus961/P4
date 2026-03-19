@@ -7,6 +7,7 @@
 %token LPAREN RPAREN
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES ACTION PARAMETERS PRECONDITION EFFECT
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL
 %token AND NOT
 %token <string> VAR
 %token <string> NAME
@@ -31,7 +32,9 @@ prog:
 (* this corresponds to a tree where parent is define and domain etc. are children *)
 define:
 | LPAREN DEFINE d = domain r = requirements p = predicates a = action_list RPAREN (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
-    { { domain = d; requirements = r; predicates = p; actions = a }  } (*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
+    { DomainDef { domain = d; requirements = r; predicates = p; actions = a }  } (*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
+| LPAREN DEFINE p = problem pd = problemdomain o = objects i = init g = goal RPAREN 
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; init = i; goal = g}  }
 ;
 
 domain:
@@ -119,4 +122,61 @@ term_list:
 term:
 | v = VAR { v }
 | n = NAME { n }
+;
+
+
+(*Parsing for Problem File*)
+problem:
+| LPAREN PROBLEM problem_name = NAME RPAREN { { problem_name = problem_name } }
+;
+
+problemdomain:
+| LPAREN PROBLEMDOMAIN problemdomain_name = NAME RPAREN { { problemdomain_name = problemdomain_name } }
+;
+
+objects:
+| LPAREN OBJECTS ob = ob_list RPAREN
+    { ob }
+;
+
+(*oparams:
+| LPAREN ob = ob_list RPAREN
+    { ob }
+;*)
+
+ob_list:
+| { [] }
+| o = odef rest = ob_list { o :: rest }
+;
+
+odef:
+| name = NAME { { oname = name } } 
+;
+
+
+init:
+| LPAREN INIT s = state_list RPAREN { s }
+;
+
+state_list:
+| { [] }
+| s = state rest = state_list { s :: rest }
+;
+
+
+state:
+| LPAREN name = NAME args = arg_list RPAREN { { sname = name; arguments = args } } 
+;
+
+arg_list:
+| { [] }
+| a = argument rest = arg_list { a :: rest }
+;
+
+argument:
+| a = NAME {a}
+;
+
+goal:
+| LPAREN GOAL e = expr RPAREN { e }
 ;
