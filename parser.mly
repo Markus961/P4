@@ -4,9 +4,10 @@
 
 %}
 
-%token LPAREN RPAREN
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
-%token PREDICATES DERIVED AND EXISTS 
+%token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
+%token AND EXISTS NOT 
+%token LPAREN RPAREN
 %token <string> VAR
 %token <string> NAME
 %token EOF
@@ -21,39 +22,33 @@
 (* grammar rules *)
 (* the program starts by evaluating define *)
 prog:
-| defs = define EOF 
-{ {defs = defs} }
+| defs = define EOF (*men det program start it reads the define block in the domain file, and when its done with it, it is done=EOF*)
+{ {defs = defs} } (*record, is used for ast. The purple bracket is a node/ocaml record for our ast*)
 ;
 
-(* domain = d, requirements = r, predicates = p are children of define *)
+(* domain = d, requirements = r, predicates = p etc.. are children of define *)
 (* therefore we make an ocaml record/datastructure to store them *)
 (* this corresponds to a tree where parent is define and domain etc. are children *)
 define:
-| LPAREN DEFINE d = domain r = requirements p = predicates de = derived_list RPAREN
-    { { domain = d; requirements = r; predicates = p; derived = de}  }
+(*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
+| LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
+(*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
+    { let (derived_list, action_list) = declarations in { domain = d; requirements = r; predicates = p; derived = derived_list; actions = action_list}  }
 ;
 
-derived_list:
-| { [] }
-| d = derived rest = derived_list { d :: rest }
-;
+declaration_list:  // parsing derived + actions in same grammar. removes ambiguity som gav error før, fordi de lignede hinanden for meget
+  | { ([], []) }   
+  | one_derived = derived rest = declaration_list { let (derived_list, action_list) = rest in (one_derived :: derived_list, action_list) }
+    // hvis vi møder derived: tilføjer d foran de-listen, beholder a-listen
+  | one_action = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, one_action :: action_list) }
+    // hvis vi møder action: tilføjer a foran a_list-listen, beholder de-listen
 
 derived:
 | LPAREN DERIVED h = pdefinitions b = expr  RPAREN { { header = h; body = b } }
 ;
 
-expr:
-| e = pdefinitions {Epdef e}
-| LPAREN AND el = expr_list RPAREN {Eand el}
-| LPAREN EXISTS LPAREN vl = variable_list RPAREN e = expr RPAREN {Eexists(vl,e)}
-
-expr_list:
-| { [] }
-| e = expr rest = expr_list { e :: rest }
-;
-
 domain:
-| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } }
+| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } } (*reasds domain part of domain file, and adds node to ast*)
 
 
 (*  below, params gets defined as a list *)
@@ -96,4 +91,42 @@ variable_list:
 
 variable:
 | v = VAR {v} (* VAR means "?", id is the variable's name *)
+;
+
+action:
+| LPAREN ACTION name = NAME
+    PARAMETERS LPAREN params = variable_list RPAREN
+    PRECONDITION pre = expr
+    EFFECT eff = expr
+  RPAREN
+  {
+    {
+      aname = name;
+      parameters = params;
+      precondition = pre;
+      effects = eff;
+    }
+  }
+;
+
+expr:
+| LPAREN AND e = expr_list RPAREN { And e }
+| LPAREN NOT e = expr RPAREN { Not e }
+| LPAREN EXISTS LPAREN vl = variable_list RPAREN e = expr RPAREN { Exists (vl, e) }
+| LPAREN name = NAME args = term_list RPAREN { Atom (name, args) }
+;
+
+expr_list:
+| { [] }
+| e = expr rest = expr_list { e:: rest }
+;
+
+term_list:
+| { [] }
+| t = term rest = term_list { t :: rest }
+;
+
+term:
+| v = VAR { v }
+| n = NAME { n }
 ;
