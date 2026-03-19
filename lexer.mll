@@ -4,19 +4,17 @@
   exception Lexing_error of string
 
 }
-(*   (:requirements :strips :derived-predicates) *)
+
 let space = [' ' '\t' '\r' '\n']
 rule token = parse
-  (*General*)
-  | "(" {LPAREN}
-  | ")" {RPAREN}
   | "define" {DEFINE}
   (*Domain File*)
   | "domain" {DOMAIN}
   | ":requirements" {REQUIREMENTS}
+  | ":strips" {STRIPS}
   | ":derived-predicates" {DPREDICATES}
   | ":predicates" {PREDICATES}
-  | ":strips" {STRIPS}
+  | ":derived" {DERIVED}
   | ":action" {ACTION}
   | ":parameters" {PARAMETERS}
   | ":precondition" {PRECONDITION}
@@ -30,11 +28,13 @@ rule token = parse
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
-  | ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
-  | '?' ['a'-'z' 'A'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
-  
+  | "exists" {EXISTS}
+  | "not" {NOT} 
+  | "(" {LPAREN}
+  | ")" {RPAREN}  
+  | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
+  | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
+  | ";"  [^ '\n']* {token lexbuf} (*Comment handling in PDDL*)
   | space+ { token lexbuf }
   | _ as c { raise (Lexing_error (Printf.sprintf "Unexpected character: %c" c)) } (* Golden *)
-
-
   | eof {EOF}

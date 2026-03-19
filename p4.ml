@@ -10,8 +10,11 @@ let string_of_predicate = function
   | { pname; variables = [] } ->
       Printf.sprintf "(%s)" pname
   | { pname; variables } ->
-      Printf.sprintf "(%s %s)" pname (String.concat " " variables)  
-
+      Printf.sprintf "(%s %s)" pname (String.concat " " variables)
+(*
+let string_of_derived = function
+| Epdef p -> Printf.sprintf "(%s)" string_of_predicate defs.derived.header.p
+*)
 let () =
   (* opens a little snippet of the domain.pddl *)
   let filename = "domain-mini.pddl" in
@@ -21,10 +24,9 @@ let () =
   (* it parses using the parser entrypoint and lexer token . *)
   match Parser.prog Lexer.token lexbuf with
   | result ->
-    Printf.printf "Parsed domain: %s\n" result.defs.domain.domain_name;
-    Printf.printf "Requirements: %s\n" (String.concat ", " (List.map string_of_feature result.defs.requirements.features));
-    Printf.printf "Predicates: %s\n" (String.concat "\n " (List.map string_of_predicate result.defs.predicates));
-
+    Printf.printf "(define (domain %s)\n" result.defs.domain.domain_name;
+    Printf.printf "(:requirements %s)\n" (String.concat " " (List.map string_of_feature result.defs.requirements.features));
+    Printf.printf "(:predicates %s\n" (String.concat "\n " (List.map string_of_predicate result.defs.predicates));
     close_in input_channel
   | exception Failure msg ->
     Printf.printf "Parse error: %s\n" msg;

@@ -4,7 +4,7 @@
              (key-shape ?k ?s)
              (lock-shape ?x ?s)
              (at ?r ?x )
-	         (at-robot ?x)
+	     (at-robot ?x)
              (place ?p)
              (key ?k)
              (shape ?s)
@@ -14,6 +14,21 @@
              (arm-empty )
 	     (reachable ?x)
 )
+
+(:derived (reachable ?to)
+	(and (place ?to) 
+		(at-robot ?to)))
+
+(:derived (reachable ?to)
+	(and 
+		(place ?to)
+		(open ?to)
+		(exists (?from)
+			(and
+				(place ?from) 
+				(reachable ?from) 
+				(conn ?from ?to) ))))
+
 (:action unlock
 :parameters (?curpos ?lockpos ?key ?shape)
 :precondition (and (place ?curpos) (place ?lockpos) (key ?key) (shape ?shape)
