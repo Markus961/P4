@@ -34,7 +34,7 @@ define:
 (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
 (*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
-    { let (derived_list, action_list) = declarations in { domain = d; requirements = r; predicates = p; derived = derived_list; actions = action_list}  }
+    { let (derived_list, action_list) = declarations in DomainDef { domain = d; requirements = r; predicates = p; derived = derived_list; actions = action_list}  }
 | LPAREN DEFINE p = problem pd = problemdomain o = objects i = init g = goal RPAREN 
     { ProblemDef { problem = p; problemdomain = pd; objects = o; init = i; goal = g}  }
 ;
