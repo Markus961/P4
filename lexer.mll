@@ -29,7 +29,6 @@ rule token = parse
   | "not" {NOT} 
   | "and" {AND}
   | "exists" {EXISTS}
-  | "not" {NOT} 
   | "(" {LPAREN}
   | ")" {RPAREN}  
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  

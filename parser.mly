@@ -42,9 +42,9 @@ define:
 declaration_list:  // parsing derived + actions in same grammar. removes ambiguity som gav error før, fordi de lignede hinanden for meget
   | { ([], []) }   
   | one_derived = derived rest = declaration_list { let (derived_list, action_list) = rest in (one_derived :: derived_list, action_list) }
-    // hvis vi møder derived: tilføjer d foran de-listen, beholder a-listen
+    (*hvis vi møder derived: tilføjer d foran de-listen, beholder a-listen*)
   | one_action = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, one_action :: action_list) }
-    // hvis vi møder action: tilføjer a foran a_list-listen, beholder de-listen
+    (*hvis vi møder action: tilføjer a foran a_list-listen, beholder de-listen*)
 
 derived:
 | LPAREN DERIVED h = pdefinitions b = expr  RPAREN { { header = h; body = b } }
