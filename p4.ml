@@ -1,3 +1,4 @@
+(*
 open Ast
 
 (* Converts features from the parser into strings *)
@@ -36,3 +37,31 @@ let () =
   | exception Failure msg ->
     Printf.printf "Parse error: %s\n" msg;
     close_in input_channel
+
+
+*)
+
+(* p4.ml *)
+
+open Ast  (* antager ast.ml har alle typer og funktioner *)
+
+let () =
+  (* forestil dig at parseren har lavet dette AST *)
+  let my_objects_decl = GridAndObjects (6, 6, ["triangle"; "diamond"; "key0"]) in
+
+  (* Oversæt til odef list *)
+  let all_odefs = objects_decl_to_odef my_objects_decl in
+
+  (* Print til konsol *)
+  print_endline "Expanded objects from grid:";
+  List.iter (fun o -> print_endline o.oname) all_odefs;
+
+  (* Brug all_odefs til at lave ProblemDef *)
+  let _problem_ast = ProblemDef {
+  problem = {problem_name="test_problem"};
+  problemdomain = {problemdomain_name="test_domain"};
+  objects = my_objects_decl;
+  init = [];
+  goal = Atom("dummy", []);
+  } in
+  ()

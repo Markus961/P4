@@ -6,6 +6,9 @@
 }
 
 let space = [' ' '\t' '\r' '\n']
+let digit = ['0'-'9']
+let integer = digit+
+
 rule token = parse
   | "define" {DEFINE}
   (*Domain File*)
@@ -25,12 +28,14 @@ rule token = parse
   | ":objects" {OBJECTS}
   | ":init" {INIT}
   | ":goal" {GOAL}
+  | ":grid" {GRID}
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
   | "exists" {EXISTS}
   | "(" {LPAREN}
   | ")" {RPAREN}  
+  | integer as c { CONST (int_of_string c) }
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   | ";"  [^ '\n']* {token lexbuf} (*Comment handling in PDDL*)

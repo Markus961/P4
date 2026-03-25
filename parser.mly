@@ -6,9 +6,10 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID
 %token AND EXISTS NOT 
 %token LPAREN RPAREN
+%token <int> CONST
 %token <string> VAR
 %token <string> NAME
 %token EOF
@@ -145,8 +146,9 @@ problemdomain:
 ;
 
 objects:
-| LPAREN OBJECTS ob = ob_list RPAREN
-    { ob }
+| LPAREN OBJECTS ob = ob_list RPAREN { NormalObjects ob }
+| LPAREN OBJECTS GRID rows = CONST columns = CONST ob = ob_list RPAREN { GridAndObjects (rows, columns, ob) }
+| LPAREN OBJECTS ob = ob_list GRID rows = CONST columns = CONST RPAREN { GridAndObjects (rows, columns, ob) }
 ;
 
 (*oparams:
@@ -155,12 +157,8 @@ objects:
 ;*)
 
 ob_list:
-| { [] }
-| o = odef rest = ob_list { o :: rest }
-;
-
-odef:
-| name = NAME { { oname = name } } 
+| n = NAME { [n] }
+| n = NAME ob_list_tail = ob_list { n :: ob_list_tail }
 ;
 
 
