@@ -7,5 +7,4 @@
  (infer true))
 
 (executable
- (name p4)
- (libraries))
+ (name p4))

@@ -56,4 +56,12 @@
 :parameters (?curpos ?key)
 :precondition (and (place ?curpos) (key ?key) 
                   (reachable ?curpos) (holding ?key))
-:effect (and (arm-empty ) (at-robot ?curpos) (at ?key ?curpos) (not (holding ?key)))))
+:effect (and (arm-empty ) (at-robot ?curpos) (at ?key ?curpos) (not (holding ?key))))
+
+
+
+
+   (:objects :grid 6 6 
+             triangle diamond square circle key0 key1 
+             key2 key3 key4 key5 key6 key7 key8 key9)
+)
