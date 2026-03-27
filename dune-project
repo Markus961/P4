@@ -1,4 +1,21 @@
 (lang dune 2.0)
-(using menhir 2.0)
-(wrapped_executables false)
 
+(name grid_extension)
+
+(using menhir 2.0)
+
+(maintainers "Maintainer Name <maintainer@example.com>")
+
+(license LICENSE)
+
+(documentation https://url/to/documentation)
+
+(package
+ (name grid_extension)
+ (synopsis "A short synopsis")
+ (description "A longer description")
+ (depends ocaml)
+ (tags
+  ("add topics" "to describe" your project)))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html

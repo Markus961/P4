@@ -7,4 +7,6 @@
  (infer true))
 
 (executable
- (name p4))
+ (public_name grid_extension)
+ (name p4)
+ (modules p4 ast expand_grid parser lexer))
