@@ -1,9 +1,19 @@
+;library makes Ast, Parser and Lexer available for tests
+(library
+ (name p4)
+ (modules ast parser lexer)) 
+
+;generates lexer from lexer.mll
 (ocamllex
  (modules lexer))
+
+;generates parser from parser.mly
 (menhir
  (modules parser)
  (flags --explain --dump)
  (infer true))
+
+;executable for main program (p4.ml)
 (executable
  (name p4)
  (flags ())

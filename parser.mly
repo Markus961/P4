@@ -13,6 +13,36 @@
 %token <string> NAME
 %token EOF
 
+
+(*for test of lexer*)
+%printer {
+  match _ with
+  | DEFINE -> "DEFINE"
+  | DOMAIN -> "DOMAIN"
+  | REQUIREMENTS -> "REQUIREMENTS"
+  | DPREDICATES -> "DPREDICATES"
+  | STRIPS -> "STRIPS"
+  | PREDICATES -> "PREDICATES"
+  | DERIVED -> "DERIVED"
+  | ACTION -> "ACTION"
+  | PARAMETERS -> "PARAMETERS"
+  | PRECONDITION -> "PRECONDITION"
+  | EFFECT -> "EFFECT"
+  | INIT -> "INIT"
+  | OBJECTS -> "OBJECTS"
+  | PROBLEM -> "PROBLEM"
+  | PROBLEMDOMAIN -> "PROBLEMDOMAIN"
+  | GOAL -> "GOAL"
+  | AND -> "AND"
+  | EXISTS -> "EXISTS"
+  | NOT -> "NOT"
+  | LPAREN -> "LPAREN"
+  | RPAREN -> "RPAREN"
+  | NAME s -> "NAME(" ^ s ^ ")"
+  | VAR s -> "VAR(" ^ s ^ ")"
+  | EOF -> "EOF"
+}
+
 (* Here the program starts *)
 %start prog
 
