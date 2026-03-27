@@ -1,12 +1,5 @@
-(ocamllex
- (modules lexer))
-
-(menhir
- (modules parser)
- (flags --explain --dump)
- (infer true))
-
 (executable
  (public_name grid_extension)
  (name p4)
- (modules p4 ast expand_grid parser lexer))
+ (modules p4)
+ (libraries grid_extension))

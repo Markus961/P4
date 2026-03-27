@@ -1,2 +1,12 @@
+(ocamllex
+ (modules lexer))
+
+(menhir
+ (modules parser)
+ (flags --explain --dump)
+ (infer true))
+
 (library
- (name grid_extension))
+ (name grid_extension)
+ (wrapped false)
+ (modules ast expand_grid parser lexer))
