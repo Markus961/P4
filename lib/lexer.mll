@@ -29,12 +29,15 @@ rule token = parse
   | ":init" {INIT}
   | ":goal" {GOAL}
   | ":grid" {GRID}
+  | ":locked_nodes" {LOCKEDNODES}
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
   | "exists" {EXISTS}
   | "(" {LPAREN}
   | ")" {RPAREN}  
+  | "[" {LBRACKET}
+  | "]" {RBRACKET}
   | integer as c { CONST (int_of_string c) }
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
