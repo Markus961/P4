@@ -47,6 +47,8 @@ let objects_decl_to_odef decl =
 
 type argument = string
 
+
+
 type row = entry list
 and entry =
   | IntEntry of int
@@ -54,7 +56,7 @@ and entry =
 
 type state = 
   | OnlyStates of { sname : string; arguments : argument list }
-  | LockedNodes of { rows : row list; statement : state}
+  | LockedNodes of { rows : row list; statement : state} (* LcokedNodes is a matrix *)
 
 type init = state list
 
