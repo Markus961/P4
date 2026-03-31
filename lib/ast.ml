@@ -47,10 +47,13 @@ let objects_decl_to_odef decl =
 
 type argument = string
 
-type state = {
-  sname : string;
-  arguments : argument list;
-}
+type row = entry list
+and entry = char
+
+type state = 
+| OnlyStates of { sname : string; arguments : argument list}
+| LockedNodes of { rows : row list; shape : state}
+
 
 type init = state list
 

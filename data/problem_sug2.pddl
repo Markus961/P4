@@ -25,14 +25,14 @@
           (conn node neighbor))))
 
           ;;Locked nodes
-          (locked grid [
+          (locked_nodes [
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 1 1 1 0]
             [0 0 1 1 1 0]
             [0 0 1 1 0 0]
-            ] :shape triangle)
+            ] (shape triangle))
 
           ;;Open nodes er så de nodes der ikke er locked
 

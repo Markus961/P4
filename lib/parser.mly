@@ -6,12 +6,13 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES
 %token AND EXISTS NOT 
-%token LPAREN RPAREN
+%token LPAREN RPAREN LBRACKET RBRACKET
 %token <int> CONST
 %token <string> VAR
 %token <string> NAME
+%token <char> CHARACTER
 %token EOF
 
 (* Here the program starts *)
@@ -173,7 +174,8 @@ state_list:
 
 
 state:
-| LPAREN name = NAME args = arg_list RPAREN { { sname = name; arguments = args } } 
+| LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
+| l = locked_nodes {l}
 ;
 
 arg_list:
@@ -183,6 +185,28 @@ arg_list:
 
 argument:
 | a = NAME {a}
+;
+
+locked_nodes:
+| LPAREN LOCKEDNODES LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodes { rows = r; shape = s } }
+;
+
+rows:
+| { [] }
+| r = row rest = rows { r :: rest }
+;
+
+row:
+| LBRACKET en = entries RBRACKET { en }
+;
+
+entries:
+| { [] }
+| ent = entry rest = entries { ent :: rest }
+;
+
+entry:
+| c = CHARACTER { c }
 ;
 
 goal:
