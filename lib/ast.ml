@@ -1,6 +1,4 @@
 
-open Expand_grid
-
 (* the below code is for domain *)
 type domain = { domain_name : string}
 
@@ -37,13 +35,6 @@ type odef = { oname : string }
 type objects_decl =
   | NormalObjects of string list (* Only objects: triangle diamond key1 etc. *)
   | GridAndObjects of int * int * string list (* Grid AND normal objects *)
-
-let objects_decl_to_odef decl =
-  match decl with
-  | NormalObjects lst -> List.map (fun name -> {oname=name}) lst
-  | GridAndObjects (rows, cols, extra_objects) ->
-      let all_names = expand_grid rows cols extra_objects in
-      List.map (fun name -> {oname=name}) all_names
 
 type argument = string
 
