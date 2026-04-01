@@ -45,7 +45,9 @@ let objects_decl_to_odef decl =
       let all_names = expand_grid rows cols extra_objects in
       List.map (fun name -> {oname=name}) all_names
 
-type argument = string
+type argument = 
+| OnlyArguments of {a : string}
+| GridArguments of int * int
 
 type row = entry list
 and entry = char
