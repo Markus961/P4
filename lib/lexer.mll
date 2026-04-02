@@ -30,6 +30,7 @@ rule token = parse
   | ":goal" {GOAL}
   | ":grid" {GRID}
   | "locked_nodes" {LOCKEDNODES}
+  | "keylocation_matrix" {KEYLOCATIONMATRIX}
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
@@ -40,7 +41,7 @@ rule token = parse
   | "]" {RBRACKET}
   | integer as c { CONST (int_of_string c) }
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
-  | ['a'-'z' 'A'-'Z' '0'-'9'] as id {CHARACTER id}
+  | ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   | ";"  [^ '\n']* {token lexbuf} (*Comment handling in PDDL*)
   | space+ { token lexbuf }
