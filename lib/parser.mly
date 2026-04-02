@@ -7,7 +7,7 @@
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
 %token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES KEYS KEYLOCATIONMATRIX
-%token AND EXISTS NOT 
+%token AND EXISTS NOT PLUS MULT
 %token LPAREN RPAREN LBRACKET RBRACKET
 %token <int> CONST
 %token <string> VAR
@@ -197,13 +197,24 @@ locked_nodes:
 keylocation_matrix:
 | LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
 
+(* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:
 | { [] }
 | r = row rest = rows { r :: rest }
+| m = repeat_notation_option { m }
+;
+
+repeat_notation_option:
+| p = row_part { [p] }
+| p = row_part PLUS m = repeat_notation_option { p :: m }
+;
+
+row_part:
+| LBRACKET en = entries RBRACKET MULT n = CONST { MultRow (en, n) }
 ;
 
 row:
-| LBRACKET en = entries RBRACKET { en }
+| LBRACKET en = entries RBRACKET { NormalRow (en) }
 ;
 
 entries:

@@ -40,9 +40,11 @@ type argument =
 | OnlyArguments of {a : string}
 | GridArguments of int * int
 
-type row = entry list
+type entry = char
 
-and entry = char
+type row = 
+| NormalRow of entry list
+| MultRow of entry list * int
 
 type key = {kname : string; shape : string; location : string}
 
