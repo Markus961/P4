@@ -9,4 +9,4 @@
 (library
  (name grid_extension)
  (wrapped false)
- (modules ast expand_grid parser lexer))
+ (modules ast parser lexer))
