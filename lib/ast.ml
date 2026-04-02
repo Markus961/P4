@@ -50,6 +50,8 @@ type state =
 | OnlyStates of { sname : string; arguments : argument list}
 | LockedNodes of { rows : row list; shape : state}
 | Keys of key list
+| KeylocationMatrix of { rows : row list; }
+
 
 type init = state list
 
