@@ -6,8 +6,8 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNOTESMATRIX LOCKEDNODES OPENNODES
-%token AND EXISTS NOT 
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNOTESMATRIX LOCKEDNODES OPENNODES KEYS KEYLOCATIONMATRIX
+%token AND EXISTS NOT PLUS MULT
 %token LPAREN RPAREN LBRACKET RBRACKET COMMA DASH
 %token <int> CONST
 %token <string> VAR
@@ -43,9 +43,9 @@ define:
 
 declaration_list:  // parsing derived + actions in same grammar. removes ambiguity som gav error før, fordi de lignede hinanden for meget
   | { ([], []) }   
-  | one_derived = derived rest = declaration_list { let (derived_list, action_list) = rest in (one_derived :: derived_list, action_list) }
+  | d = derived rest = declaration_list { let (derived_list, action_list) = rest in (d :: derived_list, action_list) }
     (*hvis vi møder derived: tilføjer d foran de-listen, beholder a-listen*)
-  | one_action = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, one_action :: action_list) }
+  | a = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, a :: action_list) }
     (*hvis vi møder action: tilføjer a foran a_list-listen, beholder de-listen*)
 
 derived:
@@ -177,6 +177,8 @@ state:
 | l = locked_nodes_matrix { l }
 | ln = locked_nodes { ln }
 | o = open_nodes { o }
+| k = keys { k }
+| km = keylocation_matrix {km}
 ;
 
 arg_list:
@@ -214,13 +216,27 @@ locked_nodes_matrix:
 | LPAREN LOCKEDNOTESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
 ;
 
+keylocation_matrix:
+| LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
+
+(* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:
 | { [] }
 | r = row rest = rows { r :: rest }
+| m = repeat_notation_option { m }
+;
+
+repeat_notation_option:
+| p = row_part { [p] }
+| p = row_part PLUS m = repeat_notation_option { p :: m }
+;
+
+row_part:
+| LBRACKET en = entries RBRACKET MULT n = CONST { MultRow (en, n) }
 ;
 
 row:
-| LBRACKET en = entries RBRACKET { en }
+| LBRACKET en = entries RBRACKET { NormalRow (en) }
 ;
 
 entries:
@@ -231,6 +247,16 @@ entries:
 entry:
 | c = CHARACTER { c }
 ;
+
+keys:
+| LPAREN KEYS ks = key_list RPAREN { Keys ks }
+
+key_list:
+| { [] }
+| k = key rest = key_list { k :: rest }
+
+key:
+| LPAREN n = NAME s = NAME l = NAME RPAREN { {kname = n; shape = s; location = l} }
 
 goal:
 | LPAREN GOAL e = expr RPAREN { e }

@@ -37,7 +37,7 @@
           ;;Open nodes er så de nodes der ikke er locked
 
           ;;Key location Diamond, Circle, Triangle, Square
-          (keylocation grid [
+          (keylocation_matrix [
             [- - - C - T]
             [- - - - - -]
             [- - - - - -]
