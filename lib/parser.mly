@@ -6,7 +6,7 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES KEYS
 %token AND EXISTS NOT 
 %token LPAREN RPAREN LBRACKET RBRACKET
 %token <int> CONST
@@ -43,9 +43,9 @@ define:
 
 declaration_list:  // parsing derived + actions in same grammar. removes ambiguity som gav error før, fordi de lignede hinanden for meget
   | { ([], []) }   
-  | one_derived = derived rest = declaration_list { let (derived_list, action_list) = rest in (one_derived :: derived_list, action_list) }
+  | d = derived rest = declaration_list { let (derived_list, action_list) = rest in (d :: derived_list, action_list) }
     (*hvis vi møder derived: tilføjer d foran de-listen, beholder a-listen*)
-  | one_action = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, one_action :: action_list) }
+  | a = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, a :: action_list) }
     (*hvis vi møder action: tilføjer a foran a_list-listen, beholder de-listen*)
 
 derived:
@@ -176,6 +176,7 @@ state_list:
 state:
 | LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
 | l = locked_nodes { l }
+| k = keys { k }
 ;
 
 arg_list:
@@ -209,6 +210,16 @@ entries:
 entry:
 | c = CHARACTER { c }
 ;
+
+keys:
+| LPAREN KEYS ks = key_list RPAREN { Keys ks }
+
+key_list:
+| { [] }
+| k = key rest = key_list { k :: rest }
+
+key:
+| LPAREN n = NAME s = NAME l = NAME RPAREN { {kname = n; shape = s; location = l} }
 
 goal:
 | LPAREN GOAL e = expr RPAREN { e }
