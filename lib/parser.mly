@@ -175,7 +175,7 @@ state_list:
 
 state:
 | LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
-| l = locked_nodes {l}
+| l = locked_nodes { l }
 ;
 
 arg_list:
@@ -184,7 +184,8 @@ arg_list:
 ;
 
 argument:
-| a = NAME {a}
+| a = NAME { OnlyArguments { a } }
+| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
 ;
 
 locked_nodes:
