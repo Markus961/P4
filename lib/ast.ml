@@ -41,11 +41,15 @@ type argument =
 | GridArguments of int * int
 
 type row = entry list
+
 and entry = char
+
+type key = {kname : string; shape : string; location : string}
 
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}
 | LockedNodes of { rows : row list; shape : state}
+| Keys of key list
 | KeylocationMatrix of { rows : row list; }
 
 
