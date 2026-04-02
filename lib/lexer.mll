@@ -29,9 +29,10 @@ rule token = parse
   | ":init" {INIT}
   | ":goal" {GOAL}
   | ":grid" {GRID}
-  | "locked_nodes_matrix" {LOCKEDNODES}
-  | ":keys" {KEYS}
+  | "locked_nodes_matrix" {LOCKEDNOTESMATRIX}
   | "locked_nodes" {LOCKEDNODES}
+  | "open_nodes" {OPENNODES}
+  | ":keys" {KEYS}
   | "keylocation_matrix" {KEYLOCATIONMATRIX}
   (*Logic*)
   | "not" {NOT} 
@@ -41,6 +42,8 @@ rule token = parse
   | ")" {RPAREN}  
   | "[" {LBRACKET}
   | "]" {RBRACKET}
+  | "," {COMMA}
+  | "-" {DASH}
   | "+" {PLUS}
   | "*" {MULT}
   | integer as c { CONST (int_of_string c) }
