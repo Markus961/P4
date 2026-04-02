@@ -29,6 +29,8 @@ rule token = parse
   | ":init" {INIT}
   | ":goal" {GOAL}
   | ":grid" {GRID}
+  | "locked_nodes_matrix" {LOCKEDNODES}
+  | ":keys" {KEYS}
   | "locked_nodes" {LOCKEDNODES}
   | "keylocation_matrix" {KEYLOCATIONMATRIX}
   (*Logic*)
