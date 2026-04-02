@@ -31,6 +31,7 @@ rule token = parse
   | ":grid" {GRID}
   | "locked_nodes_matrix" {LOCKEDNOTESMATRIX}
   | "locked_nodes" {LOCKEDNODES}
+  | "open_nodes" {OPENNODES}
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
@@ -40,6 +41,7 @@ rule token = parse
   | "[" {LBRACKET}
   | "]" {RBRACKET}
   | "," {COMMA}
+  | "-" {DASH}
   | integer as c { CONST (int_of_string c) }
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | ['a'-'z' 'A'-'Z' '0'-'9'] as id {CHARACTER id}

@@ -42,16 +42,19 @@ and entry = char
 type node =
 | Node of int * int
 
+type rc =
+| RowsColumns of string * int * int * string * int * int 
+
 type argument = 
 | OnlyArguments of {a : string}
 | GridArguments of int * int
-| LockedNodesArgs of node list * state
+| OpenNodesArgs of node list
 
 and state = 
 | OnlyStates of { sname : string; arguments : argument list}
 | LockedNodesMatrix of { rows : row list; shape : state}
-| LockedNodes of argument list * state 
-
+| LockedNodes of node list * state 
+| OpenNodes of rc * state
 
 type init = state list
 
