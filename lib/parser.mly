@@ -173,9 +173,10 @@ state_list:
 ;
 
 
-state:
+state: 
 | LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
 | l = locked_nodes { l }
+| gc = gridconnection { gc }
 ;
 
 arg_list:
@@ -190,6 +191,19 @@ argument:
 
 locked_nodes:
 | LPAREN LOCKEDNODES LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodes { rows = r; shape = s } }
+;
+
+gridconnection:
+| LPAREN GRIDCONNECTION fl = flag_list RPAREN { fl }
+;
+
+flag_list:
+| { [] }
+| f = flag rest = flag_list { f :: rest }
+;
+
+flag:
+| f = FLAG { f }
 ;
 
 rows:
