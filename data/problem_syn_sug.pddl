@@ -25,10 +25,10 @@
           (conn node neighbor))))
 
           ;;Locked nodes
-          (locked nodes [(3,2) (3,3) (3,4) (4,2) (4,3) (4,4) (5,2) (5,3)] :shape triangle)
+          (locked_nodes [(3,2) (3,3) (3,4) (4,2) (4,3) (4,4) (5,2) (5,3)] (shape triangle))
 
           ;;Open nodes
-          open nodes :rows 0-5 :cols 0-5 :except [(3,2) (3,3) (3,4) (4,2) (4,3) (4,4) (5,2) (5,3)])
+          (open_nodes (rows 0-5 cols 0-5) (except [(3,2) (3,3) (3,4) (4,2) (4,3) (4,4) (5,2) (5,3)]))
 
           ;;Key location
           (keys

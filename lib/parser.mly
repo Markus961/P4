@@ -6,6 +6,8 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES KEYLOCATIONMATRIX
+%token AND EXISTS NOT 
 %token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES
 %token AND EXISTS NOT PLUS MULT
 %token LPAREN RPAREN LBRACKET RBRACKET
@@ -176,6 +178,7 @@ state_list:
 state:
 | LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
 | l = locked_nodes {l}
+| k = keylocation_matrix {k}
 ;
 
 arg_list:
@@ -184,12 +187,16 @@ arg_list:
 ;
 
 argument:
-| a = NAME {a}
+| a = NAME { OnlyArguments { a } }
+| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
 ;
 
 locked_nodes:
 | LPAREN LOCKEDNODES LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodes { rows = r; shape = s } }
 ;
+
+keylocation_matrix:
+| LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
 
 (* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:

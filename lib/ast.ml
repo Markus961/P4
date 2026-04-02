@@ -36,7 +36,9 @@ type objects_decl =
   | NormalObjects of string list (* Only objects: triangle diamond key1 etc. *)
   | GridAndObjects of int * int * string list (* Grid AND normal objects *)
 
-type argument = string
+type argument = 
+| OnlyArguments of {a : string}
+| GridArguments of int * int
 
 type entry = char
 
@@ -47,6 +49,7 @@ type row =
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}
 | LockedNodes of { rows : row list; shape : state}
+| KeylocationMatrix of { rows : row list; }
 
 
 type init = state list
