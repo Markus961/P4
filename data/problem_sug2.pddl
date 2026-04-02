@@ -25,7 +25,7 @@
           (conn node neighbor))))
 
           ;;Locked nodes
-          (locked_nodes [
+          (locked_nodes_matrix [
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]

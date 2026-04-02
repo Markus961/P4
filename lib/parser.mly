@@ -6,9 +6,9 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNOTESMATRIX LOCKEDNODES
 %token AND EXISTS NOT 
-%token LPAREN RPAREN LBRACKET RBRACKET
+%token LPAREN RPAREN LBRACKET RBRACKET COMMA
 %token <int> CONST
 %token <string> VAR
 %token <string> NAME
@@ -175,7 +175,8 @@ state_list:
 
 state:
 | LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
-| l = locked_nodes { l }
+| l = locked_nodes_matrix { l }
+| ln = locked_nodes { ln }
 ;
 
 arg_list:
@@ -186,10 +187,23 @@ arg_list:
 argument:
 | a = NAME { OnlyArguments { a } }
 | GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
+| LBRACKET n = node_list RBRACKET s = state  { LockedNodesArgs ( n, s ) }
 ;
 
 locked_nodes:
-| LPAREN LOCKEDNODES LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodes { rows = r; shape = s } }
+| LPAREN LOCKEDNODES a = arg_list s = state RPAREN { LockedNodes ( a, s ) }
+;
+
+node_list:
+| { [] }
+| n = node rest = node_list { n :: rest}
+;
+
+node:
+| LPAREN i1 = CONST COMMA i2 = CONST RPAREN { Node ( i1, i2 ) }
+
+locked_nodes_matrix:
+| LPAREN LOCKEDNOTESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
 ;
 
 rows:

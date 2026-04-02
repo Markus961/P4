@@ -12,8 +12,8 @@ let expand_grid rows cols extra =
 
 
 
-  (* locked_nodes transformer *)
-  let locked_nodes_transformer rows state = 
+  (* locked_nodes_matrix transformer *)
+  let locked_nodes_matrix_transformer rows state = 
     assert false
 
   *)

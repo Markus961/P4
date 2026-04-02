@@ -36,16 +36,21 @@ type objects_decl =
   | NormalObjects of string list (* Only objects: triangle diamond key1 etc. *)
   | GridAndObjects of int * int * string list (* Grid AND normal objects *)
 
-type argument = 
-| OnlyArguments of {a : string}
-| GridArguments of int * int
-
 type row = entry list
 and entry = char
 
-type state = 
+type node =
+| Node of int * int
+
+type argument = 
+| OnlyArguments of {a : string}
+| GridArguments of int * int
+| LockedNodesArgs of node list * state
+
+and state = 
 | OnlyStates of { sname : string; arguments : argument list}
-| LockedNodes of { rows : row list; shape : state}
+| LockedNodesMatrix of { rows : row list; shape : state}
+| LockedNodes of argument list * state 
 
 
 type init = state list
