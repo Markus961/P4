@@ -185,7 +185,8 @@ arg_list:
 ;
 
 argument:
-| a = NAME {a}
+| a = NAME { OnlyArguments { a } }
+| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
 ;
 
 locked_nodes:

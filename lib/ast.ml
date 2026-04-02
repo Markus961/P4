@@ -36,7 +36,9 @@ type objects_decl =
   | NormalObjects of string list (* Only objects: triangle diamond key1 etc. *)
   | GridAndObjects of int * int * string list (* Grid AND normal objects *)
 
-type argument = string
+type argument = 
+| OnlyArguments of {a : string}
+| GridArguments of int * int
 
 type row = entry list
 and entry = char
