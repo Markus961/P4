@@ -38,8 +38,11 @@ type objects_decl =
 
 type argument = string
 
-type row = entry list
-and entry = char
+type entry = char
+
+type row = 
+| NormalRow of entry list
+| MultRow of entry list * int
 
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}

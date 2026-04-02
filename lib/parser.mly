@@ -7,7 +7,7 @@
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
 %token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODES
-%token AND EXISTS NOT 
+%token AND EXISTS NOT PLUS MULT
 %token LPAREN RPAREN LBRACKET RBRACKET
 %token <int> CONST
 %token <string> VAR
@@ -191,13 +191,24 @@ locked_nodes:
 | LPAREN LOCKEDNODES LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodes { rows = r; shape = s } }
 ;
 
+(* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:
 | { [] }
 | r = row rest = rows { r :: rest }
+| m = repeat_notation_option { m }
+;
+
+repeat_notation_option:
+| p = row_part { [p] }
+| p = row_part PLUS m = repeat_notation_option { p :: m }
+;
+
+row_part:
+| LBRACKET en = entries RBRACKET MULT n = CONST { MultRow (en, n) }
 ;
 
 row:
-| LBRACKET en = entries RBRACKET { en }
+| LBRACKET en = entries RBRACKET { NormalRow (en) }
 ;
 
 entries:
