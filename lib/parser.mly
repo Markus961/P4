@@ -195,7 +195,7 @@ locked_nodes:
 ;
 
 gridconnection:
-| LPAREN GRIDCONNECTION fl = flag_list RPAREN { fl }
+| LPAREN GRIDCONNECTION fl = flag_list RPAREN { GridConnection fl }
 ;
 
 flag_list:
