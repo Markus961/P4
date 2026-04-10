@@ -12,7 +12,9 @@ let grid_to_strings rows cols =
 
 let transform_objects_decl obj =
   match obj with
+  (* If NormalObjects do nothing *)
   | NormalObjects _ -> obj
+  (* If GridAndObjects transform into NormalObjects *)
   | GridAndObjects (rows, cols, objs) ->
     let grid_objs = grid_to_strings rows cols in
         NormalObjects (grid_objs @ objs)
