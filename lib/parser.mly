@@ -6,12 +6,13 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNOTESMATRIX LOCKEDNODES OPENNODES KEYS KEYLOCATIONMATRIX
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNOTESMATRIX LOCKEDNODES OPENNODES KEYS KEYLOCATIONMATRIX GRIDCONNECTION
 %token AND EXISTS NOT PLUS MULT
 %token LPAREN RPAREN LBRACKET RBRACKET COMMA DASH
 %token <int> CONST
 %token <string> VAR
 %token <string> NAME
+%token <string> FLAG
 %token <char> CHARACTER
 %token EOF
 
@@ -179,6 +180,7 @@ state:
 | o = open_nodes { o }
 | k = keys { k }
 | km = keylocation_matrix {km}
+| gc = gridconnection { gc }
 ;
 
 arg_list:
@@ -214,6 +216,19 @@ node:
 
 locked_nodes_matrix:
 | LPAREN LOCKEDNOTESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
+;
+
+gridconnection:
+| LPAREN GRIDCONNECTION fl = flag_list RPAREN { GridConnection fl }
+;
+
+flag_list:
+| { [] }
+| f = flag rest = flag_list { f :: rest }
+;
+
+flag:
+| f = FLAG { f }
 ;
 
 keylocation_matrix:

@@ -62,6 +62,7 @@ type state =
 | OpenNodes of rc * state
 | Keys of key list
 | KeylocationMatrix of { rows : row list; }
+| GridConnection of string list
 
 type init = state list
 
