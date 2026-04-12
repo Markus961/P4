@@ -25,7 +25,7 @@
           (conn node neighbor))))
 
           ;;Locked nodes
-          (locked_nodes [
+          (locked_nodes_matrix [
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
@@ -37,7 +37,7 @@
           ;;Open nodes er så de nodes der ikke er locked
 
           ;;Key location Diamond, Circle, Triangle, Square
-          (keylocation grid [
+          (keylocation_matrix [
             [- - - C - T]
             [- - - - - -]
             [- - - - - -]
