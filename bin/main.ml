@@ -1,5 +1,4 @@
 (* husk at lave executable
-
 open Ast
 
 (* function to parse input-file into ast *)
@@ -7,7 +6,6 @@ open Ast
 (* function to transform ast into standard pddl ast *)
 
 (* function to do something with transformed ast (make pddl) *)
-
 *)
 
 open Ast
