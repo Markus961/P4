@@ -8,8 +8,6 @@ open Ast
 
 (* function to do something with transformed ast (make pddl) *)
 
-
-
 *)
 
 open Ast
