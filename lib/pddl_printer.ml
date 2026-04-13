@@ -5,10 +5,8 @@ let print_objects_decl obj =
   match obj with
   | NormalObjects objs ->
       List.iter print_endline objs
-
-  | GridAndObjects (r, c, objs) ->
-      Printf.printf "GridAndObjects (%d x %d)\n" r c;
-      List.iter print_endline objs
+  | _ -> 
+    print_endline ("No objects")
 
 let print_program p =
   match p.defs with
