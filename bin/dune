@@ -1,5 +1,12 @@
 (executable
+ (name main)
  (public_name grid_extension)
- (name p4)
- (modules p4)
+ (modules main)
  (libraries grid_extension))
+
+
+;(executable
+ ;(public_name grid_extension)
+ ;(name p4)
+ ;(modules main)
+ ;(libraries grid_extension))

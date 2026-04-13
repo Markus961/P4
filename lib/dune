@@ -9,4 +9,4 @@
 (library
  (name grid_extension)
  (wrapped false)
- (modules ast ast_transformer parser lexer))
+ (modules ast ast_transformer parser lexer pddl_printer))
