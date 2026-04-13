@@ -1,23 +1,36 @@
-(* open Ast
+open Ast
 
-(* :grid transformer: skal ikke printe nodes men lave GridAndObjects om til NormalObjects *)
-let expand_grid rows cols extra =
-  let nodes =
-    List.init rows (fun r ->
-      List.init cols (fun c -> Printf.sprintf "node%d-%d" r c)
-    )
-    |> List.flatten
-  in
-  nodes @ extra
+let grid_to_strings rows cols =
+  let acc = ref [] in
+    for i = 0 to rows - 1 do
+      for j = 0 to cols -1 do
+        acc := Printf.sprintf "node%d-%d" i j :: !acc
+      done
+    done;
+  (* List is built in reverse so it must be reversed *)
+  List.rev !acc
+
+let transform_objects_decl obj =
+  match obj with
+  (* If NormalObjects do nothing *)
+  | NormalObjects _ -> obj
+  (* If GridAndObjects transform into NormalObjects *)
+  | GridAndObjects (rows, cols, objs) ->
+    let grid_objs = grid_to_strings rows cols in
+        NormalObjects (grid_objs @ objs)
+   
+
+(*
+let transform_argument arg =
+  assert false
+*)
 
 
 
-  (* locked_nodes_matrix transformer *)
-  let locked_nodes_matrix_transformer rows state = 
-    assert false
-
-  *)
-
+(*
+let transform_state state =
+  assert false
+*)
 
 
   (* i main: i main: 
