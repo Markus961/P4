@@ -29,7 +29,11 @@ rule token = parse
   | ":init" {INIT}
   | ":goal" {GOAL}
   | ":grid" {GRID}
+  | "locked_nodes_matrix" {LOCKEDNOTESMATRIX}
   | "locked_nodes" {LOCKEDNODES}
+  | "grid_connection" {GRIDCONNECTION}
+  | "open_nodes" {OPENNODES}
+  | ":keys" {KEYS}
   | "keylocation_matrix" {KEYLOCATIONMATRIX}
   (*Logic*)
   | "not" {NOT} 
@@ -39,10 +43,15 @@ rule token = parse
   | ")" {RPAREN}  
   | "[" {LBRACKET}
   | "]" {RBRACKET}
+  | "," {COMMA}
+  | "-" {DASH}
+  | "+" {PLUS}
+  | "*" {MULT}
   | integer as c { CONST (int_of_string c) }
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
+  | '-' ['a'-'z' 'A'-'Z'] as id {FLAG id}
   | ";"  [^ '\n']* {token lexbuf} (*Comment handling in PDDL*)
   | space+ { token lexbuf }
   | _ as c { raise (Lexing_error (Printf.sprintf "Unexpected character: %c" c)) } (* Golden *)

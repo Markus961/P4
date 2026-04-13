@@ -19,6 +19,19 @@
           (shape circle)
 
           ;;Connections
+          ;;
+          ;;H: Horizontal - Left Right
+          ;;V: Vertical - Up Down 
+          ;;D: Diagonal
+          ;;
+          ;;W: Wraparound - last node to 0, ex. If horizontal connection - node 5-0 to node 0-0, If vertical connection - node 0-5 to node 0-0
+          ;;If Diagonal, then 5-5 to 0-0, If both then both
+          ;;
+          ;;Måske lave det så at man kan gøre det for kun en del af matrix (grid_connection (0,0)(3,3) -V -W)
+
+
+          (grid_connection -H -V -D -W)
+
           (for-each node in grid
           (for-each neighbor of node
           (if neighbor-adjacent? node neighbor
