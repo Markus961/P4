@@ -18,6 +18,28 @@ let transform_objects_decl obj =
   | GridAndObjects (rows, cols, objs) ->
     let grid_objs = grid_to_strings rows cols in
         NormalObjects (grid_objs @ objs)
+
+
+let transform_program p =
+  match p.defs with
+  (* We didn't provide extensions for domain.pddl so nothing happens *)
+  | DomainDef _ -> p
+  | ProblemDef problem_def ->
+      let problem = problem_def.problem in
+      let problemdomain = problem_def.problemdomain in
+      let new_objects = transform_objects_decl problem_def.objects in
+      let init = problem_def.init in
+      let goal = problem_def.goal in
+{
+  defs =
+    ProblemDef {
+      problem;
+      problemdomain;
+      objects = new_objects;
+      init;
+      goal;
+    }
+}
    
 
 (*

@@ -48,3 +48,4 @@
    (:goal (and (at key8 node3-2)
                (at key5 node4-2)
                (at key0 node4-1))))
+)
