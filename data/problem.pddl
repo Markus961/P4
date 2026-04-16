@@ -12,8 +12,8 @@
              key3 key4 key5 key6 key7 key8 key9)
 
    ;;initial state
-   (:init (arm-empty)       ;;Robottens arm er tom
-          (place node0-0)   ;;Alle nodes eksisterer som places
+   (:init (arm-empty)      
+          (place node0-0)  
           (place node0-1)
           (place node0-2)
           (place node0-3)

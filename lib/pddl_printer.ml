@@ -8,6 +8,38 @@ let print_objects_decl obj =
   | _ -> 
     print_endline ("No objects")
 
+(* For printing OnlyStates *)
+let print_argument args =
+  match args with
+  | OnlyArguments { a } ->
+      print_endline a
+  | _ -> ()
+
+let print_onlystates sname arguments =
+    print_endline ("(" ^ sname);
+    List.iter print_argument arguments;
+    print_endline (")")
+
+let rec print_init_section state_list =
+  match state_list with
+  | [] -> ()
+  | OnlyStates { sname; arguments } :: tl ->
+      print_onlystates sname arguments;
+      print_init_section tl
+(*| LockedNodesMatrix { rows; shape } ->
+      ()
+  
+  | LockedNodes { ; state } ->
+      ()
+  | OpenNodes ->
+      ()
+  | Keys ->
+      ()
+  | KeylocationMatrix ->
+      ()
+  | GridConnection ->
+      () *)
+  | _ -> ()
 (* Used for printing predicate definitions from domain.pddl *)
 let print_pdefinition pdefs =
   print_endline ("(" ^ pdefs.pname);
@@ -38,7 +70,10 @@ let print_program p =
     print_endline (Printf.sprintf "(:domain %s)" pd.problemdomain.problemdomain_name);
     print_endline("(:objects ");
     print_objects_decl pd.objects;
-    print_endline(")");
+    print_endline (")");
+    print_endline ("(:init ");
+    print_init_section pd.init;
+
 
     (* define end parenthesis *)
     print_endline (")"); 
