@@ -2,13 +2,19 @@ open Ast
 
 let grid_to_strings rows cols grid_name =
   let acc = ref [] in
+    if rows <= 0 || cols <= 0 then
+    invalid_arg "row and cols must be positive";
     for i = 0 to rows - 1 do
       for j = 0 to cols -1 do
         acc := Printf.sprintf "%s%d-%d" grid_name i j :: !acc
       done
     done;
   (* List is built in reverse so it must be reversed *)
-  List.rev !acc
+  let grid_string_output = List.rev !acc in
+  let grid_count = rows * cols in
+  if List.length grid_string_output <> grid_count then
+  invalid_arg "matrix does not match input amount";
+  grid_string_output
 
 let transform_objects_decl obj =
   match obj with
