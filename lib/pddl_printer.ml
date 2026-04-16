@@ -49,6 +49,23 @@ let print_pdefinition pdefs =
 let print_all_pdefinitions pdefinitions =
   List.iter print_pdefinition pdefinitions
 
+(* Used for printing derived predicates from domain.pddl *)  
+let rec string_of_expr e =
+  match e with
+  | Atom (name, args) ->
+       "(" ^ name ^ " " ^ String.concat " " args ^ ")"
+  | And exprs ->
+      "(and " ^ String.concat " " (List.map string_of_expr exprs) ^ ")"
+  | Not e ->
+      "(not " ^ string_of_expr e ^ ")"
+  | Exists (vars, e) ->
+      "(exists (" ^ String.concat " " vars ^ ") " ^ string_of_expr e ^ ")"             
+let print_derived d =
+  print_endline ("(:derived (" ^ d.header.pname ^ " " ^ String.concat " " d.header.variables ^ ") " ^ string_of_expr d.body ^ ")"
+  )
+
+let print_all_derived dlist =
+  List.iter print_derived dlist  
 
 let print_program p =
   match p.defs with
@@ -58,12 +75,9 @@ let print_program p =
     print_endline ("(");
     print_endline (":requirements"); (* note: experiments with dot notation as with domain *)
     print_endline ":strips";
-    print_endline ":derived-predicates";
     print_endline "(:predicates";
     print_all_pdefinitions d.predicates;
-    print_endline (")");
-    
-    print_endline (")");
+    print_all_derived d.derived; 
   | ProblemDef pd ->
     print_endline ("(define ");
     print_endline (Printf.sprintf "(problem %s)" pd.problem.problem_name);
