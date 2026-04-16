@@ -1,10 +1,10 @@
 open Ast
 
-let grid_to_strings rows cols =
+let grid_to_strings rows cols grid_name =
   let acc = ref [] in
     for i = 0 to rows - 1 do
       for j = 0 to cols -1 do
-        acc := Printf.sprintf "node%d-%d" i j :: !acc
+        acc := Printf.sprintf "%s%d-%d" grid_name i j :: !acc
       done
     done;
   (* List is built in reverse so it must be reversed *)
@@ -15,8 +15,8 @@ let transform_objects_decl obj =
   (* If NormalObjects do nothing *)
   | NormalObjects _ -> obj
   (* If GridAndObjects transform into NormalObjects *)
-  | GridAndObjects (rows, cols, objs) ->
-    let grid_objs = grid_to_strings rows cols in
+  | GridAndObjects (rows, cols, grid_name, objs) ->
+    let grid_objs = grid_to_strings rows cols grid_name in
         NormalObjects (grid_objs @ objs)
 
 
