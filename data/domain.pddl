@@ -15,6 +15,8 @@
 	     (reachable ?x)
 )
 
+;;(:grid grid-name conn key-shape lock-shape)
+
 (:derived (reachable ?to)
 	(and (place ?to) 
 		(at-robot ?to)))

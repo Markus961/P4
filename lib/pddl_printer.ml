@@ -40,6 +40,15 @@ let rec print_init_section state_list =
   | GridConnection ->
       () *)
   | _ -> ()
+(* Used for printing predicate definitions from domain.pddl *)
+let print_pdefinition pdefs =
+  print_endline ("(" ^ pdefs.pname);
+  List.iter print_endline pdefs.variables;
+  print_endline (")")
+
+let print_all_pdefinitions pdefinitions =
+  List.iter print_pdefinition pdefinitions
+
 
 let print_program p =
   match p.defs with
@@ -50,6 +59,8 @@ let print_program p =
     print_endline (":requirements"); (* note: experiments with dot notation as with domain *)
     print_endline ":strips";
     print_endline ":derived-predicates";
+    print_endline "(:predicates";
+    print_all_pdefinitions d.predicates;
     print_endline (")");
     
     print_endline (")");

@@ -149,8 +149,8 @@ problemdomain:
 
 objects:
 | LPAREN OBJECTS ob = ob_list RPAREN { NormalObjects ob }
-| LPAREN OBJECTS GRID rows = CONST columns = CONST ob = ob_list RPAREN { GridAndObjects (rows, columns, ob) }
-| LPAREN OBJECTS ob = ob_list GRID rows = CONST columns = CONST RPAREN { GridAndObjects (rows, columns, ob) }
+| LPAREN OBJECTS LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN ob = ob_list RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
+| LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
 ;
 
 (*oparams:

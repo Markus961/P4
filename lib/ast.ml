@@ -34,7 +34,7 @@ type odef = { oname : string }
 
 type objects_decl =
   | NormalObjects of string list (* Only objects: triangle diamond key1 etc. *)
-  | GridAndObjects of int * int * string list (* Grid AND normal objects *)
+  | GridAndObjects of int * int * string * string list (* Grid AND normal objects *)
 
 type node =
 | Node of int * int
