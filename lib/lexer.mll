@@ -28,13 +28,20 @@ rule token = parse
   | ":objects" {OBJECTS}
   | ":init" {INIT}
   | ":goal" {GOAL}
+  (*| "locked_nodes_matrix" {LOCKEDNOTESMATRIX} (**)
+  | "locked_nodes" {LOCKEDNODES} (**)
+  | "grid_connection" {GRIDCONNECTION} (**)
+  | "open_nodes" {OPENNODES} (**)
+  | "keylocation_matrix" {KEYLOCATIONMATRIX} (**)*)
+  (*Grid Part Problem File*)
   | ":grid" {GRID}
-  | "locked_nodes_matrix" {LOCKEDNOTESMATRIX}
-  | "locked_nodes" {LOCKEDNODES}
-  | "grid_connection" {GRIDCONNECTION}
-  | "open_nodes" {OPENNODES}
+  | ":rows" {ROWS}
+  | ":columns" {COLUMNS}
+  | ":name" {GRIDNAME}
+  | ":connections" {CONNECTIONS}
   | ":keys" {KEYS}
-  | "keylocation_matrix" {KEYLOCATIONMATRIX}
+  | ":lockedlocations" {LOCKEDNODESMATRIX}
+  | ":keylocations" {KEYLOCATIONMATRIX}
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}

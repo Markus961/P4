@@ -6,7 +6,10 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNOTESMATRIX LOCKEDNODES OPENNODES KEYS KEYLOCATIONMATRIX GRIDCONNECTION
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX LOCKEDNODES OPENNODES KEYS KEYLOCATIONMATRIX GRIDCONNECTION
+
+%token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS
+
 %token AND EXISTS NOT PLUS MULT
 %token LPAREN RPAREN LBRACKET RBRACKET COMMA DASH
 %token <int> CONST
@@ -38,7 +41,7 @@ define:
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
 (*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
     { let (derived_list, action_list) = declarations in DomainDef { domain = d; requirements = r; predicates = p; derived = derived_list; actions = action_list}  }
-| LPAREN DEFINE p = problem pd = problemdomain o = objects i = init g = goal RPAREN 
+| LPAREN DEFINE p = problem pd = problemdomain o = objects grid = grid i = init g = goal RPAREN 
     { ProblemDef { problem = p; problemdomain = pd; objects = o; init = i; goal = g}  }
 ;
 
@@ -149,14 +152,28 @@ problemdomain:
 
 objects:
 | LPAREN OBJECTS ob = ob_list RPAREN { NormalObjects ob }
-| LPAREN OBJECTS LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN ob = ob_list RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
-| LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
+(*| LPAREN OBJECTS LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN ob = ob_list RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
+| LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }*)
 ;
 
-(*oparams:
-| LPAREN ob = ob_list RPAREN
-    { ob }
-;*)
+grid:
+| LPAREN GRID gridargs = gridarglist RPAREN { build_grid gridargs }
+;
+
+gridargs:
+| { [] }
+| ga = gridarg rest = gridargs { ga :: rest }
+;
+
+gridarg:
+| ROWS rows = integer { rows }
+| COLUMNS columns = integer { columns }
+| GRIDNAME gridname = NAME { gridname }
+| CONNECTIONS fl = flag_list { GridConnection fl }
+| KEYS ks = key_list { Keys ks }
+| LOCKEDNODESMATRIX lnm = locked_nodes_matrix { lnm }
+| KEYLOCATIONMATRIX klm = keylocation_matrix { klm }
+;
 
 ob_list:
 | n = NAME { [n] }
@@ -179,7 +196,7 @@ state:
 | ln = locked_nodes { ln }
 | o = open_nodes { o }
 | k = keys { k }
-| km = keylocation_matrix {km}
+| km = keylocation_matrix { km }
 | gc = gridconnection { gc }
 ;
 
@@ -190,7 +207,7 @@ arg_list:
 
 argument:
 | a = NAME { OnlyArguments { a } }
-| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
+| (*GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }*)
 | LBRACKET n = node_list RBRACKET { OpenNodesArgs ( n ) }
 ;
 
@@ -214,13 +231,17 @@ node_list:
 node:
 | LPAREN i1 = CONST COMMA i2 = CONST RPAREN { Node ( i1, i2 ) }
 
+(*locked_nodes_matrix:
+| LPAREN LOCKEDNODESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
+;*)
+
 locked_nodes_matrix:
-| LPAREN LOCKEDNOTESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
+| LBRACKET r = rows RBRACKET s = state { LockedNodesMatrix { rows = r; shape = s } }
 ;
 
-gridconnection:
+(*gridconnection:
 | LPAREN GRIDCONNECTION fl = flag_list RPAREN { GridConnection fl }
-;
+;*)
 
 flag_list:
 | { [] }
@@ -231,8 +252,13 @@ flag:
 | f = FLAG { f }
 ;
 
-keylocation_matrix:
+(*keylocation_matrix:
 | LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
+;*)
+
+keylocation_matrix:
+| LBRACKET r = rows RBRACKET { KeylocationMatrix { rows = r } }
+;
 
 (* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:
