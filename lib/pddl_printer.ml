@@ -40,10 +40,12 @@ let print_all_derived dlist =
   List.iter print_derived dlist  
 
 (* Used for printing actions from the domain.pddl *)
+
 (* Helper function for parameters *)
 let string_of_params params =
   "(" ^ String.concat " " params ^ ")"  
 
+(* This function is a prettyprinter for the actions from the domain.pddl*)  
   let print_action a =
   print_endline ("(:action " ^ a.aname);
   print_endline (":parameters " ^ string_of_params a.parameters);
@@ -51,12 +53,14 @@ let string_of_params params =
   print_endline (":effect " ^ string_of_expr a.effects ^ ")");
   print_endline ""
 
+(* This function iterates over the print_action function from earlier and creates a list *)
  let print_all_actions alist =
   List.iter print_action alist 
 
+(* Newline function used in the print_program function *)  
 let newline () = print_endline ""  
 
-
+(* print_program is the main function *)
 let print_program p =
   match p.defs with
   | DomainDef d ->
