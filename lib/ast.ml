@@ -68,7 +68,68 @@ type init = state list
 
 type goal = expr
 
-(* the below code is for define *)
+(* type stmt = {
+  name : string list;
+} *)
+
+type grid_param =
+  | GP_rows of int
+  | GP_cols of int
+  | GP_name of string
+  | GP_connections of string list
+  | GP_keys of key list
+  | GP_lnm of state
+  | GP_klm of state
+
+type grid = {
+  rows : int option;
+  cols : int option;
+  name : string option;
+  connections : string list;
+  keys : key list;
+  locked : state option;
+  keyloc : state option;
+}
+
+let build_grid (params : grid_param list) : grid =
+  let rows = ref None in
+  let cols = ref None in
+  let name = ref None in
+  let connections = ref [] in
+  let keys = ref [] in
+  let locked = ref None in
+  let keyloc = ref None in
+
+  let set_once what r v =
+    match !r with
+    | None -> r := Some v
+    | Some _ -> failwith ("Duplicate grid field: " ^ what)
+  in
+
+  List.iter
+    (function
+      | GP_rows r -> set_once "rows" rows r
+      | GP_cols c -> set_once "columns" cols c
+      | GP_name n -> set_once "name" name n
+      | GP_connections cs -> connections := cs
+      | GP_keys ks -> keys := ks
+      | GP_lnm l -> set_once "lockedlocations" locked l
+      | GP_klm k -> set_once "keylocations" keyloc k
+    )
+    params;
+
+  {
+    rows = !rows;
+    cols = !cols;
+    name = !name;
+    connections = !connections;
+    keys = !keys;
+    locked = !locked;
+    keyloc = !keyloc;
+  }
+
+
+  (* the below code is for define *)
 (* the parameters can be used only because they are derived above *)
 type define =
   | DomainDef of {
@@ -81,14 +142,9 @@ type define =
   | ProblemDef of { problem : problem;
   problemdomain : problemdomain;
   objects : objects_decl;
+  grid : grid;
   init : state list;
   goal : expr;}
 
   (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define} (*in the parser we said that the program is "defs", so here we declare the type, which is define, which is declared above*)
-
-
-
-(* type stmt = {
-  name : string list;
-} *)

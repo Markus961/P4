@@ -28,6 +28,7 @@ let transform_program p =
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
       let new_objects = transform_objects_decl problem_def.objects in
+      let grid = problem_def.grid in
       let init = problem_def.init in (* Make transform_init *)
       let goal = problem_def.goal in
 {
@@ -36,6 +37,7 @@ let transform_program p =
       problem;
       problemdomain;
       objects = new_objects;
+      grid;
       init;
       goal;
     }

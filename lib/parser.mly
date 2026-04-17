@@ -6,7 +6,7 @@
 
 %token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX LOCKEDNODES OPENNODES KEYS KEYLOCATIONMATRIX GRIDCONNECTION
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX LOCKEDNODES OPENNODES KEYLOCATIONMATRIX
 
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS
 
@@ -42,7 +42,7 @@ define:
 (*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
     { let (derived_list, action_list) = declarations in DomainDef { domain = d; requirements = r; predicates = p; derived = derived_list; actions = action_list}  }
 | LPAREN DEFINE p = problem pd = problemdomain o = objects grid = grid i = init g = goal RPAREN 
-    { ProblemDef { problem = p; problemdomain = pd; objects = o; init = i; goal = g}  }
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; grid = grid; init = i; goal = g}  }
 ;
 
 declaration_list:  // parsing derived + actions in same grammar. removes ambiguity som gav error før, fordi de lignede hinanden for meget
@@ -157,7 +157,7 @@ objects:
 ;
 
 grid:
-| LPAREN GRID gridargs = gridarglist RPAREN { build_grid gridargs }
+| LPAREN GRID gas = gridargs RPAREN { build_grid gas }
 ;
 
 gridargs:
@@ -166,13 +166,13 @@ gridargs:
 ;
 
 gridarg:
-| ROWS rows = integer { rows }
-| COLUMNS columns = integer { columns }
-| GRIDNAME gridname = NAME { gridname }
-| CONNECTIONS fl = flag_list { GridConnection fl }
-| KEYS ks = key_list { Keys ks }
-| LOCKEDNODESMATRIX lnm = locked_nodes_matrix { lnm }
-| KEYLOCATIONMATRIX klm = keylocation_matrix { klm }
+| ROWS rows = CONST { GP_rows rows }
+| COLUMNS cols = CONST { GP_cols cols }
+| GRIDNAME n = NAME { GP_name n }
+| CONNECTIONS fl = flag_list { GP_connections fl }
+| KEYS ks = key_list { GP_keys ks }
+| LOCKEDNODESMATRIX lnm = locked_nodes_matrix { GP_lnm lnm }
+| KEYLOCATIONMATRIX klm = keylocation_matrix { GP_klm klm }
 ;
 
 ob_list:
@@ -197,7 +197,7 @@ state:
 | o = open_nodes { o }
 | k = keys { k }
 | km = keylocation_matrix { km }
-| gc = gridconnection { gc }
+(*| gc = gridconnection { gc }*)
 ;
 
 arg_list:
@@ -207,7 +207,7 @@ arg_list:
 
 argument:
 | a = NAME { OnlyArguments { a } }
-| (*GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }*)
+| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
 | LBRACKET n = node_list RBRACKET { OpenNodesArgs ( n ) }
 ;
 
