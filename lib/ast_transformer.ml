@@ -29,7 +29,7 @@ let rec string_of_arguments args =
 let string_of_state = function
   | OnlyStates { sname = _ ; arguments } -> 
     let args = string_of_arguments arguments in
-      "(" ^ String.concat "," args ^ ")"
+      String.concat "" args
   | LockedNodesMatrix _ -> ""
   | LockedNodes _ ->  ""
   | OpenNodes _ -> ""
@@ -44,27 +44,27 @@ let matrix_to_nodes rows matrix_name shape =
     | NormalRow entries ->
       List.concat (
         List.mapi (fun j entry ->
-        if entry = '0' then
-          [OnlyStates {
-            sname = "open"; 
-            arguments = [OnlyArguments {a = Printf.sprintf "%s%d-%d" matrix_name i j}]}
-          ]
-        else if entry = '1' then
-          let arg = Printf.sprintf "%s%d-%d" matrix_name i j in
-            [OnlyStates {
-              sname = "locked"; 
-              arguments = [OnlyArguments {a = arg}]
-            };
-            OnlyStates {
-              sname = "lock-shape"; 
-              arguments = [
-                OnlyArguments {a = arg}; 
-                OnlyArguments {a = string_of_state shape}
+          match entry with
+            | '0' ->
+              [OnlyStates {
+                sname = "open"; 
+                arguments = [OnlyArguments {a = Printf.sprintf "%s%d-%d" matrix_name i j}]}
               ]
-            }
-            ]
-        else
-          failwith (Printf.sprintf "error")
+            | _ ->
+              let arg = Printf.sprintf "%s%d-%d" matrix_name i j in
+                [OnlyStates {
+                  sname = "locked"; 
+                  arguments = [OnlyArguments {a = arg}]
+                };
+                OnlyStates {
+                  sname = "lock-shape"; 
+                  arguments = [
+                    OnlyArguments {a = arg}; 
+                    OnlyArguments {a = string_of_state shape}
+                  ]
+                }
+                ]
+
       ) entries
       )
       
