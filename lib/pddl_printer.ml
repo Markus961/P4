@@ -50,15 +50,39 @@ let print_all_pdefinitions pdefinitions =
   List.iter print_pdefinition pdefinitions
 
 
+(*turn features into strings*)
+let string_of_feature f =
+  match f with
+  | Strips -> ":strips"
+  | DerivedPredicates -> ":derived-predicates"
+
+let print_requirements req =
+  List.iter (fun f -> print_endline (string_of_feature f)) req.features
+
+
+let rec string_of_expr expr =
+  match expr with
+  | Atom (name, args) ->
+    "(" ^ name ^ " " ^ String.concat " " args ^ ")" (*String.concat takes string list (args), return one combined string, with elements from the string list, and has a seperator (with is space)*)
+  | And exprs ->
+    "(and " ^ String.concat " " (List.map string_of_expr exprs) ^ ")"
+  | Not expr ->
+    "(not " ^ string_of_expr expr ^ ")"
+  | Exists (vars, expr) ->
+    "(exists (" ^ String.concat " " vars ^ ") " ^ string_of_expr expr ^ ")"
+
+let print_goal goal =
+  print_endline (string_of_expr goal) 
+
+
 let print_program p =
   match p.defs with
   | DomainDef d ->
     print_endline ("(define");
     print_endline (Printf.sprintf "(domain %s)" d.domain.domain_name);
-    print_endline ("(");
-    print_endline (":requirements"); (* note: experiments with dot notation as with domain *)
-    print_endline ":strips";
-    print_endline ":derived-predicates";
+    print_endline ("(:requirements"); (* note: experiments with dot notation as with domain *)
+    print_requirements d.requirements;
+    print_endline (")");
     print_endline "(:predicates";
     print_all_pdefinitions d.predicates;
     print_endline (")");
@@ -73,6 +97,10 @@ let print_program p =
     print_endline (")");
     print_endline ("(:init ");
     print_init_section pd.init;
+    print_endline (")");
+    print_endline ("(:goal");
+    print_goal pd.goal;
+    print_endline (")");
 
 
     (* define end parenthesis *)
