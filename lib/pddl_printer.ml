@@ -80,7 +80,7 @@ let print_program p =
   | DomainDef d ->
     print_endline ("(define");
     print_endline (Printf.sprintf "(domain %s)" d.domain.domain_name);
-    print_endline ("(:requirements"); (* note: experiments with dot notation as with domain *)
+    print_endline ("(:requirements"); 
     print_requirements d.requirements;
     print_endline (")");
     print_endline "(:predicates";
