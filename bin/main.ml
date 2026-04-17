@@ -25,7 +25,7 @@ let () =
   print_endline "START"; (* Debug: did the function start *)
 
   (*Parse*)
-  let input_channel = open_in "./data/problem.pddl" in
+  let input_channel = open_in "./data/domain.pddl" in
   let lexbuf = Lexing.from_channel input_channel in
   let ast = Parser.prog Lexer.token lexbuf in
   close_in input_channel;
