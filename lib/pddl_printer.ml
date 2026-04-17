@@ -49,7 +49,8 @@ let print_pdefinition pdefs =
 let print_all_pdefinitions pdefinitions =
   List.iter print_pdefinition pdefinitions
 
-(* Used for printing derived predicates from domain.pddl *)  
+(* These funcitons are used for printing derived predicates from domain.pddl *)
+(* string_of_expr is a function that takes the ast expr and translates it to a string *)  
 let rec string_of_expr e =
   match e with
   | Atom (name, args) ->
@@ -59,14 +60,39 @@ let rec string_of_expr e =
   | Not e ->
       "(not " ^ string_of_expr e ^ ")"
   | Exists (vars, e) ->
-      "(exists (" ^ String.concat " " vars ^ ") " ^ string_of_expr e ^ ")"             
+      "(exists (" ^ String.concat " " vars ^ ") " ^ string_of_expr e ^ ")"  
+      
+(* This function is a pretteprinter for the derived predicates from the domain.pddl. It takes one derived value and print it in pddl *)      
 let print_derived d =
   print_endline ("(:derived (" ^ d.header.pname ^ " " ^ String.concat " " d.header.variables ^ ") " ^ string_of_expr d.body ^ ")"
   )
 
+(* This function iterates the print_derived from earlier and creates a list *)
 let print_all_derived dlist =
   List.iter print_derived dlist  
 
+(* Used for printing actions from the domain.pddl *)
+
+(* Helper function for parameters *)
+let string_of_params params =
+  "(" ^ String.concat " " params ^ ")"  
+
+(* This function is a prettyprinter for the actions from the domain.pddl*)  
+  let print_action a =
+  print_endline ("(:action " ^ a.aname);
+  print_endline (":parameters " ^ string_of_params a.parameters);
+  print_endline (":precondition " ^ string_of_expr a.precondition);
+  print_endline (":effect " ^ string_of_expr a.effects ^ ")");
+  print_endline ""
+
+(* This function iterates over the print_action function from earlier and creates a list *)
+ let print_all_actions alist =
+  List.iter print_action alist 
+
+(* Newline function used in the print_program function *)  
+let newline () = print_endline ""  
+
+(* print_program is the main function *)
 let print_program p =
   match p.defs with
   | DomainDef d ->
@@ -77,7 +103,11 @@ let print_program p =
     print_endline ":strips";
     print_endline "(:predicates";
     print_all_pdefinitions d.predicates;
-    print_all_derived d.derived; 
+    newline ();
+    print_all_derived d.derived;
+    newline ();
+    print_all_actions d.actions;
+    print_endline ")"; 
   | ProblemDef pd ->
     print_endline ("(define ");
     print_endline (Printf.sprintf "(problem %s)" pd.problem.problem_name);
