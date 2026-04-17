@@ -6,6 +6,15 @@
              key3 key4 key5 key6 key7 key8 key9)
 
    (:init (arm-empty)
+   
+        (locked_nodes_matrix node [
+            [0 0 0 0 0 0]
+            [0 0 0 0 0 0]
+            [0 0 0 0 0 0]
+            [0 0 1 1 1 0]
+            [0 0 1 1 1 0]
+            [0 0 1 1 0 0]
+            ] (shape triangle))
          
         ;;virker ikke uden denne og goal
         (at-robot node5-5))
