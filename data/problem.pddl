@@ -181,7 +181,7 @@
 
           ;;Syntactic sugar (locked nodes [(3,2) (3,3) (3,4) (4,2) (4,3) (4,4) (5,2) (5,3)] :shape triangle)
           (locked node4-2)
-          (lock-shape node4-2 triangle)    ;;node 4-2 er locked og kræver nøgle af shape tirangle
+          (lock-shape node4-2 triangle)
           (locked node5-2)
           (lock-shape node5-2 triangle)
           (locked node5-3)
