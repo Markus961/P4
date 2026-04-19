@@ -16,6 +16,15 @@
             [0 0 1 1 0 0]
             ] (shape triangle))
 
+        (keylocation_matrix node [
+            [- - - C - T]
+            [- - - - - -]
+            [- - - - - -]
+            [- - - - - -]
+            [- - D S - -]
+            [- D - - - T]
+            ])    
+
          
         ;;virker ikke uden denne og goal
         (at-robot node5-5))

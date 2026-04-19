@@ -232,7 +232,7 @@ flag:
 ;
 
 keylocation_matrix:
-| LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
+| LPAREN KEYLOCATIONMATRIX matrix_name = NAME LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r; matrix_name } }
 
 (* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:
@@ -261,6 +261,7 @@ entries:
 
 entry:
 | c = CHARACTER { c }
+| DASH { '-' }
 ;
 
 keys:

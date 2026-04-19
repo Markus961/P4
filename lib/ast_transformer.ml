@@ -73,6 +73,69 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
+let shape_of_symbol = function
+  | 'C' -> "circle"
+  | 'D' -> "diamond"
+  | 'T' -> "triangle"
+  | 'S' -> "square"
+  | _ -> ""
+
+let keylocation_to_nodes rows matrix_name =
+  let key_counter = ref 0 in
+  
+  List.concat (
+    List.mapi (fun i row ->
+      match row with
+      | NormalRow entries ->
+        List.concat (
+          List.mapi (fun j entry ->
+            
+            match entry with
+            | '-' ->
+                [] (* empty cell *)
+            
+            | symbol ->
+                let key_id = Printf.sprintf "key%d" !key_counter in
+                
+                incr key_counter;
+                
+                let node_id = Printf.sprintf "%s%d-%d" matrix_name i j in
+                
+                let shape = shape_of_symbol symbol in
+                
+                [
+                  (* (key key0) *)
+                  OnlyStates {
+                    sname = "key";
+                    arguments = [OnlyArguments {a = key_id}]
+                  };
+
+                  (* (key-shape key0 diamond) *)
+                  OnlyStates {
+                    sname = "key-shape";
+                    arguments = [
+                      OnlyArguments {a = key_id};
+                      OnlyArguments {a = shape}
+                    ]
+                  };
+
+                  OnlyStates {
+                    sname = "at";
+                    arguments = [
+                      OnlyArguments {a = key_id};
+                      OnlyArguments {a = node_id}
+                    ]
+                  }
+                ]
+                
+          ) entries
+        )
+
+      | _ ->
+          failwith "invalid row"
+    ) rows
+  )
+
 let rec transform_init (states : state list) =
   match states with
   | [] -> []
@@ -80,13 +143,12 @@ let rec transform_init (states : state list) =
       s :: transform_init tl
   | (LockedNodesMatrix { rows; matrix_name; shape }) :: tl ->
       matrix_to_nodes rows matrix_name shape @ transform_init tl
+  |  (KeylocationMatrix { rows; matrix_name }) :: tl -> keylocation_to_nodes rows matrix_name @ transform_init tl   
   (* | LockedNodes (nodes, st) as hd :: tl ->
       hd :: transform_init tl
   | OpenNodes (rc, st) as hd :: tl ->
       hd :: transform_init tl
   | Keys keys as hd :: tl ->
-      hd :: transform_init tl
-  | KeylocationMatrix { rows } as hd :: tl ->
       hd :: transform_init tl
   | GridConnection flags as hd :: tl ->
       hd :: transform_init tl *)
