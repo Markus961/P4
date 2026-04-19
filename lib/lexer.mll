@@ -44,10 +44,9 @@ rule token = parse
   | "[" {LBRACKET}
   | "]" {RBRACKET}
   | "," {COMMA}
-  | "-" {DASH}
   | "+" {PLUS}
   | "*" {MULT}
-  | ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}
+  | ['a'-'z' 'A'-'Z' '0'-'9' '-'] as c { CHARACTER c }
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }    
   | integer as c { CONST (int_of_string c) }
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)

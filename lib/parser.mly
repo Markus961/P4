@@ -203,7 +203,7 @@ open_nodes:
 ;
 
 rc_list:
-| rows = NAME r1 = CONST DASH r2 = CONST cols = NAME c1 = CONST DASH c2 = CONST { RowsColumns ( rows, r1, r2, cols, c1, c2 ) }
+| rows = NAME r1 = CONST r2 = CONST cols = NAME c1 = CONST c2 = CONST { RowsColumns ( rows, r1, r2, cols, c1, c2 ) }
 ;
 
 node_list:
@@ -261,7 +261,6 @@ entries:
 
 entry:
 | c = CHARACTER { c }
-| DASH { '-' }
 ;
 
 keys:
