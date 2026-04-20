@@ -73,77 +73,60 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
-let shape_of_symbol = function
-  | 'C' -> "circle"
-  | 'D' -> "diamond"
-  | 'T' -> "triangle"
-  | 'S' -> "square"
-  | _ -> ""
-
-let keylocation_to_nodes rows matrix_name =
-  let key_counter = ref 0 in
+let matrix_to_key_states rows matrix_name all_init_states =
+  let shapes = List.filter_map (function
+    | OnlyStates { sname = "shape"; arguments = [OnlyArguments {a = shape_name}] } -> Some shape_name
+    | _ -> None
+  ) all_init_states in 
   
-  List.concat (
-    List.mapi (fun i row ->
-      match row with
-      | NormalRow entries ->
-        List.concat (
-          List.mapi (fun j entry ->
+  let keys = List.filter_map (function
+  
+    | OnlyStates { sname = "key"; arguments = [OnlyArguments {a = key_name}] } -> Some key_name
+    | _ -> None
+  ) all_init_states in
+
+  let available_keys = ref keys in
+
+  List.concat (List.mapi (fun i row ->
+    match row with
+    
+    | NormalRow entries ->
+        List.fold_left (fun acc (j, entry) ->
+          if entry = '-' then acc
+          else
             
-            match entry with
-            | '-' ->
-                [] (* empty cell *)
-            
-            | symbol ->
-                let key_id = Printf.sprintf "key%d" !key_counter in
-                
-                incr key_counter;
-                
-                let node_id = Printf.sprintf "%s%d-%d" matrix_name i j in
-                
-                let shape = shape_of_symbol symbol in
-                
-                [
-                  (* (key key0) *)
-                  OnlyStates {
-                    sname = "key";
-                    arguments = [OnlyArguments {a = key_id}]
-                  };
+            let symbol_lower = Char.lowercase_ascii entry in
+            let found_shape = List.find_opt (fun s ->
+              String.length s > 0 && Char.lowercase_ascii s.[0] = symbol_lower) shapes in
+              
+              match found_shape with
+              | None -> acc
+              | Some s_name ->
+                  match !available_keys with
+                  
+                  | [] -> failwith "There are more symbols in the matrix then the defined keys"
+                  | current_key :: tail ->
+                      available_keys := tail;
+                      let node_name = Printf.sprintf "%s%d-%d" matrix_name i j in
+                      
+                      
+                      let new_states = [
+                        OnlyStates { sname = "key-shape"; arguments = [OnlyArguments {a = current_key}; OnlyArguments {a = s_name}] };
+                        OnlyStates { sname = "at"; arguments = [OnlyArguments {a = current_key}; OnlyArguments {a = node_name}] }
+                      ] in
+                      acc @ new_states
+        ) [] (List.mapi (fun j e -> (j, e)) entries)
+    | _ -> []
+  ) rows)
 
-                  (* (key-shape key0 diamond) *)
-                  OnlyStates {
-                    sname = "key-shape";
-                    arguments = [
-                      OnlyArguments {a = key_id};
-                      OnlyArguments {a = shape}
-                    ]
-                  };
-
-                  OnlyStates {
-                    sname = "at";
-                    arguments = [
-                      OnlyArguments {a = key_id};
-                      OnlyArguments {a = node_id}
-                    ]
-                  }
-                ]
-                
-          ) entries
-        )
-
-      | _ ->
-          failwith "invalid row"
-    ) rows
-  )
-
-let rec transform_init (states : state list) =
-  match states with
+let rec transform_init_helper all_states (states_to_process : state list) =
+  match states_to_process with
   | [] -> []
   | (OnlyStates _ as s) :: tl -> 
-      s :: transform_init tl
+      s :: transform_init_helper all_states tl
   | (LockedNodesMatrix { rows; matrix_name; shape }) :: tl ->
-      matrix_to_nodes rows matrix_name shape @ transform_init tl
-  |  (KeylocationMatrix { rows; matrix_name }) :: tl -> keylocation_to_nodes rows matrix_name @ transform_init tl   
+      matrix_to_nodes rows matrix_name shape @ transform_init_helper all_states tl
+  |  (KeylocationMatrix { rows; matrix_name }) :: tl -> matrix_to_key_states rows matrix_name all_states @ transform_init_helper all_states tl   
   (* | LockedNodes (nodes, st) as hd :: tl ->
       hd :: transform_init tl
   | OpenNodes (rc, st) as hd :: tl ->
@@ -154,6 +137,9 @@ let rec transform_init (states : state list) =
       hd :: transform_init tl *)
   | _ ->
       failwith ("Hi failure")
+
+let transform_init states =
+  transform_init_helper states states      
 
 let transform_program p =
   match p.defs with
