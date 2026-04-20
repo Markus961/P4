@@ -218,28 +218,18 @@ locked_nodes_matrix:
 | LPAREN LOCKEDNOTESMATRIX matrix_name = NAME LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; matrix_name; shape = s } }
 ;
 
-gridconnection:
-| LPAREN GRIDCONNECTION fl = flag_list RPAREN { GridConnection fl }
-;
-
-flag_list:
-| { [] }
-| f = flag rest = flag_list { f :: rest }
-;
-
-flag:
-| f = FLAG { f }
-;
-
 keylocation_matrix:
 | LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
 
 (* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 rows:
 | { [] }
-| r = row rest = rows { r :: rest }
-| m = repeat_notation_option { m }
+| r = row_expr rest = rows { r :: rest }
 ;
+
+row_expr:
+| m = repeat_notation_option { RowRepeat m}
+| r = row { RowNormal r }
 
 repeat_notation_option:
 | p = row_part { [p] }
@@ -261,6 +251,19 @@ entries:
 
 entry:
 | c = CHARACTER { c }
+;
+
+gridconnection:
+| LPAREN GRIDCONNECTION fl = flag_list RPAREN { GridConnection fl }
+;
+
+flag_list:
+| { [] }
+| f = flag rest = flag_list { f :: rest }
+;
+
+flag:
+| f = FLAG { f }
 ;
 
 keys:

@@ -44,8 +44,12 @@ type rc =
 
 type entry = char
 
-type row = 
+type row_expr =
+| RowNormal of row
+| RowRepeat of row_part list
+and row = 
 | NormalRow of entry list
+and row_part =
 | MultRow of entry list * int
 
 type key = {kname : string; shape : string; location : string}
@@ -57,11 +61,11 @@ type argument =
 
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}
-| LockedNodesMatrix of { rows : row list; matrix_name : string; shape : state}
+| LockedNodesMatrix of { rows : row_expr list; matrix_name : string; shape : state}
 | LockedNodes of node list * state 
 | OpenNodes of rc * state
 | Keys of key list
-| KeylocationMatrix of { rows : row list; }
+| KeylocationMatrix of { rows : row_expr list; }
 | GridConnection of string list
 
 type init = state list

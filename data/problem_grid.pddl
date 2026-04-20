@@ -8,12 +8,7 @@
    (:init (arm-empty)
    
         (locked_nodes_matrix node [
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 1 1 1 0]
-            [0 0 1 1 1 0]
-            [0 0 1 1 0 0]
+            [1]*2 + [0]*1
             ] (shape triangle))
 
          
