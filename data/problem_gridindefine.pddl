@@ -8,7 +8,7 @@
       :columns 5
       :name fileno
       :connections -v -h
-      :keys diamond triangle
+      :keys D = diamond T = triangle
       
       :lockedlocations [
             [0 0 0 0 0 0]
