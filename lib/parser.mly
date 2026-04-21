@@ -215,7 +215,7 @@ node:
 | LPAREN i1 = CONST COMMA i2 = CONST RPAREN { Node ( i1, i2 ) }
 
 locked_nodes_matrix:
-| LPAREN LOCKEDNOTESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
+| LPAREN LOCKEDNOTESMATRIX matrix_name = NAME LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; matrix_name; shape = s } }
 ;
 
 gridconnection:
