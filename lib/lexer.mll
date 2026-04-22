@@ -51,7 +51,7 @@ rule token = parse
   | "[" {LBRACKET}
   | "]" {RBRACKET}
   | "," {COMMA}
-  | "-" {DASH}
+  (*| "-" {DASH}*)
   | "+" {PLUS}
   | "*" {MULT}
   | integer as c { CONST (int_of_string c) }
