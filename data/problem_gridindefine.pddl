@@ -8,9 +8,9 @@
       :columns 5
       :name fileno
       :connections -v -h
-      :keys D = diamond T = triangle
+      :keys ((D = diamond) (T = triangle))
       
-      :lockedlocations [
+      :lockedlocations ([
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
@@ -19,14 +19,14 @@
             [0 0 1 1 0 0]
             ] (shape triangle))
 
-      :keylocations [
-            [- - - C - T]
-            [- - - - - -]
-            [- - - - - -]
-            [- - - - - -]
-            [- - D S - -]
-            [- D - - - T]
-            ]
+      :keylocations ([
+            [0 0 0 C 0 T]
+            [0 0 0 0 0 0]
+            [0 0 0 0 0 0]
+            [0 0 0 0 0 0]
+            [0 0 D S 0 0]
+            [0 D 0 0 0 T]
+            ])
    )
 
    (:init (arm-empty)

@@ -10,13 +10,12 @@
 (*%token LOCKEDNODES OPENNODES DASH -- Unused atm*)
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS
 
-%token AND EXISTS NOT PLUS MULT COMMA
+%token AND EXISTS NOT PLUS MULT COMMA EQUALS
 %token LPAREN RPAREN LBRACKET RBRACKET 
 %token <int> CONST
 %token <string> VAR
 %token <string> NAME
 %token <string> FLAG
-%token <char> CHARACTER
 %token EOF
 
 (* Here the program starts *)
@@ -170,7 +169,7 @@ gridarg:
 | COLUMNS cols = CONST { GP_cols cols }
 | GRIDNAME n = NAME { GP_name n }
 | CONNECTIONS fl = flag_list { GP_connections fl }
-| KEYS ks = key_list { GP_keys ks }
+| KEYS LPAREN ks = key_list RPAREN { GP_keys ks }
 | LOCKEDNODESMATRIX LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { rows = r; shape = s }) }
 | KEYLOCATIONMATRIX LPAREN LBRACKET r = grid_rows RBRACKET RPAREN { GP_klm (KeylocationMatrix { rows = r }) }
 ;
@@ -284,7 +283,8 @@ entries:
 ;
 
 entry:
-| c = CHARACTER { c }
+| c = CONST { string_of_int(c) }
+| n = NAME { n }
 ;
 
 (*keys:
@@ -296,7 +296,7 @@ key_list:
 | k = key rest = key_list { k :: rest }
 
 key:
-| LPAREN n = NAME s = NAME l = NAME RPAREN { {kname = n; shape = s; location = l} }
+| LPAREN n = NAME EQUALS s = NAME RPAREN { {kname = n; shape = s} }
 
 goal:
 | LPAREN GOAL e = expr RPAREN { e }

@@ -42,13 +42,13 @@ type node =
 type rc =
 | RowsColumns of string * int * int * string * int * int 
 
-type entry = char
+type entry = string
 
 type row = 
 | NormalRow of entry list
 | MultRow of entry list * int
 
-type key = {kname : string; shape : string; location : string}
+type key = {kname : string; shape : string}
 
 type argument = 
 | OnlyArguments of {a : string}

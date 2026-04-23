@@ -51,12 +51,13 @@ rule token = parse
   | "[" {LBRACKET}
   | "]" {RBRACKET}
   | "," {COMMA}
+  | "=" {EQUALS}
   (*| "-" {DASH}*)
   | "+" {PLUS}
   | "*" {MULT}
   | integer as c { CONST (int_of_string c) }
+  (*| ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}  Giver alt for mange problemer med andre typer som bliver lavet om til character token og omvendt*)
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
-  | ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   | '-' ['a'-'z' 'A'-'Z'] as id {FLAG id}
   | ";"  [^ '\n']* {token lexbuf} (*Comment handling in PDDL*)
