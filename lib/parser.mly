@@ -159,6 +159,7 @@ grid:
 | LPAREN GRID gas = gridargs RPAREN { build_grid gas }
 ;
 
+(* Filled backwards to avoid ambiguity, shouldn't mess up grid arguments in the AST *)
 gridargs:
 | { [] }
 | tl = gridargs ga = gridarg { ga :: tl }
