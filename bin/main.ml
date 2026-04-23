@@ -12,7 +12,7 @@ open Ast
 
 let () =
   print_endline "START"; (* Debug: did the function start *)
-  let input_channel = open_in "./data/problem.pddl" in
+  let input_channel = open_in "./data/problem_gridindefine.pddl" in
   let lexbuf = Lexing.from_channel input_channel in
   let ast = Parser.prog Lexer.token lexbuf in
   close_in input_channel;
