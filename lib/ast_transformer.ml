@@ -94,7 +94,7 @@ let matrix_to_nodes rows matrix_name shape =
       List.concat (
         List.mapi (fun j entry ->
           match entry with
-            | '0' ->
+            | "0" ->
               [OnlyStates {
                 sname = "open"; 
                 arguments = [OnlyArguments {a = Printf.sprintf "%s%d-%d" matrix_name i j}]}
@@ -157,8 +157,8 @@ let transform_program p =
       let new_objects = transform_objects_decl problem_def.objects in
       let grid = problem_def.grid in
       let init = problem_def.init in (* Make transform_init *)
-      let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
-      let new_init = transform_init obj_grid_data problem_def.init in (* Make transform_init *)
+      (*let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
+      let new_init = transform_init obj_grid_data problem_def.init in  Make transform_init *)
       let goal = problem_def.goal in
 {
   defs =

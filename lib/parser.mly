@@ -171,7 +171,7 @@ gridarg:
 | GRIDNAME n = NAME { GP_name n }
 | CONNECTIONS fl = flag_list { GP_connections fl }
 | KEYS LPAREN ks = key_list RPAREN { GP_keys ks }
-| LOCKEDNODESMATRIX LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { rows = r; shape = s }) }
+| LOCKEDNODESMATRIX ln = NAME LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { matrix_name = ln; rows = r; shape = s }) }
 | KEYLOCATIONMATRIX LPAREN LBRACKET r = grid_rows RBRACKET RPAREN { GP_klm (KeylocationMatrix { rows = r }) }
 ;
 

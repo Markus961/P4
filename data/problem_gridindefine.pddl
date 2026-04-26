@@ -10,7 +10,7 @@
       :connections -v -h
       :keys ((D = diamond node1-1) (T = triangle node1-1))
       
-      :lockedlocations ([
+      :lockedlocations fileno ([
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]
