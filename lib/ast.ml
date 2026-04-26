@@ -48,11 +48,11 @@ type row =
 | NormalRow of entry list
 | MultRow of entry list * int
 
-type key = {kname : string; shape : string}
+type key = {kname : string; shape : string; location : string}
 
 type argument = 
 | OnlyArguments of {a : string}
-| GridArguments of int * int
+| GridArguments of int * int 
 | OpenNodesArgs of node list
 
 type state = 

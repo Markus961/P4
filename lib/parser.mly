@@ -297,7 +297,7 @@ key_list:
 | k = key rest = key_list { k :: rest }
 
 key:
-| LPAREN n = NAME EQUALS s = NAME RPAREN { {kname = n; shape = s} }
+| LPAREN n = NAME EQUALS s = NAME l = NAME RPAREN { {kname = n; shape = s; location = l} }
 
 goal:
 | LPAREN GOAL e = expr RPAREN { e }

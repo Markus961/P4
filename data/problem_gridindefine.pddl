@@ -8,7 +8,7 @@
       :columns 5
       :name fileno
       :connections -v -h
-      :keys ((D = diamond) (T = triangle))
+      :keys ((D = diamond node1-1) (T = triangle node1-1))
       
       :lockedlocations ([
             [0 0 0 0 0 0]
