@@ -28,13 +28,20 @@ rule token = parse
   | ":objects" {OBJECTS}
   | ":init" {INIT}
   | ":goal" {GOAL}
+  (*| "locked_nodes_matrix" {LOCKEDNOTESMATRIX} (**)
+  | "locked_nodes" {LOCKEDNODES} (**)
+  | "grid_connection" {GRIDCONNECTION} (**)
+  | "open_nodes" {OPENNODES} (**)
+  | "keylocation_matrix" {KEYLOCATIONMATRIX} (**)*)
+  (*Grid Part Problem File*)
   | ":grid" {GRID}
-  | "locked_nodes_matrix" {LOCKEDNOTESMATRIX}
-  | "locked_nodes" {LOCKEDNODES}
-  | "grid_connection" {GRIDCONNECTION}
-  | "open_nodes" {OPENNODES}
+  | ":rows" {ROWS}
+  | ":columns" {COLUMNS}
+  | ":name" {GRIDNAME}
+  | ":connections" {CONNECTIONS}
   | ":keys" {KEYS}
-  | "keylocation_matrix" {KEYLOCATIONMATRIX}
+  | ":lockedlocations" {LOCKEDNODESMATRIX}
+  | ":keylocations" {KEYLOCATIONMATRIX}
   (*Logic*)
   | "not" {NOT} 
   | "and" {AND}
@@ -44,12 +51,13 @@ rule token = parse
   | "[" {LBRACKET}
   | "]" {RBRACKET}
   | "," {COMMA}
-  | "-" {DASH}
+  | "=" {EQUALS}
+  (*| "-" {DASH}*)
   | "+" {PLUS}
   | "*" {MULT}
-  | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id } 
-  | ['a'-'z' 'A'-'Z' '0'-'1' '-'] as c {CHARACTER c} 
-  | integer as c { CONST (int_of_string c) }     
+  | integer as c { CONST (int_of_string c) }
+  (*| ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}  Giver alt for mange problemer med andre typer som bliver lavet om til character token og omvendt*)
+  | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   | '-' ['a'-'z' 'A'-'Z'] as id {FLAG id}
   | ";"  [^ '\n']* {token lexbuf} (*Comment handling in PDDL*)
