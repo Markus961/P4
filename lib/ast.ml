@@ -57,7 +57,7 @@ type argument =
 
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}
-| LockedNodesMatrix of { rows : row list; shape : state}
+| LockedNodesMatrix of { rows : row list; matrix_name : string; shape : state}
 | LockedNodes of node list * state 
 | OpenNodes of rc * state
 | Keys of key list
@@ -131,20 +131,27 @@ let build_grid (params : grid_param list) : grid =
 
   (* the below code is for define *)
 (* the parameters can be used only because they are derived above *)
-type define =
-  | DomainDef of {
-  domain : domain; 
-  requirements : requirements; 
-  predicates : pdefinition list; 
+type domain_def = {
+  domain : domain;
+  requirements : requirements;
+  predicates : pdefinition list;
   derived : derived list;
   actions : action list
-  }
-  | ProblemDef of { problem : problem;
+}
+
+type problem_def = { 
+  problem : problem;
   problemdomain : problemdomain;
   objects : objects_decl;
   grid : grid;
   init : state list;
   goal : expr;}
+
+(* the below code is for define *)
+(* the parameters can be used only because they are derived above *)
+type define =
+  | DomainDef of domain_def
+  | ProblemDef of problem_def
 
   (* This is our 'main' type. we need to put all the rest of the types in here*)
 type program = {defs : define} (*in the parser we said that the program is "defs", so here we declare the type, which is define, which is declared above*)
