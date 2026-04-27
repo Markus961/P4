@@ -1,16 +1,24 @@
 open Ast
 
+
 let grid_to_strings rows cols grid_name =
   let acc = ref [] in
   if rows <= 0 || cols <= 0 then
     invalid_arg "row and cols must be positive";
-    for i = 0 to rows - 1 do
-      for j = 0 to cols - 1 do
-        acc := Printf.sprintf "%s%d-%d" grid_name i j :: !acc
-      done;
+  for i = 0 to rows - 1 do
+    for j = 0 to cols - 1 do
+      acc := Printf.sprintf "%s%d-%d" grid_name i j :: !acc
     done;
+  done;
   (* List is built in reverse so it must be reversed *)
   List.rev !acc
+let transform_grid grid =
+  match grid.rows, grid.cols, grid.name with
+  | Some r, Some c, Some n ->
+    let grid_objects = grid_to_strings r c n in
+    NormalObjects (grid_objects)
+  | _ ->
+    invalid_arg "grid lacks rows/cols/name"
 
 let transform_objects_decl obj =
   match obj with
@@ -25,7 +33,7 @@ let obj_grid_data_of_objects_decl = function
   | GridAndObjects (rows, cols, grid_name, _) -> Some (rows, cols, grid_name)
   | NormalObjects _ -> None
 
-  (*Count the rows. each instance of normalRow - add 1 to the accumulator, return that int *)
+(*Count the rows. each instance of normalRow - add 1 to the accumulator, return that int *)
 let row_count rows =
   List.fold_left
     (fun acc row ->
@@ -66,7 +74,6 @@ let validate_locked_matrix expected_rows expected_cols expected_name rows matrix
              actual_cols
              expected_cols))
     rows
-
 
 let rec string_of_arguments args = 
   match args with
@@ -154,7 +161,13 @@ let transform_program p =
   | ProblemDef problem_def ->
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
-      let new_objects = transform_objects_decl problem_def.objects in
+      let new_objects = 
+        match transform_objects_decl problem_def.objects, transform_grid problem_def.grid with
+        | NormalObjects objects1, NormalObjects objects2 ->
+          NormalObjects (objects1 @ objects2)
+        | _ ->
+          failwith "Objects are not in correct format"
+      in
       let grid = problem_def.grid in
       let init = problem_def.init in (* Make transform_init *)
       (*let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
