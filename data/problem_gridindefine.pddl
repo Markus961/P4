@@ -20,7 +20,7 @@
             [0 0 1 1 0 0]
             ] (shape triangle))
 
-      :keylocations fileno ([
+      :keylocations test ([
             [St 0 0 D 0 T]
             [S 0 0 0 0 0]
             [0 0 0 0 0 0]

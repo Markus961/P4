@@ -129,6 +129,13 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
+  let validate_matrix_name grid_name matrix_name =
+  if grid_name <> matrix_name then
+    failwith
+      (Printf.sprintf
+         "Matrix name '%s' does not match grid name '%s'"
+         matrix_name grid_name)
+
 let transform_keyloc (grid : Ast.grid) =
   let remaining_keys = ref grid.key_names in
   
@@ -149,6 +156,12 @@ let transform_keyloc (grid : Ast.grid) =
   match grid.keyloc with
 
   | Some (KeylocationMatrix { matrix_name; rows }) ->
+      (match grid.name with
+     | Some grid_name ->
+         validate_matrix_name grid_name matrix_name
+     | None ->
+         failwith "Grid has no name");
+
       let result =
         List.concat (
           List.mapi (fun i row ->
@@ -212,7 +225,7 @@ let validate_unique_shapes shapes =
       failwith
         ("Duplicate shape identifier in :shapes: " ^ s.char_id);
     Hashtbl.add seen s.char_id ()
-  ) shapes
+  ) shapes  
 
 
 let rec transform_init obj_grid_data (states : state list) =
