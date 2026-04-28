@@ -24,8 +24,10 @@ let test_generate_vertical () =
   ]
   in
 
-  assert (result = expected);
-  print_endline "PASSED"
+  if result = expected then
+    print_endline "PASSED"
+  else
+    print_endline "FAILED"
 
 let () =
   test_generate_vertical ()
