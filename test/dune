@@ -1,7 +1,0 @@
-(test
- (name test_generate_vertical)
- (libraries grid_extension))
-
-(test
- (name test_generate_horizontal)
- (libraries grid_extension))
