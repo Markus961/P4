@@ -129,6 +129,92 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
+let transform_keyloc (grid : Ast.grid) =
+  let remaining_keys = ref grid.key_names in
+  
+  let get_next_key () =
+    match !remaining_keys with
+
+    | [] -> failwith "Flere bogstaver i matricen end nøgler i :keys"
+    | hd :: tl -> remaining_keys := tl; hd
+  in
+
+  let find_shape char_id =
+    match List.find_opt (fun s -> s.char_id = char_id) grid.shapes with
+
+    | Some s -> s.shape_name
+    | None -> failwith ("Ukendt bogstav i matrix: " ^ char_id)
+  in
+
+  match grid.keyloc with
+
+  | Some (KeylocationMatrix { matrix_name; rows }) ->
+      let result =
+        List.concat (
+          List.mapi (fun i row ->
+            match row with
+            | NormalRow entries ->
+                List.concat (
+                  List.mapi (fun j entry ->
+                    if entry = "0" then
+                      []
+                    else
+                      let key_name = get_next_key () in
+                      let shape_name = find_shape entry in
+                      let node_name =
+                        Printf.sprintf "%s%d-%d" matrix_name i j
+                      in
+                      [
+                        OnlyStates {
+                          sname = "key";
+                          arguments = [
+                            OnlyArguments { a = key_name }
+                          ];
+                        };
+
+                        OnlyStates {
+                          sname = "key-shape";
+                          arguments = [
+                            OnlyArguments { a = key_name };
+                            OnlyArguments { a = shape_name };
+                          ];
+                        };
+
+                        OnlyStates {
+                          sname = "at";
+                          arguments = [
+                            OnlyArguments { a = key_name };
+                            OnlyArguments { a = node_name };
+                          ];
+                        };
+                      ]
+                  ) entries
+                )
+
+            | MultRow _ ->
+                failwith
+                  "MultRow understøttes endnu ikke i :keylocations"
+          ) rows
+        )
+      in
+
+      if !remaining_keys <> [] then
+        failwith "Flere nøgler i :keys end symboler i :keylocations";
+
+      result
+
+  | _ -> []
+
+let validate_unique_shapes shapes =
+  let seen = Hashtbl.create 16 in
+  List.iter (fun s ->
+    if Hashtbl.mem seen s.char_id then
+      failwith
+        ("Duplicate shape identifier in :shapes: " ^ s.char_id);
+    Hashtbl.add seen s.char_id ()
+  ) shapes
+
+
 let rec transform_init obj_grid_data (states : state list) =
   match states with
   | [] -> []
@@ -158,29 +244,47 @@ let transform_program p =
   match p.defs with
   (* We didn't provide extensions for domain.pddl so nothing happens *)
   | DomainDef _ -> p
+
   | ProblemDef problem_def ->
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
+      let grid = problem_def.grid in
+      validate_unique_shapes grid.shapes;
       let new_objects = 
-        match transform_objects_decl problem_def.objects, transform_grid problem_def.grid with
-        | NormalObjects objects1, NormalObjects objects2 ->
-          NormalObjects (objects1 @ objects2)
+        match transform_objects_decl problem_def.objects, transform_grid grid with
+        | NormalObjects obj1, NormalObjects nodes ->
+          let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
+          NormalObjects (obj1 @ nodes @ grid.key_names @ shape_names)
         | _ ->
           failwith "Objects are not in correct format"
       in
-      let grid = problem_def.grid in
-      let init = problem_def.init in (* Make transform_init *)
+
+      let grid_data = match grid.rows, grid.cols, grid.name with
+
+        | Some r, Some c, Some n -> Some (r, c, n)
+        | _ -> None
+      in
+
+
+      let key_matrix_states = transform_keyloc grid in
+
+      let new_init =  
+        key_matrix_states @ 
+        transform_init grid_data problem_def.init 
+      in
+
+       (* Make transform_init *)
       (*let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
       let new_init = transform_init obj_grid_data problem_def.init in  Make transform_init *)
-      let goal = problem_def.goal in
+    
 {
   defs =
     ProblemDef {
-      problem;
-      problemdomain;
+      problem = problem;
+      problemdomain = problemdomain;
       objects = new_objects;
-      grid;
-      init;
-      goal;
+      grid = grid;
+      init = new_init;
+      goal = problem_def.goal;
     }
 }
