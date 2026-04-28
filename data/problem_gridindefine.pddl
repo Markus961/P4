@@ -4,10 +4,10 @@
    (:objects test_object)
 
    (:grid 
-      :rows 5
-      :columns 5
+      :rows 2
+      :columns 2
       :name fileno
-      :connections -v -h
+      :connections -H -V
       :keys ((D = diamond node1-1) (T = triangle node1-1))
       
       :lockedlocations fileno ([

@@ -1,5 +1,53 @@
 open Ast
 
+(*lave test for at se om den producerer det rigtige antal nodes*)
+let generate_horizontal grid_name rows cols =
+  let acc = ref [] in
+  for i = 0 to rows - 1 do
+    for j = 0 to cols - 2 do
+
+        let arg_list = ref [] in
+        arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name i (j+1)} :: !arg_list;
+        arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name i j} :: !arg_list;
+        
+        acc := OnlyStates {sname = "conn"; arguments = !arg_list} :: !acc
+        
+    done
+  done;
+  List.rev !acc
+
+let generate_vertical grid_name rows cols =
+  let acc = ref [] in
+  for i = 0 to rows - 2 do
+    for j = 0 to cols - 1 do
+      
+      let arg_list = ref [] in
+      arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name (i+1) j} :: !arg_list;
+      arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name i j} :: !arg_list;
+        
+      acc := OnlyStates {sname = "conn"; arguments = !arg_list} :: !acc
+        
+    done
+  done;
+  List.rev !acc
+  
+let generate_connections flags rows cols grid_name =
+  match rows, cols, grid_name with
+  | Some r, Some c, Some n ->
+    List.concat (
+      List.map (fun f ->
+        match f with
+        | "-H" -> generate_horizontal n r c
+        | "-V" ->  generate_vertical n r c
+        | _ ->
+          failwith "Invalid flag"
+      ) flags
+    )
+  | _ ->
+    failwith "Missing parameters (rows, columns, grid_name)"
+    
+let transform_grid_to_connections grid =
+  generate_connections grid.connections grid.rows grid.cols grid.name
 
 let grid_to_strings rows cols grid_name =
   let acc = ref [] in
@@ -169,7 +217,11 @@ let transform_program p =
           failwith "Objects are not in correct format"
       in
       let grid = problem_def.grid in
-      let init = problem_def.init in (* Make transform_init *)
+      let new_init =
+        match transform_grid_to_connections problem_def.grid, problem_def.init with
+        | states1, states2 ->
+          states1 @ states2
+      in
       (*let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
       let new_init = transform_init obj_grid_data problem_def.init in  Make transform_init *)
       let goal = problem_def.goal in
@@ -180,7 +232,7 @@ let transform_program p =
       problemdomain;
       objects = new_objects;
       grid;
-      init;
+      init = new_init;
       goal;
     }
 }
