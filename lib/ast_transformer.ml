@@ -129,6 +129,14 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
+let locked_nodes_from_grid grid = 
+  match grid.locked with 
+  | None -> []
+  | Some (LockedNodesMatrix {rows; matrix_name; shape}) ->
+    matrix_to_nodes rows matrix_name shape
+  | _ -> failwith "Expected LockedNodesMatrix in grid.locked"
+
+  
 let rec transform_init obj_grid_data (states : state list) =
   match states with
   | [] -> []
@@ -169,9 +177,11 @@ let transform_program p =
           failwith "Objects are not in correct format"
       in
       let grid = problem_def.grid in
-      let init = problem_def.init in (* Make transform_init *)
+      (*let init = problem_def.init in*) (* Make transform_init *)
       (*let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
       let new_init = transform_init obj_grid_data problem_def.init in  Make transform_init *)
+      let locked_from_grid = locked_nodes_from_grid problem_def.grid in
+      let new_init = locked_from_grid @ problem_def.init in
       let goal = problem_def.goal in
 {
   defs =
@@ -180,7 +190,7 @@ let transform_program p =
       problemdomain;
       objects = new_objects;
       grid;
-      init;
+      init = new_init;
       goal;
     }
 }
