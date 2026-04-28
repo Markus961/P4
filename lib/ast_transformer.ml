@@ -142,7 +142,7 @@ let transform_keyloc (grid : Ast.grid) =
   let get_next_key () =
     match !remaining_keys with
 
-    | [] -> failwith "Flere bogstaver i matricen end nøgler i :keys"
+    | [] -> failwith "More symbols in the matrix than keys in :keys"
     | hd :: tl -> remaining_keys := tl; hd
   in
 
@@ -150,7 +150,7 @@ let transform_keyloc (grid : Ast.grid) =
     match List.find_opt (fun s -> s.char_id = char_id) grid.shapes with
 
     | Some s -> s.shape_name
-    | None -> failwith ("Ukendt bogstav i matrix: " ^ char_id)
+    | None -> failwith ("Unknown symbol in the matrix: " ^ char_id)
   in
 
   match grid.keyloc with
@@ -206,13 +206,13 @@ let transform_keyloc (grid : Ast.grid) =
 
             | MultRow _ ->
                 failwith
-                  "MultRow understøttes endnu ikke i :keylocations"
+                  "MultRow is not supported by :keylocations yet"
           ) rows
         )
       in
 
       if !remaining_keys <> [] then
-        failwith "Flere nøgler i :keys end symboler i :keylocations";
+        failwith "More keys in :keys than symbols in :keylocations";
 
       result
 
