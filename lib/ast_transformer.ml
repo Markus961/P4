@@ -227,7 +227,9 @@ let validate_unique_shapes shapes =
     Hashtbl.add seen s.char_id ()
   ) shapes  
 
-
+(* transform_init transforms the :init section of the PDDL problem.
+It processes each state, validates special structues like LockedNodesMatrix
+using grid_data, and converts them into standard PDDL predicates. *)
 let rec transform_init grid_data (states : state list) =
   match states with
   | [] -> []
