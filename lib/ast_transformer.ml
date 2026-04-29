@@ -228,8 +228,8 @@ let transform_program p =
   {
     defs =
       ProblemDef {
-        problem = problem;
-        problemdomain = problemdomain;
+        problem;
+        problemdomain;
         objects = new_objects;
         grid;
         init = new_init;
