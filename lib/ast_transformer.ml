@@ -263,6 +263,9 @@ let transform_program p =
       let problemdomain = problem_def.problemdomain in
       let grid = problem_def.grid in
       validate_unique_shapes grid.shapes;
+
+      (* new_objects translate the :objects section for the PDDL problem it combines grid defined objects with regular object
+        like key objects from :keys and shape objects from :shapes the result is a long list of objects needed in the domain *)
       let new_objects = 
         match transform_objects_decl problem_def.objects, transform_grid grid with
         | NormalObjects obj1, NormalObjects nodes ->
@@ -272,8 +275,9 @@ let transform_program p =
           failwith "Objects are not in correct format"
       in
 
+      (* grid_data packs grid information (rows, cols, name) into an option type for later validation.
+      Option type means the value may either be Some value or None if something is missing *)
       let grid_data = match grid.rows, grid.cols, grid.name with
-
         | Some r, Some c, Some n -> Some (r, c, n)
         | _ -> None
       in
