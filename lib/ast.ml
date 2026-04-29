@@ -26,6 +26,8 @@ type action = { aname : string; parameters : variable list; precondition : expr;
 
 (*Problem File AST*)
 
+type shape_map = { char_id : string; shape_name : string }
+
 type problem = {problem_name : string;}
 
 type problemdomain = {problemdomain_name : string;}
@@ -48,7 +50,6 @@ type row =
 | NormalRow of entry list
 | MultRow of entry list * int
 
-type key = {kname : string; shape : string; location : string}
 
 type argument = 
 | OnlyArguments of {a : string}
@@ -60,8 +61,7 @@ type state =
 | LockedNodesMatrix of { rows : row list; matrix_name : string; shape : state}
 | LockedNodes of node list * state 
 | OpenNodes of rc * state
-| Keys of key list
-| KeylocationMatrix of { rows : row list; }
+| KeylocationMatrix of { matrix_name : string; rows : row list}
 | GridConnection of string list
 
 type init = state list
@@ -75,10 +75,14 @@ type goal = expr
 type grid_param =
   | GP_rows of int
   | GP_cols of int
+  
   | GP_name of string
   | GP_connections of string list
-  | GP_keys of key list
+
+  | GP_key_names of string list
+  | GP_shapes of shape_map list
   | GP_lnm of state
+
   | GP_klm of state
 
 type grid = {
@@ -86,7 +90,8 @@ type grid = {
   cols : int option;
   name : string option;
   connections : string list;
-  keys : key list;
+  key_names : string list;
+  shapes : shape_map list;
   locked : state option;
   keyloc : state option;
 }
@@ -96,7 +101,8 @@ let build_grid (params : grid_param list) : grid =
   let cols = ref None in
   let name = ref None in
   let connections = ref [] in
-  let keys = ref [] in
+  let key_names = ref [] in
+  let shapes = ref [] in
   let locked = ref None in
   let keyloc = ref None in
 
@@ -108,11 +114,15 @@ let build_grid (params : grid_param list) : grid =
 
   List.iter
     (function
+
       | GP_rows r -> set_once "rows" rows r
       | GP_cols c -> set_once "columns" cols c
       | GP_name n -> set_once "name" name n
+
       | GP_connections cs -> connections := cs
-      | GP_keys ks -> keys := ks
+      | GP_key_names kns -> key_names := kns
+
+      | GP_shapes ss -> shapes := ss
       | GP_lnm l -> set_once "lockedlocations" locked l
       | GP_klm k -> set_once "keylocations" keyloc k
     )
@@ -123,7 +133,8 @@ let build_grid (params : grid_param list) : grid =
     cols = !cols;
     name = !name;
     connections = !connections;
-    keys = !keys;
+    key_names = !key_names;
+    shapes = !shapes;
     locked = !locked;
     keyloc = !keyloc;
   }

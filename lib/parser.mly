@@ -8,7 +8,7 @@
 %token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
 %token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX
 (*%token LOCKEDNODES OPENNODES DASH -- Unused atm*)
-%token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS
+%token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS SHAPES
 
 %token AND EXISTS NOT PLUS MULT COMMA EQUALS
 %token LPAREN RPAREN LBRACKET RBRACKET 
@@ -169,10 +169,26 @@ gridarg:
 | ROWS rows = CONST { GP_rows rows }
 | COLUMNS cols = CONST { GP_cols cols }
 | GRIDNAME n = NAME { GP_name n }
+
 | CONNECTIONS fl = flag_list { GP_connections fl }
-| KEYS LPAREN ks = key_list RPAREN { GP_keys ks }
+| KEYS ns = simple_name_list {GP_key_names ns }
+| SHAPES LPAREN sl = shape_mapping_list RPAREN { GP_shapes sl }
 | LOCKEDNODESMATRIX ln = NAME LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { matrix_name = ln; rows = r; shape = s }) }
-| KEYLOCATIONMATRIX LPAREN LBRACKET r = grid_rows RBRACKET RPAREN { GP_klm (KeylocationMatrix { rows = r }) }
+| KEYLOCATIONMATRIX km = NAME LPAREN LBRACKET r = grid_rows RBRACKET RPAREN { GP_klm (KeylocationMatrix { matrix_name = km; rows = r }) }
+;
+
+simple_name_list:
+| n = NAME { [n] }
+| n = NAME rest = simple_name_list { n :: rest }
+;
+
+shape_mapping_list:
+| { [] }
+| m = shape_mapping rest = shape_mapping_list { m :: rest }
+;
+
+shape_mapping:
+| LPAREN id = NAME EQUALS s = NAME RPAREN {{ char_id = id; shape_name = s } }
 ;
 
 ob_list:
@@ -288,16 +304,6 @@ entry:
 | n = NAME { n }
 ;
 
-(*keys:
-| LPAREN KEYS ks = key_list RPAREN { Keys ks }
-;*)
-
-key_list:
-| { [] }
-| k = key rest = key_list { k :: rest }
-
-key:
-| LPAREN n = NAME EQUALS s = NAME l = NAME RPAREN { {kname = n; shape = s; location = l} }
 
 goal:
 | LPAREN GOAL e = expr RPAREN { e }
