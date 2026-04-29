@@ -230,7 +230,7 @@ let transform_program p =
       let new_init =
         match transform_grid_to_connections problem_def.grid, locked_from_grid, problem_def.init with
         | states1, states2, states3 ->
-          states1 @ states2 @ states 3
+          states1 @ states2 @ states3
       in
       (*let obj_grid_data = obj_grid_data_of_objects_decl problem_def.objects in
       let new_init = transform_init obj_grid_data problem_def.init in  Make transform_init *)
