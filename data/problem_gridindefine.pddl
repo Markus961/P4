@@ -4,10 +4,10 @@
    (:objects test_object)
 
    (:grid 
-      :rows 5
-      :columns 5
+      :rows 2
+      :columns 2
       :name fileno
-      :connections -v -h
+      :connections -H -V
       :keys key0 key1 key2 key3 key4 key5 key6 key7
       :shapes ((D = diamond) (T = triangle) (St = star) (S = square))
       

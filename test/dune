@@ -1,3 +1,0 @@
-(test
- (name test_grid_extension)
- (libraries grid_extension))
