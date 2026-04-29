@@ -228,18 +228,18 @@ let validate_unique_shapes shapes =
   ) shapes  
 
 
-let rec transform_init obj_grid_data (states : state list) =
+let rec transform_init grid_data (states : state list) =
   match states with
   | [] -> []
   | (OnlyStates _ as s) :: tl -> 
-      s :: transform_init obj_grid_data tl
+      s :: transform_init grid_data tl
   | (LockedNodesMatrix { rows; matrix_name; shape }) :: tl ->
-  (match obj_grid_data with
+  (match grid_data with
     | Some (expected_rows, expected_cols, expected_name) -> (*compare lockedNodeMatrix with gridobj. *)
       validate_locked_matrix expected_rows expected_cols expected_name rows matrix_name
     | None ->
       invalid_arg "locked_nodes_matrix doesn't match :objects (:grid ...)");  
-      matrix_to_nodes rows matrix_name shape @ transform_init obj_grid_data tl
+      matrix_to_nodes rows matrix_name shape @ transform_init grid_data tl
   (* | LockedNodes (nodes, st) as hd :: tl ->
       hd :: transform_init tl
   | OpenNodes (rc, st) as hd :: tl ->
