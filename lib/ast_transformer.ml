@@ -89,7 +89,6 @@ let string_of_state = function
   | LockedNodesMatrix _ -> ""
   | LockedNodes _ ->  ""
   | OpenNodes _ -> ""
-  | Keys _ -> ""
   | KeylocationMatrix _ -> ""
   | GridConnection _ -> ""
 

@@ -171,7 +171,6 @@ gridarg:
 | GRIDNAME n = NAME { GP_name n }
 
 | CONNECTIONS fl = flag_list { GP_connections fl }
-| KEYS LPAREN ks = key_list RPAREN { GP_keys ks }
 | KEYS ns = simple_name_list {GP_key_names ns }
 | SHAPES LPAREN sl = shape_mapping_list RPAREN { GP_shapes sl }
 | LOCKEDNODESMATRIX ln = NAME LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { matrix_name = ln; rows = r; shape = s }) }
@@ -305,16 +304,6 @@ entry:
 | n = NAME { n }
 ;
 
-(*keys:
-| LPAREN KEYS ks = key_list RPAREN { Keys ks }
-;*)
-
-key_list:
-| { [] }
-| k = key rest = key_list { k :: rest }
-
-key:
-| LPAREN n = NAME EQUALS s = NAME l = NAME RPAREN { {kname = n; shape = s; location = l} }
 
 goal:
 | LPAREN GOAL e = expr RPAREN { e }

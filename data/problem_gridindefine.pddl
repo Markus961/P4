@@ -9,7 +9,7 @@
       :name fileno
       :connections -v -h
       :keys key0 key1 key2 key3 key4 key5 key6 key7
-      :Shapes ((D = diamond) (T = triangle) (St = star) (S = square))
+      :shapes ((D = diamond) (T = triangle) (St = star) (S = square))
       
       :lockedlocations fileno ([
             [0 0 0 0 0 0]

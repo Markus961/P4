@@ -40,7 +40,7 @@ rule token = parse
   | ":name" {GRIDNAME}
   | ":connections" {CONNECTIONS}
   | ":keys" {KEYS}
-  | ":Shapes" {SHAPES}
+  | ":shapes" {SHAPES}
   | ":lockedlocations" {LOCKEDNODESMATRIX}
   | ":keylocations" {KEYLOCATIONMATRIX}
   (*Logic*)
