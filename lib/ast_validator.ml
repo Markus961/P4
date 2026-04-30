@@ -115,7 +115,7 @@ let validate_grid grid =
        validate_keylocation_matrix expected_rows expected_cols expected_name grid.key_names grid.shapes key_rows matrix_name
        | _ -> failwith "Expected KeylocationMatrix in grid.keyloc")
   | _ -> invalid_arg "grid lacks rows/cols/name"
-        (* checks that all matrixes in init fits with locked + keylocation grids *)
+        (* Checks that all matrixes defined in :grid sections are transformed properly in the :init section. *)
 let rec validate_init_states grid_data states =
   match states with
   | [] -> ()
