@@ -82,12 +82,6 @@ let transform_keyloc (grid : Ast.grid) =
   match grid.keyloc with
 
   | Some (KeylocationMatrix { matrix_name; rows }) ->
-      (match grid.name with
-     | Some grid_name ->
-         Utils.validate_matrix_name grid_name matrix_name
-     | None ->
-         failwith "Grid has no name");
-
       let result =
         List.concat (
           List.mapi (fun i row ->
@@ -178,11 +172,6 @@ let rec transform_init_states grid_data states =
   | (OnlyStates _ as s) :: tl -> 
       s :: transform_init_states grid_data tl
   | (LockedNodesMatrix { rows; matrix_name; shape }) :: tl ->
-  (match grid_data with
-    | Some (expected_rows, expected_cols, expected_name) -> (*compare lockedNodeMatrix with gridobj. *)
-      Utils.validate_locked_matrix expected_rows expected_cols expected_name rows matrix_name
-    | None ->
-      invalid_arg "locked_nodes_matrix doesn't match :objects (:grid ...)");  
       matrix_to_nodes rows matrix_name shape @ transform_init_states grid_data tl
   (* | LockedNodes (nodes, st) as hd :: tl ->
       hd :: transform_init tl
@@ -220,7 +209,6 @@ let transform_program p =
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
       let grid = problem_def.grid in
-      Utils.validate_unique_shapes grid.shapes;
       let new_objects = transform_objects problem_def.objects problem_def.grid in
       let new_init = transform_init problem_def.grid problem_def.init in
       let goal = problem_def.goal in

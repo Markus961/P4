@@ -28,6 +28,11 @@ let () =
   let ast = Parser.prog Lexer.token lexbuf in
   close_in input_channel;
 
+  (match ast.defs with
+  | DomainDef _ -> ()
+  | ProblemDef problem_def ->
+      Ast_validator.validate_problem_def problem_def); (*Call the Ast_validator to check the input*)
+
   (*Transform*)
   let transformed_ast = Ast_transformer.transform_program ast in
 
