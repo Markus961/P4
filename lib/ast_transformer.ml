@@ -26,15 +26,6 @@ let transform_grid_to_objects grid =
   | _ ->
     invalid_arg "grid lacks rows/cols/name"
 
-let transform_objects_decl obj =
-  match obj with
-  (* If NormalObjects do nothing *)
-  | NormalObjects _ -> obj
-  (* If GridAndObjects transform into NormalObjects *)
-  | GridAndObjects (rows, cols, grid_name, objs) ->
-    let grid_objs = Utils.grid_to_strings rows cols grid_name in
-        NormalObjects (grid_objs @ objs)
-
 let matrix_to_nodes rows matrix_name shape =
   List.concat (
     List.mapi (fun i row ->
@@ -160,21 +151,39 @@ let locked_nodes_from_grid grid =
     matrix_to_nodes rows matrix_name shape
   | _ -> failwith "Expected LockedNodesMatrix in grid.locked"
 
+let transform_objects objects grid =
+  let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
+  
+  let normal_objects = 
+    match objects with
+    | NormalObjects obj -> obj
+    | _ -> failwith "Objects are not in correct format"
+  in
+  
+  let grid_objects =
+    match transform_grid_to_objects grid with
+    | NormalObjects nodes -> nodes
+    | _ -> failwith "Objects are not in correct format"
+  in
+
+  NormalObjects (normal_objects @ grid_objects @ grid.key_names @ shape_names)
+  
+
 (* transform_init transforms the :init section of the PDDL problem.
 It processes each state, validates special structues like LockedNodesMatrix
 using grid_data, and converts them into standard PDDL predicates. *)
-let rec transform_init grid_data (states : state list) =
+let rec transform_init_states grid_data states =
   match states with
   | [] -> []
   | (OnlyStates _ as s) :: tl -> 
-      s :: transform_init grid_data tl
+      s :: transform_init_states grid_data tl
   | (LockedNodesMatrix { rows; matrix_name; shape }) :: tl ->
   (match grid_data with
     | Some (expected_rows, expected_cols, expected_name) -> (*compare lockedNodeMatrix with gridobj. *)
       Utils.validate_locked_matrix expected_rows expected_cols expected_name rows matrix_name
     | None ->
       invalid_arg "locked_nodes_matrix doesn't match :objects (:grid ...)");  
-      matrix_to_nodes rows matrix_name shape @ transform_init grid_data tl
+      matrix_to_nodes rows matrix_name shape @ transform_init_states grid_data tl
   (* | LockedNodes (nodes, st) as hd :: tl ->
       hd :: transform_init tl
   | OpenNodes (rc, st) as hd :: tl ->
@@ -188,55 +197,42 @@ let rec transform_init grid_data (states : state list) =
   | _ ->
       failwith ("Hi failure")
 
+(* Converts a grid into OnlyStates for the init-section *)
+let transform_init grid states =
+  (* grid_data packs grid information (rows, cols, name) into an option type for later validation.
+  Option type means the value may either be Some value or None if something is missing *)
+  let grid_data =
+    match grid.rows, grid.cols, grid.name with
+    | Some r, Some c, Some n -> Some (r, c, n)
+    | _ -> None
+  in
+
+  let connections = transform_grid_to_connections grid in
+  let key_matrix_states = transform_keyloc grid in
+  let locked_from_grid = locked_nodes_from_grid grid in
+
+  connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
+
 let transform_program p =
   match p.defs with
-  (* We didn't provide extensions for domain.pddl so nothing happens *)
   | DomainDef _ -> p
-
   | ProblemDef problem_def ->
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
       let grid = problem_def.grid in
       Utils.validate_unique_shapes grid.shapes;
-
-      (* new_objects translate the :objects section for the PDDL problem it combines grid defined objects with regular object
-        like key objects from :keys and shape objects from :shapes the result is a long list of objects needed in the domain *)
-      let new_objects = 
-        match transform_objects_decl problem_def.objects, transform_grid_to_objects grid with
-        | NormalObjects obj1, NormalObjects nodes ->
-          let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
-          NormalObjects (obj1 @ nodes @ grid.key_names @ shape_names)
-        | _ ->
-          failwith "Objects are not in correct format"
-      in
-
-      let grid = problem_def.grid in
-      (* grid_data packs grid information (rows, cols, name) into an option type for later validation.
-      Option type means the value may either be Some value or None if something is missing *)
-      let grid_data = match grid.rows, grid.cols, grid.name with
-        | Some r, Some c, Some n -> Some (r, c, n)
-        | _ -> None
-      in
-
-
-      let key_matrix_states = transform_keyloc grid in
-      let locked_from_grid = locked_nodes_from_grid problem_def.grid in
-
-      let new_init =  
-        transform_grid_to_connections problem_def.grid @ key_matrix_states @ locked_from_grid @ 
-        transform_init grid_data problem_def.init 
-      in
-      
+      let new_objects = transform_objects problem_def.objects problem_def.grid in
+      let new_init = transform_init problem_def.grid problem_def.init in
       let goal = problem_def.goal in
 
-{
-  defs =
-    ProblemDef {
-      problem = problem;
-      problemdomain = problemdomain;
-      objects = new_objects;
-      grid;
-      init = new_init;
-      goal;
-    }
-}
+  {
+    defs =
+      ProblemDef {
+        problem;
+        problemdomain;
+        objects = new_objects;
+        grid;
+        init = new_init;
+        goal;
+      }
+  }
