@@ -278,7 +278,7 @@ flag:
 grid_rows:
 | { [] }
 | r = row rest = grid_rows { r :: rest }
-| m = repeat_notation_option { m }
+| m = repeat_notation_option rest = grid_rows { m @ rest }
 ;
 
 repeat_notation_option:
