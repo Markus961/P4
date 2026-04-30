@@ -1,7 +1,7 @@
 open Ast
 let test_generate_horizontal () =
   print_endline "Running test on generate_horizontal";
-  let result = Ast_transformer.generate_horizontal "node" 2 2 in
+  let result = Utils.generate_horizontal "node" 2 2 in
   let expected = [
     OnlyStates 
       {sname = "conn"; arguments = [
