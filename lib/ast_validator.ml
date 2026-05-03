@@ -1,4 +1,4 @@
-open Ast
+(* open Ast
 
 (* Count how many rows a matrix has*)
 let row_count rows =
@@ -74,7 +74,7 @@ let validate_locked_matrix expected_rows expected_cols expected_name rows matrix
                 if entry <> "0" && entry <> "1" then
                   invalid_arg (
                     Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry
-                  )
+                    )
               ) entries
     ) rows
     
@@ -152,4 +152,4 @@ let validate_problem_def problem_def =
     | Some rows, Some cols, Some name -> Some (rows, cols, name, problem_def.grid.key_names, problem_def.grid.shapes)
     | _ -> None
   in
-  validate_init_states grid_data problem_def.init
+  validate_init_states grid_data problem_def.init *)

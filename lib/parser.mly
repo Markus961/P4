@@ -282,8 +282,8 @@ grid_rows:
 ;
 
 repeat_notation_option:
-| p = row_part { [p] }
-| p = row_part PLUS m = repeat_notation_option { p :: m }
+| p = row_part { [MultRowOption [p]] } (* repeat_notation_option needs a list of rows and a MultRowOption is one row *)
+| p = row_part PLUS m = repeat_notation_option { MultRowOption [p] :: m }
 ;
 
 row_part:

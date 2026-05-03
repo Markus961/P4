@@ -26,18 +26,6 @@ let transform_grid_to_objects grid =
   | _ ->
     invalid_arg "grid lacks rows/cols/name"
 
-
-
-
-
-
-
-
-
-
-
-
-
 let matrix_to_nodes rows matrix_name shape =
   let expanded_rows = Utils.expand_rows rows in
   List.concat (

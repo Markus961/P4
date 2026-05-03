@@ -12,7 +12,8 @@
       :shapes ((St = star))
       
       :lockedlocations fileno ([
-            [0]*6
+            [0]*1 + [1]*1
+            [0]*1 + [1]*1
             ] (shape triangle))
 
       :keylocations fileno ([
