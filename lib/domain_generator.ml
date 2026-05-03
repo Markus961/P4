@@ -14,7 +14,6 @@ let string_of_all_pdefinitions preds =
 let string_of_feature f =
   match f with
   | Strips -> ":strips"
-  | DerivedPredicates -> ":derived-predicates"
 
 let string_of_requirements req =
   "(:requirements " ^ String.concat " " (List.map string_of_feature req.features) ^ ")\n"
@@ -31,16 +30,7 @@ let rec string_of_expr expr =
   | Exists (vars, expr) ->
     "(exists (" ^ String.concat " " vars ^ ") " ^ string_of_expr expr ^ ")"
 
-(* This function is a pretteprinter for the derived predicates from the domain.pddl. It takes one derived value and print it in pddl *)      
-let string_of_derived d =
-  "(:derived (" ^ d.header.pname ^ " " 
-  ^ String.concat " " d.header.variables ^ ")\n" 
-  ^ string_of_expr d.body 
-  ^ ")\n"
 
-(* This function iterates the print_derived from earlier and creates a list *)
-let string_of_all_derived dlist =
-  String.concat "\n" (List.map string_of_derived dlist)
 
 (* Used for printing actions from the domain.pddl *)
 
@@ -66,6 +56,5 @@ let string_of_domain d =
   "(define (domain " ^ d.domain.domain_name ^ ")\n"
   ^ string_of_requirements d.requirements ^ "\n"
   ^ string_of_all_pdefinitions d.predicates ^ "\n"
-  ^ string_of_all_derived d.derived ^ "\n"
   ^ string_of_all_actions d.actions ^ "\n"
   ^ ")\n"
