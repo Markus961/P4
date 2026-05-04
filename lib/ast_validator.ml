@@ -108,7 +108,17 @@ let validate_locked_array expected_rows expected_cols nodes =
         invalid_arg "Node outside grid bounds")
     nodes
    
-    (*Tnis Function collects all the above grid definition functions into one big check*)
+let shape_exists shapes shape =
+  List.exists (fun s -> s.shape_name = shape) shapes
+
+let extract_shape_name = function
+  | OnlyStates { sname = "shape"; arguments = [OnlyArguments { a }] } -> a
+  | OnlyStates { sname; _ } ->
+      failwith ("Expected (shape X) but got (" ^ sname ^ " ...)")
+  | _ ->
+      failwith "Invalid shape structure"
+
+(* This Function collects all the above grid definition functions into one big check*)
 let validate_grid grid =
   match grid.rows, grid.cols, grid.name with
   | Some expected_rows, Some expected_cols, Some expected_name ->
@@ -124,9 +134,14 @@ let validate_grid grid =
        locked_rows
        matrix_name
 
- | Some (LockedNodes (grid_name, nodes, _shape)) ->
+ | Some (LockedNodes (grid_name, nodes, shape)) ->
      if grid_name <> expected_name then
-       invalid_arg "LockedNodes belongs to wrong grid";
+      invalid_arg "LockedNodes belongs to wrong grid";
+
+     let shape_name = extract_shape_name shape in
+
+     if not (shape_exists grid.shapes shape_name) then
+      invalid_arg ("Unknown shape used in lockednodesarray: " ^ shape_name);
 
      validate_locked_array
        expected_rows
