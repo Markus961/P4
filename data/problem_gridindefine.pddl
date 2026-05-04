@@ -4,11 +4,11 @@
    (:objects test_object)
 
    (:grid 
-      :rows 2
-      :columns 2
+      :rows 6
+      :columns 6
       :name fileno
       :connections -H -V
-      :keys key0 key1 key2 key3 key4 key5 key6 key7
+      :keys key0 key1 key2 key3 key4 key5 key6 key7 
       :shapes ((D = diamond) (T = triangle) (St = star) (S = square))
       
       :lockedlocations fileno ([
@@ -21,7 +21,7 @@
             ] (shape triangle))
 
       :keylocations fileno ([
-            [St 0 0 D 0 T]
+            [St 0 D 0 0 T]
             [S 0 0 0 0 0]
             [0 0 0 0 0 0]
             [0 0 0 0 0 0]

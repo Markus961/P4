@@ -10,7 +10,7 @@
 (at key0 fileno0-0)
 (key key1)
 (key-shape key1 diamond)
-(at key1 fileno0-3)
+(at key1 fileno0-2)
 (key key2)
 (key-shape key2 triangle)
 (at key2 fileno0-5)

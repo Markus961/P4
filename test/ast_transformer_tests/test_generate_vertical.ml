@@ -2,7 +2,7 @@ open Ast
 
 let test_generate_vertical () =
   print_endline "Running test on generate_vertical";
-  let result = Ast_transformer.generate_vertical "node" 3 2 in
+  let result = Utils.generate_vertical "node" 3 2 in
   let expected = [
     OnlyStates 
       {sname = "conn"; arguments = [
