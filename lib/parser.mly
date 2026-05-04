@@ -278,16 +278,21 @@ flag:
 grid_rows:
 | { [] }
 | r = row rest = grid_rows { r :: rest }
-| m = repeat_notation_option rest = grid_rows { m @ rest }
+| m = repeat_notation_option rest = grid_rows {print_endline "Hit repeat_notation_option"; m :: rest }
 ;
 
 repeat_notation_option:
-| p = row_part { [MultRowOption [p]] } (* repeat_notation_option needs a list of rows and a MultRowOption is one row *)
-| p = row_part PLUS m = repeat_notation_option { MultRowOption [p] :: m }
+| p = row_part { MultRowOption [p] }
+| p = row_part PLUS m = repeat_notation_option { 
+  print_endline "Hit MultRowOption"; 
+  (match m with
+  | MultRowOption lst -> MultRowOption (p :: lst)
+  | _ -> assert false)
+}
 ;
 
 row_part:
-| LBRACKET en = entries RBRACKET MULT n = CONST { MultRow (en, n) }
+| LBRACKET en = entries RBRACKET MULT n = CONST { print_endline "Hit MultRow"; MultRow (en, n) }
 ;
 
 row:
