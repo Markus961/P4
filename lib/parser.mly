@@ -4,8 +4,8 @@
 
 %}
 
-%token DEFINE DOMAIN REQUIREMENTS DPREDICATES STRIPS
-%token PREDICATES DERIVED ACTION PARAMETERS PRECONDITION EFFECT
+%token DEFINE DOMAIN REQUIREMENTS STRIPS
+%token PREDICATES ACTION PARAMETERS PRECONDITION EFFECT
 %token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX
 (*%token LOCKEDNODES OPENNODES DASH -- Unused atm*)
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS SHAPES
@@ -38,22 +38,17 @@ prog:
 define:
 (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
-(*makes three nodes in ast, called, domain, requirements, predicates, which will be expanded, which means they are not terminal, they have more nodes below them*)
-    { let (derived_list, action_list) = declarations in DomainDef { domain = d; requirements = r; predicates = p; derived = derived_list; actions = action_list}  }
+     { DomainDef { domain = d; requirements = r; predicates = p; actions = declarations } }
 | LPAREN DEFINE p = problem pd = problemdomain o = objects grid = grid i = init g = goal RPAREN 
     { ProblemDef { problem = p; problemdomain = pd; objects = o; grid = grid; init = i; goal = g}  }
 ;
 
-declaration_list:  // parsing derived + actions in same grammar. removes ambiguity som gav error før, fordi de lignede hinanden for meget
-  | { ([], []) }   
-  | d = derived rest = declaration_list { let (derived_list, action_list) = rest in (d :: derived_list, action_list) }
-    (*hvis vi møder derived: tilføjer d foran de-listen, beholder a-listen*)
-  | a = action rest = declaration_list { let (derived_list, action_list) = rest in (derived_list, a :: action_list) }
-    (*hvis vi møder action: tilføjer a foran a_list-listen, beholder de-listen*)
+declaration_list:  
+  | { [] }   
+  | a = action rest = declaration_list { a :: rest }
+    (*hvis vi møder action: tilføjer a foran rest*)
 
-derived:
-| LPAREN DERIVED h = pdefinitions b = expr  RPAREN { { header = h; body = b } }
-;
+
 
 domain:
 | LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } } (*reasds domain part of domain file, and adds node to ast*)
@@ -75,7 +70,6 @@ feature_list:
 
 features: 
 | STRIPS {Strips} 
-| DPREDICATES {DerivedPredicates}
 ;
 
 predicates:
