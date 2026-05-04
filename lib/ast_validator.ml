@@ -99,16 +99,43 @@ let validate_keylocation_matrix expected_rows expected_cols expected_name key_na
   if !remaining_keys <> [] then
     failwith "Amount of keys doesn't match with amount of keylocations in matrix"
     
+let validate_locked_array expected_rows expected_cols nodes =
+  List.iter
+    (fun (Node (r, c)) ->
+      if r < 0 || c < 0 then
+        invalid_arg "Invalid node coordinates";
+      if r >= expected_rows || c >= expected_cols then
+        invalid_arg "Node outside grid bounds")
+    nodes
+   
     (*Tnis Function collects all the above grid definition functions into one big check*)
 let validate_grid grid =
   match grid.rows, grid.cols, grid.name with
   | Some expected_rows, Some expected_cols, Some expected_name ->
       validate_unique_shapes grid.shapes;
       (match grid.locked with
-       | None -> ()
-     | Some (LockedNodesMatrix { rows = locked_rows; matrix_name; _ }) ->
-       validate_locked_matrix expected_rows expected_cols expected_name locked_rows matrix_name
-       | _ -> failwith "Expected LockedNodesMatrix in grid.locked");
+ | None -> ()
+
+ | Some (LockedNodesMatrix { rows = locked_rows; matrix_name; _ }) ->
+     validate_locked_matrix
+       expected_rows
+       expected_cols
+       expected_name
+       locked_rows
+       matrix_name
+
+ | Some (LockedNodes (grid_name, nodes, _shape)) ->
+     if grid_name <> expected_name then
+       invalid_arg "LockedNodes belongs to wrong grid";
+
+     validate_locked_array
+       expected_rows
+       expected_cols
+       nodes
+
+ | _ ->
+     failwith "Unknown locked nodes format"
+);
       (match grid.keyloc with
        | None -> ()
      | Some (KeylocationMatrix { matrix_name; rows = key_rows }) ->
@@ -133,7 +160,8 @@ let rec validate_init_states grid_data states =
        | None -> invalid_arg "keylocation_matrix doesn't match :objects (:grid ...)");
       validate_init_states grid_data tl
   | _ :: _ -> failwith "Hi failure"
-
+    
+    
   (*function that is sent to main. validates the entire problem *)
 let validate_problem_def problem_def =
   validate_grid problem_def.grid;

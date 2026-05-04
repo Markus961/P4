@@ -62,6 +62,28 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
+  let array_to_nodes nodes shape =
+    List.concat (
+      List.map (fun (Node (r, c)) ->
+        let node_name = Printf.sprintf "node%d-%d" r c in
+        [
+          OnlyStates {
+            sname = "locked";
+            arguments = [
+              OnlyArguments {a = node_name};
+            ]
+          };
+          OnlyStates {
+            sname = "lock-shape";
+            arguments = [
+              OnlyArguments {a = node_name};
+              OnlyArguments {a = Utils.string_of_state shape}
+            ]
+          }
+        ]
+      ) nodes
+    )
+
 let transform_keyloc (grid : Ast.grid) =
   let remaining_keys = ref grid.key_names in
   
@@ -143,7 +165,17 @@ let locked_nodes_from_grid grid =
   | None -> []
   | Some (LockedNodesMatrix {rows; matrix_name; shape}) ->
     matrix_to_nodes rows matrix_name shape
-  | _ -> failwith "Expected LockedNodesMatrix in grid.locked"
+  | Some (LockedNodes (grid_name, nodes, shape)) ->
+      (match grid.name with
+       | Some n when n = grid_name ->
+           array_to_nodes nodes shape
+       | Some n ->
+           failwith ("LockedNodesArray belongs to grid " ^ grid_name ^ " but current grid is " ^ n)
+       | None ->
+           failwith "Grid has no name defined")
+  
+  
+    | _ -> failwith "unexpected locked node format"
 
 let transform_objects objects grid =
   let shape_names = List.map (fun s -> s.shape_name) grid.shapes in

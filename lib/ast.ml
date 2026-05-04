@@ -56,7 +56,7 @@ type argument =
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}
 | LockedNodesMatrix of { rows : row list; matrix_name : string; shape : state}
-| LockedNodes of node list * state 
+| LockedNodes of string * node list * state 
 | OpenNodes of rc * state
 | KeylocationMatrix of { matrix_name : string; rows : row list}
 | GridConnection of string list

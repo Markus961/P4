@@ -6,7 +6,7 @@
 
 %token DEFINE DOMAIN REQUIREMENTS STRIPS
 %token PREDICATES ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX LOCKEDNODES
 (*%token LOCKEDNODES OPENNODES DASH -- Unused atm*)
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS SHAPES
 
@@ -168,6 +168,7 @@ gridarg:
 | KEYS ns = simple_name_list {GP_key_names ns }
 | SHAPES LPAREN sl = shape_mapping_list RPAREN { GP_shapes sl }
 | LOCKEDNODESMATRIX ln = NAME LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { matrix_name = ln; rows = r; shape = s }) }
+| LOCKEDNODES ln = NAME LPAREN LBRACKET nl = node_list RBRACKET s = state RPAREN { GP_lnm (LockedNodes (ln, nl, s)) }
 | KEYLOCATIONMATRIX km = NAME LPAREN LBRACKET r = grid_rows RBRACKET RPAREN { GP_klm (KeylocationMatrix { matrix_name = km; rows = r }) }
 ;
 
