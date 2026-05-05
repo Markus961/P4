@@ -23,15 +23,17 @@ let write_file filename content =
 
 let () =
   print_endline "START"; (* Debug: did the function start *)
-  let input_channel = open_in "./data/problem_gridindefine.pddl" in
+  let input_channel = open_in "./data/problem_grid.pddl" in
   let lexbuf = Lexing.from_channel input_channel in
   let ast = Parser.prog Lexer.token lexbuf in
   close_in input_channel;
 
-  (match ast.defs with
+
+(* UDKOMMENTERET MENS JEG ARBEJDER PÅ MULT *)
+(*   (match ast.defs with
   | DomainDef _ -> ()
   | ProblemDef problem_def ->
-      Ast_validator.validate_problem_def problem_def); (*Call the Ast_validator to check the input*)
+      Ast_validator.validate_problem_def problem_def); *) (*Call the Ast_validator to check the input*)
 
   (*Transform*)
   let transformed_ast = Ast_transformer.transform_program ast in

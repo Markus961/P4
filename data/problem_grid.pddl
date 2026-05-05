@@ -1,21 +1,28 @@
 (define (problem strips-grid-y-2)
    (:domain grid)
 
-   (:objects (:grid 10 10 node)
-             triangle diamond square circle key0 key1 key2
-             key3 key4 key5 key6 key7 key8 key9)
+   (:objects test_object)
 
-   (:init (arm-empty)
-   
-        (locked_nodes_matrix node [
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 1 1 1 0]
-            [0 0 1 1 1 0]
-            [0 0 1 1 0 0]
+   (:grid 
+      :rows 1
+      :columns 6
+      :name fileno
+      :connections -H -V
+      :keys key0
+      :shapes ((St = star))
+      
+      :lockedlocations fileno ([
+            [0]*3 + [1]*3 ;; problem at + tolkes som ny row tjek parser
+            [0]*3 + [1]*3
+            
             ] (shape triangle))
 
+      :keylocations fileno ([
+            [St 0 0 0 0 0]
+            ])
+   )
+
+   (:init (arm-empty)
          
         ;;virker ikke uden denne og goal
         (at-robot node5-5))

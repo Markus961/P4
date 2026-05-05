@@ -1,19 +1,21 @@
-open Ast
+(* open Ast
 
 (* Count how many rows a matrix has*)
 let row_count rows =
-  List.fold_left
-    (fun acc row ->
+  List.fold_left (
+    fun acc row ->
       match row with
       | NormalRow _ -> acc + 1
-      | MultRow _ -> failwith "error")
-    0
-    rows
+      | MultRow _ -> acc +1
+  )
+  0
+  rows
 
     (* Count how many collums a matrix has*)
 let cols_count = function
   | NormalRow entries -> List.length entries
-  | MultRow _ -> failwith "error"
+  | MultRow (_, num_of_entries) -> 
+    print_endline "HUSK fix så man kan have liste af multrow"; num_of_entries
 
   (* Validate if a shape key has already been assigned to another shape*)
 let validate_unique_shapes shapes =
@@ -63,10 +65,18 @@ let validate_locked_matrix expected_rows expected_cols expected_name rows matrix
                 invalid_arg
                   (Printf.sprintf
                      "locked_nodes_matrix may only contain 0 or 1, but found '%s'"
-                     entry))
+                     entry)
+            )
             entries
-      | MultRow _ -> failwith "MultRow is not supported by :lockednodes yet")
-    rows
+      | MultRow (entries, _) -> 
+          List.iter
+              (fun entry ->
+                if entry <> "0" && entry <> "1" then
+                  invalid_arg (
+                    Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry
+                    )
+              ) entries
+    ) rows
     
         (*Validate key matrix using the function 2 times above. check keys *)
 let validate_keylocation_matrix expected_rows expected_cols expected_name key_names shapes rows matrix_name =
@@ -132,7 +142,7 @@ let rec validate_init_states grid_data states =
            validate_keylocation_matrix expected_rows expected_cols expected_name key_names shapes rows matrix_name
        | None -> invalid_arg "keylocation_matrix doesn't match :objects (:grid ...)");
       validate_init_states grid_data tl
-  | _ :: _ -> failwith "Hi failure"
+  | _ :: _ -> failwith "validate_init_states failure"
 
   (*function that is sent to main. validates the entire problem *)
 let validate_problem_def problem_def =
@@ -142,4 +152,4 @@ let validate_problem_def problem_def =
     | Some rows, Some cols, Some name -> Some (rows, cols, name, problem_def.grid.key_names, problem_def.grid.shapes)
     | _ -> None
   in
-  validate_init_states grid_data problem_def.init
+  validate_init_states grid_data problem_def.init *)
