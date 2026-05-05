@@ -15,9 +15,7 @@ rule token = parse
   | "domain" {DOMAIN}
   | ":requirements" {REQUIREMENTS}
   | ":strips" {STRIPS}
-  | ":derived-predicates" {DPREDICATES}
   | ":predicates" {PREDICATES}
-  | ":derived" {DERIVED}
   | ":action" {ACTION}
   | ":parameters" {PARAMETERS}
   | ":precondition" {PRECONDITION}

@@ -1,11 +1,19 @@
 (define (problem strips-grid-y-2)
 (:domain grid)
+<<<<<<< fix_mult_now
 (:objects test_object fileno0-0 fileno0-1 fileno0-2 fileno0-3 fileno0-4 fileno0-5 key0 star)
 (:init (conn fileno0-0 fileno0-1)
 (conn fileno0-1 fileno0-2)
 (conn fileno0-2 fileno0-3)
 (conn fileno0-3 fileno0-4)
 (conn fileno0-4 fileno0-5)
+=======
+(:objects test_object fileno0-0 fileno0-1 fileno1-0 fileno1-1 key0 key1 key2 key3 key4 key5 key6 key7 diamond triangle star square)
+(:init (conn fileno0-0 fileno0-1)
+(conn fileno1-0 fileno1-1)
+(conn fileno0-0 fileno1-0)
+(conn fileno0-1 fileno1-1)
+>>>>>>> main
 (key key0)
 (key-shape key0 star)
 (at key0 fileno0-0)

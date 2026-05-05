@@ -5,7 +5,6 @@ type domain = { domain_name : string}
 (* the below code is for requirements *)
 type feature =
 | Strips
-| DerivedPredicates
 
 type requirements = {	features : feature list} (*requirements contains features, fetures is a feature list*)
 
@@ -19,8 +18,6 @@ type expr =
 | And of expr list
 | Not of expr
 | Exists of variable list * expr
-
-type derived = {header : pdefinition; body : expr}
 
 type action = { aname : string; parameters : variable list; precondition : expr; effects : expr; }
 
@@ -149,7 +146,6 @@ type domain_def = {
   domain : domain;
   requirements : requirements;
   predicates : pdefinition list;
-  derived : derived list;
   actions : action list
 }
 
