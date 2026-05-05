@@ -195,12 +195,25 @@ let transform_init grid states =
     | Some r, Some c, Some n -> Some (r, c, n)
     | _ -> None
   in
+  (*Adds place to each node in the grid*)
+  let place_states =
+    match grid.rows, grid.cols, grid.name with
+    | Some r, Some c, Some n ->
+        List.map
+          (fun node_name ->
+            OnlyStates {
+              sname = "place";
+              arguments = [OnlyArguments { a = node_name }];
+            })
+          (Utils.grid_to_strings r c n)
+    | _ -> []
+  in
 
   let connections = transform_grid_to_connections grid in
   let key_matrix_states = transform_keyloc grid in
   let locked_from_grid = locked_nodes_from_grid grid in
 
-  connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
+  place_states @ connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
 
 let transform_program p =
   match p.defs with
