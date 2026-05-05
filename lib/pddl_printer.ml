@@ -55,7 +55,6 @@ let print_all_pdefinitions pdefinitions =
 let string_of_feature f =
   match f with
   | Strips -> ":strips"
-  | DerivedPredicates -> ":derived-predicates"
 
 let print_requirements req =
   List.iter (fun f -> print_endline (string_of_feature f)) req.features
@@ -76,14 +75,6 @@ let print_requirements req =
 let print_goal goal =
   print_endline (string_of_expr goal) 
 
-(* This function is a pretteprinter for the derived predicates from the domain.pddl. It takes one derived value and print it in pddl *)      
-let print_derived d =
-  print_endline ("(:derived (" ^ d.header.pname ^ " " ^ String.concat " " d.header.variables ^ ") " ^ string_of_expr d.body ^ ")"
-  )
-
-(* This function iterates the print_derived from earlier and creates a list *)
-let print_all_derived dlist =
-  List.iter print_derived dlist  
 
 (* Used for printing actions from the domain.pddl *)
 
@@ -116,7 +107,6 @@ let print_program p =
     print_endline "(:predicates";
     print_all_pdefinitions d.predicates;
     print_endline ("\n");
-    print_all_derived d.derived;
     print_endline ("\n");
     print_all_actions d.actions;
     print_endline ")"; 
