@@ -12,7 +12,7 @@
       :shapes ((St = star))
       
       :lockedlocations fileno ([
-            [0]*3 + [1]*3 ;; problem at + tolkes som ny row tjek parser
+            [0]*3 + [1]*3
             [0]*3 + [1]*3
             
             ] (shape triangle))

@@ -29,7 +29,7 @@ let () =
   close_in input_channel;
 
 
-
+  
    (match ast.defs with
   | DomainDef _ -> ()
   | ProblemDef problem_def ->
