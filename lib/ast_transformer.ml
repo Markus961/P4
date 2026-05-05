@@ -84,6 +84,37 @@ let matrix_to_nodes rows matrix_name shape =
       ) nodes
     )
 
+let generate_open_nodes grid locked_nodes =
+  match grid.rows, grid.cols with
+  | Some rows, Some cols ->
+
+      let all_nodes =
+        List.init rows (fun r ->
+          List.init cols (fun c -> Node (r, c))
+        )
+        |> List.concat
+      in
+
+      let is_locked node =
+        List.exists (fun n -> n = node) locked_nodes
+      in
+  
+      let open_nodes =
+        List.filter (fun n -> not (is_locked n)) all_nodes
+      in
+
+      List.map (fun (Node (r, c)) ->
+        OnlyStates {
+          sname = "open";
+          arguments = [
+            OnlyArguments {
+              a = Printf.sprintf "node%d-%d" r c
+            }
+          ]
+        }
+      ) open_nodes
+  | _ -> failwith "Grid missing rows/cols"
+
 let transform_keyloc (grid : Ast.grid) =
   let remaining_keys = ref grid.key_names in
   
@@ -232,7 +263,14 @@ let transform_init grid states =
   let key_matrix_states = transform_keyloc grid in
   let locked_from_grid = locked_nodes_from_grid grid in
 
-  connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
+  let open_states =
+    match grid.locked with
+    | Some (LockedNodes (_, nodes, _)) ->
+        generate_open_nodes grid nodes
+    | _ -> []
+    in
+
+  connections @ key_matrix_states @ locked_from_grid @ open_states @ transform_init_states grid_data states
 
 let transform_program p =
   match p.defs with
