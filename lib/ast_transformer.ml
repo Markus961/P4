@@ -61,33 +61,55 @@ let matrix_to_nodes rows matrix_name shape =
       failwith (Printf.sprintf "error")
     ) rows
   )
+(*
+    Converts a list of node coordinates into explicit PDDL state predicates for locked nodes and their associated shapes.
+    Each node is given in the form (Node (r, c)) and is transformed into:
+    1. A unique node identifier based on the grid name:
+      "<grid_name><row>-<col>" (e.g., "fileno3-2")
+    2. A "locked" predicate indicating that the node is locked.
+    3. A "lock-shape" predicate assigning a specific shape to the locked node.
 
-  let array_to_nodes grid_name nodes shape =
-    List.concat (
-      List.map (fun (Node (r, c)) ->
-        let node_name = Printf.sprintf "%s%d-%d" grid_name r c in
-        [
-          OnlyStates {
-            sname = "locked";
-            arguments = [
-              OnlyArguments {a = node_name};
-            ]
-          };
-          OnlyStates {
-            sname = "lock-shape";
-            arguments = [
-              OnlyArguments {a = node_name};
-              OnlyArguments {a = Utils.string_of_state shape}
-            ]
-          }
-        ]
-      ) nodes
-    )
+    The function flattens all generated predicates into a single list.
+*)
+let array_to_nodes grid_name nodes shape =
+  List.concat (
+    List.map (fun (Node (r, c)) ->
+      (* Construct the unique node name using grid prefix and coordinates (e.g., fileno1-1) *)
+      let node_name = Printf.sprintf "%s%d-%d" grid_name r c in
+      [
+        (* mark node is locked *)
+        OnlyStates {
+          sname = "locked";
+          arguments = [
+            OnlyArguments {a = node_name};
+          ]
+        };
+        
+        (* Assign shape to the locked node *)
+        OnlyStates {
+          sname = "lock-shape";
+          arguments = [
+            OnlyArguments {a = node_name};
+            OnlyArguments {a = Utils.string_of_state shape}
+          ]
+        }
+      ]
+    ) nodes
+  )
 
+(* 
+    Generates all "open" node states for a grid.
+    The function:
+    - Builds the full set of nodes based on grid dimensions (rows x cols)
+    - Removes nodes that are marked as locked
+    - Converts the remaining nodes into "open" PDDL predicates
+    - Uses the grid name as a prefix to each node
+*)  
 let generate_open_nodes grid_name grid locked_nodes =
   match grid.rows, grid.cols with
   | Some rows, Some cols ->
 
+      (* Generate full grid of nodes (r, c) coordinates *)
       let all_nodes =
         List.init rows (fun r ->
           List.init cols (fun c -> Node (r, c))
@@ -95,14 +117,17 @@ let generate_open_nodes grid_name grid locked_nodes =
         |> List.concat
       in
 
+      (* Check if a node is part of the locked set *)
       let is_locked node =
         List.exists (fun n -> n = node) locked_nodes
       in
-  
+
+      (* Filter out locked nodes *)
       let open_nodes =
         List.filter (fun n -> not (is_locked n)) all_nodes
       in
 
+      (* Convert remaining nodes into "open" predicates *)
       List.map (fun (Node (r, c)) ->
         OnlyStates {
           sname = "open";

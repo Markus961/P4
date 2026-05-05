@@ -111,6 +111,12 @@ let validate_locked_array expected_rows expected_cols nodes =
 let shape_exists shapes shape =
   List.exists (fun s -> s.shape_name = shape) shapes
 
+(* It extracts the shape name from a state of the form:
+(shape X)
+- If the input matches OnlyStates with sname="shape" and exactly one argument, it returns that argument (the shape name).
+- If it is an OnlyStates but not "shape", it fails with an error.
+- And if it is none of the above it fails because the format is invalid.
+*)  
 let extract_shape_name = function
   | OnlyStates { sname = "shape"; arguments = [OnlyArguments { a }] } -> a
   | OnlyStates { sname; _ } ->
@@ -121,7 +127,7 @@ let extract_shape_name = function
 (* This Function collects all the above grid definition functions into one big check*)
 let validate_grid grid =
   match grid.rows, grid.cols, grid.name with
-  | Some expected_rows, Some expected_cols, Some expected_name ->
+ | Some expected_rows, Some expected_cols, Some expected_name ->
       validate_unique_shapes grid.shapes;
       (match grid.locked with
  | None -> ()
@@ -149,14 +155,14 @@ let validate_grid grid =
        nodes
 
  | _ ->
-     failwith "Unknown locked nodes format"
-);
+     failwith "Unknown locked nodes format");
+
       (match grid.keyloc with
        | None -> ()
      | Some (KeylocationMatrix { matrix_name; rows = key_rows }) ->
        validate_keylocation_matrix expected_rows expected_cols expected_name grid.key_names grid.shapes key_rows matrix_name
        | _ -> failwith "Expected KeylocationMatrix in grid.keyloc")
-  | _ -> invalid_arg "grid lacks rows/cols/name"
+ | _ -> invalid_arg "grid lacks rows/cols/name"
         (* Checks that all matrixes defined in :grid sections are transformed properly in the :init section. *)
 let rec validate_init_states grid_data states =
   match states with
