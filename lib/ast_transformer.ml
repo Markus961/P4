@@ -62,10 +62,10 @@ let matrix_to_nodes rows matrix_name shape =
     ) rows
   )
 
-  let array_to_nodes nodes shape =
+  let array_to_nodes grid_name nodes shape =
     List.concat (
       List.map (fun (Node (r, c)) ->
-        let node_name = Printf.sprintf "node%d-%d" r c in
+        let node_name = Printf.sprintf "%s%d-%d" grid_name r c in
         [
           OnlyStates {
             sname = "locked";
@@ -84,7 +84,7 @@ let matrix_to_nodes rows matrix_name shape =
       ) nodes
     )
 
-let generate_open_nodes grid locked_nodes =
+let generate_open_nodes grid_name grid locked_nodes =
   match grid.rows, grid.cols with
   | Some rows, Some cols ->
 
@@ -108,7 +108,7 @@ let generate_open_nodes grid locked_nodes =
           sname = "open";
           arguments = [
             OnlyArguments {
-              a = Printf.sprintf "node%d-%d" r c
+              a = Printf.sprintf "%s%d-%d" grid_name r c
             }
           ]
         }
@@ -199,14 +199,14 @@ let locked_nodes_from_grid grid =
   | Some (LockedNodes (grid_name, nodes, shape)) ->
       (match grid.name with
        | Some n when n = grid_name ->
-           array_to_nodes nodes shape
+           array_to_nodes grid_name nodes shape
        | Some n ->
            failwith ("LockedNodesArray belongs to grid " ^ grid_name ^ " but current grid is " ^ n)
        | None ->
            failwith "Grid has no name defined")
   
   
-    | _ -> failwith "unexpected locked node format"
+  | _ -> failwith "unexpected locked node format"
 
 let transform_objects objects grid =
   let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
@@ -264,11 +264,14 @@ let transform_init grid states =
   let locked_from_grid = locked_nodes_from_grid grid in
 
   let open_states =
-    match grid.locked with
-    | Some (LockedNodes (_, nodes, _)) ->
-        generate_open_nodes grid nodes
+    match grid.locked, grid.name with
+    | Some (LockedNodes (grid_name, nodes, _)), Some name ->
+        if grid_name <> name then
+          failwith "LockedNodesArray belongs to wrong grid"
+        else
+        generate_open_nodes name grid nodes
     | _ -> []
-    in
+  in
 
   connections @ key_matrix_states @ locked_from_grid @ open_states @ transform_init_states grid_data states
 
