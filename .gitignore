@@ -405,6 +405,7 @@ transformed_problem.pddl
 detailed_solution_plan.txt
 solution_plan.txt
 sas_plan 
+
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
