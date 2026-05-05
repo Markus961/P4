@@ -234,7 +234,7 @@ let transform_program p =
         problem;
         problemdomain;
         objects = new_objects;
-        grid = grid_opt;
+        grid = None; (*grid is none after transform, because we shall not have grid construct in the transformed ast*)
         init = new_init;
         goal;
       }
