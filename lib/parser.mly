@@ -282,7 +282,7 @@ grid_rows:
 ;
 
 repeat_notation_option:
-| p = row_part { MultRowOption [p] }
+| p = row_part { MultRowOption [p] } 
 | p = row_part PLUS m = repeat_notation_option { 
   print_endline "Hit MultRowOption"; 
   (match m with

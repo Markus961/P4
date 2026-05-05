@@ -29,11 +29,11 @@ let () =
   close_in input_channel;
 
 
-(* UDKOMMENTERET MENS JEG ARBEJDER PÅ MULT *)
-(*   (match ast.defs with
+
+   (match ast.defs with
   | DomainDef _ -> ()
   | ProblemDef problem_def ->
-      Ast_validator.validate_problem_def problem_def); *) (*Call the Ast_validator to check the input*)
+      Ast_validator.validate_problem_def problem_def); (*Call the Ast_validator to check the input*)
 
   (*Transform*)
   let transformed_ast = Ast_transformer.transform_program ast in

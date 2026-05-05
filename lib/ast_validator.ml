@@ -1,4 +1,4 @@
-(* open Ast
+open Ast
 
 (* Count how many rows a matrix has*)
 let row_count rows =
@@ -6,16 +6,15 @@ let row_count rows =
     fun acc row ->
       match row with
       | NormalRow _ -> acc + 1
-      | MultRow _ -> acc +1
+      | MultRowOption _ -> acc +1
   )
   0
   rows
 
     (* Count how many collums a matrix has*)
-let cols_count = function
-  | NormalRow entries -> List.length entries
-  | MultRow (_, num_of_entries) -> 
-    print_endline "HUSK fix så man kan have liste af multrow"; num_of_entries
+let cols_count row =
+  let expanded_row = Utils.expand_row row in
+  List.fold_left (fun acc _ -> acc + 1) 0 expanded_row
 
   (* Validate if a shape key has already been assigned to another shape*)
 let validate_unique_shapes shapes =
@@ -52,33 +51,24 @@ let validate_matrix_basic expected_rows expected_cols expected_name rows matrix_
              actual_cols
              expected_cols))
     rows
-        (*Validate locked matrix using the function above. check entries. only 0 and 1's allowed *)
+
+(*Validate locked matrix using the function above. check entries. only 0 and 1's allowed *)
 let validate_locked_matrix expected_rows expected_cols expected_name rows matrix_name =
   validate_matrix_basic expected_rows expected_cols expected_name rows matrix_name;
-  List.iter
-    (fun row ->
-      match row with
-      | NormalRow entries ->
-          List.iter
-            (fun entry ->
-              if entry <> "0" && entry <> "1" then
-                invalid_arg
-                  (Printf.sprintf
-                     "locked_nodes_matrix may only contain 0 or 1, but found '%s'"
-                     entry)
-            )
-            entries
-      | MultRow (entries, _) -> 
-          List.iter
-              (fun entry ->
-                if entry <> "0" && entry <> "1" then
-                  invalid_arg (
-                    Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry
-                    )
-              ) entries
-    ) rows
+  
+  (* Expand rows into entries to avoid matching NormalRow and MultRowOption *)
+  let entries = List.concat(Utils.expand_rows rows) in
+
+  (* Iterate over entries *)
+  List.iter (
+    fun entry ->
+      if entry <> "0" && entry <> "1" then
+        invalid_arg (Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry) 
+  ) entries
+
+
     
-        (*Validate key matrix using the function 2 times above. check keys *)
+(*Validate key matrix using the function 2 times above. check keys *)
 let validate_keylocation_matrix expected_rows expected_cols expected_name key_names shapes rows matrix_name =
   validate_matrix_basic expected_rows expected_cols expected_name rows matrix_name;
   let remaining_keys = ref key_names in
@@ -94,18 +84,17 @@ let validate_keylocation_matrix expected_rows expected_cols expected_name key_na
     | Some s -> s.shape_name
     | None -> failwith ("Unknown symbol in the matrix: "  ^ char_id)
   in
-  List.iter
-    (fun row ->
-      match row with
-      | NormalRow entries ->
-          List.iter
-            (fun entry ->
-              if entry <> "0" then (
-                ignore (get_next_key ());
-                ignore (find_shape entry)))
-            entries
-      | MultRow _ -> failwith "MultRow is not supported by :keylocations yet")
-    rows;
+
+  (* Expand rows into entries to avoid matching NormalRow and MultRowOption *)
+  let entries = List.concat(Utils.expand_rows rows) in
+  (* Iterate over entries *)
+  List.iter (
+    fun entry ->
+      if entry <> "0" then (
+        ignore (get_next_key ());
+        ignore (find_shape entry))
+  ) entries;
+
   if !remaining_keys <> [] then
     failwith "Amount of keys doesn't match with amount of keylocations in matrix"
     
@@ -152,4 +141,4 @@ let validate_problem_def problem_def =
     | Some rows, Some cols, Some name -> Some (rows, cols, name, problem_def.grid.key_names, problem_def.grid.shapes)
     | _ -> None
   in
-  validate_init_states grid_data problem_def.init *)
+  validate_init_states grid_data problem_def.init
