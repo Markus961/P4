@@ -150,7 +150,7 @@ type problem_def = {
   problem : problem;
   problemdomain : problemdomain;
   objects : objects_decl;
-  grid : grid;
+  grid : grid option;
   init : state list;
   goal : expr;}
 
