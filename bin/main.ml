@@ -53,28 +53,43 @@ let process_file input_path =
     
 let planner_path = ref None
 
+let find_home_dir () =
+  (* Try the standard home variable first. *)
+  match Sys.getenv_opt "HOME" with
+  | Some home -> Some home
+  (* On Windows, use the user profile path instead. *)
+  | None -> Sys.getenv_opt "USERPROFILE"
+
 let check_planner_installed () =
-  (* Look for Fast Downward in the current user's HOME folder. *)
-  (* Sys.getenv_opt reads an environment variable and returns Some value or None. *)
-  let default_path = Sys.getenv_opt "HOME" in
-  match default_path with
-  | None ->
-      (* HOME is missing, so we cannot build the planner path. *)
-      print_endline "Could not determine HOME directory.";
+  (* Allow the planner path to be set explicitly on any system. *)
+  match Sys.getenv_opt "FAST_DOWNWARD_PATH" with
+  | Some custom_path when Sys.file_exists custom_path ->
+      (* Store the custom path so run_planner can use it later. *)
+      planner_path := Some custom_path
+  | Some custom_path ->
+      (* Stop early if the custom path does not exist. *)
+      print_endline ("\nERROR: FAST_DOWNWARD_PATH not found: " ^ custom_path);
       exit 1
-  | Some home ->
-      (* Build the expected Fast Downward path inside ~/planners/downward. *)
-      let path = home ^ "/planners/downward/fast-downward.py" in
-      if Sys.file_exists path then
-        planner_path := Some path (* here we then store the ai planner for later use*)
-      else (
-        (* Stop early if the planner is not installed where we expect it. *)
-        print_endline "\nERROR: Fast Downward not found.";
-        print_endline ("Expected at: " ^ path);
-        print_endline "See document: SETUP_PLANNER.md for installation instructions.";
-        prerr_endline "Or check at: https://github.com/Markus961/P4/blob/main/PLANNER_SETUP.md";
-        exit 1
-      )
+  | None ->
+      (* Fallback path works on macOS/Linux (HOME) and Windows (USERPROFILE). *)
+      (match find_home_dir () with
+      | None ->
+          (* We cannot build a path if no home directory is available. *)
+          print_endline "Could not determine HOME/USERPROFILE directory.";
+          exit 1
+      | Some home ->
+          (* Build the default Fast Downward path inside the home folder. *)
+          let path = Filename.concat home "planners/downward/fast-downward.py" in
+          if Sys.file_exists path then
+            (* Save the path when the planner exists at the default location. *)
+            planner_path := Some path
+          else (
+            (* Tell the user exactly where we expected the planner. *)
+            print_endline "\nERROR: Fast Downward not found.";
+            print_endline ("Expected at: " ^ path);
+            print_endline "Set FAST_DOWNWARD_PATH or see PLANNER_SETUP.md.";
+            exit 1
+          ))
 
 (* Run Fast Downward automatically after transformation *)
 let run_planner () =
@@ -89,11 +104,21 @@ let run_planner () =
       (* This message tells the user that planning has started. *)
       print_endline "\nRunning Fast Downward...";
 
+      (* File where we store the full planner log. *)
       let output_filename = "detailed_solution_plan.txt" in
 
       (* Build the command that runs Fast Downward on the translated PDDL files. *)
+      let planner_exec =
+        (* Windows needs an explicit python call for the .py script. *)
+        if Sys.os_type = "Win32" then
+          "python \"" ^ path ^ "\""
+        (* macOS/Linux can run the script directly. *)
+        else
+          "\"" ^ path ^ "\""
+      in
+      (* Add the translated domain, problem, and search strategy. *)
       let cmd =
-        path ^
+        planner_exec ^
         " transformed_domain.pddl transformed_problem.pddl \
          --search \"astar(lmcut())\""
       in
@@ -108,7 +133,9 @@ let run_planner () =
       (try
          while true do
            let line = input_line ic in
+           (* Print each line to the terminal. *)
            print_endline line;
+           (* Also save each line to the log file. *)
            output_string oc (line ^ "\n")
          done
        with End_of_file ->
@@ -119,15 +146,19 @@ let run_planner () =
       (* Close the output file after all lines have been written. *)
       close_out oc;
 
-      (* Rename Fast Downward default plan file *)
+      (* Rename Fast Downward's default plan file into our own filename. *)
       let default_plan = "sas_plan" in
       let new_plan_name = "solution_plan.txt" in
 
       if Sys.file_exists default_plan then (
-        ignore (Sys.command ("mv " ^ default_plan ^ " " ^ new_plan_name));
+        (* Remove an older result if it already exists. *)
+        if Sys.file_exists new_plan_name then Sys.remove new_plan_name;
+        (* Move the planner output to the final filename. *)
+        Sys.rename default_plan new_plan_name;
         print_endline ("Renamed " ^ default_plan ^ " to " ^ new_plan_name)
       )
       else
+        (* Warn when the planner did not create a plan file. *)
         print_endline "Warning: solution_plan was not generated."
 
 let () =
