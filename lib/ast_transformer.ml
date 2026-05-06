@@ -81,7 +81,7 @@ let matrix_to_nodes rows matrix_name shape =
     The result is a flat list of all generated predicates.
 
 *)
-let generate_locked_and_open_states grid_name grid nodes shape =
+let generate_locked_and_open_states grid_name grid locked_nodes shape =
   match grid.rows, grid.cols with
   | Some rows, Some cols ->
 
@@ -95,7 +95,7 @@ let generate_locked_and_open_states grid_name grid nodes shape =
 
       (* --- CHECK IF NODE IS LOCKED --- *)
       let is_locked node =
-        List.exists (fun n -> n = node) nodes
+        List.exists (fun n -> n = node) locked_nodes
       in
 
       (* --- LOCKED STATES --- *)
@@ -116,7 +116,7 @@ let generate_locked_and_open_states grid_name grid nodes shape =
                 ]
               }
             ]
-          ) nodes
+          ) locked_nodes
         )
       in
 
