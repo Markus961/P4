@@ -4,20 +4,21 @@
    (:objects test_object)
 
    (:grid 
-      :rows 1
+      :rows 2
       :columns 6
       :name fileno
       :connections -H -V
-      :keys key0
+      :keys key0 key1
       :shapes ((St = star))
       
       :lockedlocations fileno ([
-            [0]*3 + [1]*3 ;; problem at + tolkes som ny row tjek parser
+            [0]*3 + [1]*3
             [0]*3 + [1]*3
             
             ] (shape triangle))
 
       :keylocations fileno ([
+            [St 0 0 0 0 0]
             [St 0 0 0 0 0]
             ])
    )
