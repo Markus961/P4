@@ -1,0 +1,4 @@
+(test
+ (name test_normal_rows)
+ (libraries grid_extension)
+ (deps normal_rows.pddl expected.pddl))
