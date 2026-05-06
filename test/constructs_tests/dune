@@ -2,3 +2,8 @@
  (name test_normal_rows)
  (libraries grid_extension)
  (deps normal_rows.pddl expected.pddl))
+
+ (test
+ (name compiler_for_testing)
+ (libraries grid_extension)
+ (deps normal_rows.pddl expected.pddl))

@@ -4,23 +4,17 @@
    (:objects test_object)
 
    (:grid 
-      :rows 2
+      :rows 1
       :columns 6
-      :name fileno
-      :connections -H -V
-      :keys key0 key1
-      :shapes ((St = star))
+      :name test
+      :connections 
+      :keys key0 
+      :shapes ()
       
-      :lockedlocations fileno ([
+      :lockedlocations test ([
             [0 0 0 1 1 1]
-            [0 0 0 1 1 1]
-            
             ] (shape triangle))
 
-      :keylocations fileno ([
-            [St 0 0 0 0 0]
-            [St 0 0 0 0 0]
-            ])
    )
 
    (:init (arm-empty)

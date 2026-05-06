@@ -77,3 +77,21 @@ let expand_row row =
 (* List.map uses a function on all elements of a list *)
 let expand_rows rows =
   List.map expand_row rows
+
+(* helper function - Writes a string to a file *)
+let write_file filename content =
+  (* Open a file for writing and get an output channel *)
+  let oc = open_out filename in
+
+  (* Write the entire string content into the file *)
+  output_string oc content;
+
+  (* Close the file to ensure all data is flushed and saved *)
+  close_out oc
+
+let read_file filename =
+  let ic = open_in filename in
+  let length = in_channel_length ic in
+  let content = really_input_string ic length in
+  close_in ic;
+  content 
