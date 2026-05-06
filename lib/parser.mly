@@ -272,12 +272,16 @@ flag:
 grid_rows:
 | { [] }
 | r = row rest = grid_rows { r :: rest }
-| m = repeat_notation_option { m }
+| m = repeat_notation_option rest = grid_rows { m :: rest }
 ;
 
 repeat_notation_option:
-| p = row_part { [p] }
-| p = row_part PLUS m = repeat_notation_option { p :: m }
+| p = row_part { MultRowOption [p] } 
+| p = row_part PLUS m = repeat_notation_option {  
+  (match m with
+  | MultRowOption lst -> MultRowOption (p :: lst)
+  | _ -> assert false)
+}
 ;
 
 row_part:

@@ -27,10 +27,9 @@ let transform_grid_to_objects grid =
     invalid_arg "grid lacks rows/cols/name"
 
 let matrix_to_nodes rows matrix_name shape =
+  let expanded_rows = Utils.expand_rows rows in
   List.concat (
-    List.mapi (fun i row ->
-    match row with
-    | NormalRow entries ->
+    List.mapi (fun i entries ->
       List.concat (
         List.mapi (fun j entry ->
           match entry with
@@ -53,13 +52,9 @@ let matrix_to_nodes rows matrix_name shape =
                   ]
                 }
                 ]
-
-      ) entries
+        ) entries
       )
-      
-    | (* MultRow (entries, multiplicator) *) _ ->
-      failwith (Printf.sprintf "error")
-    ) rows
+    ) expanded_rows
   )
 
 let transform_keyloc (grid : Ast.grid) =
@@ -82,54 +77,51 @@ let transform_keyloc (grid : Ast.grid) =
   match grid.keyloc with
 
   | Some (KeylocationMatrix { matrix_name; rows }) ->
+    
       let result =
-        List.concat (
-          List.mapi (fun i row ->
-            match row with
-            | NormalRow entries ->
-                List.concat (
-                  List.mapi (fun j entry ->
-                    if entry = "0" then
-                      []
-                    else
-                      let key_name = get_next_key () in
-                      let shape_name = find_shape entry in
-                      let node_name =
-                        Printf.sprintf "%s%d-%d" matrix_name i j
-                      in
-                      [
-                        OnlyStates {
-                          sname = "key";
-                          arguments = [
-                            OnlyArguments { a = key_name }
-                          ];
-                        };
+        let expanded_rows = Utils.expand_rows rows in
+          List.concat (
+            List.mapi (fun i entries ->
+              List.concat (
+                List.mapi (fun j entry ->
+                  if entry = "0" then
+                    []
+                  else
+                    let key_name = get_next_key () in
+                    let shape_name = find_shape entry in
+                    let node_name =
+                      Printf.sprintf "%s%d-%d" matrix_name i j
+                    in
+                    [
+                      OnlyStates {
+                        sname = "key";
+                        arguments = [
+                        OnlyArguments { a = key_name }
+                        ];
+                      };
 
-                        OnlyStates {
-                          sname = "key-shape";
-                          arguments = [
-                            OnlyArguments { a = key_name };
-                            OnlyArguments { a = shape_name };
-                          ];
-                        };
+                      OnlyStates {
+                        sname = "key-shape";
+                        arguments = [
+                          OnlyArguments { a = key_name };
+                          OnlyArguments { a = shape_name };
+                        ];
+                      };
 
-                        OnlyStates {
-                          sname = "at";
-                          arguments = [
-                            OnlyArguments { a = key_name };
-                            OnlyArguments { a = node_name };
-                          ];
-                        };
-                      ]
-                  ) entries
-                )
+                      OnlyStates {
+                        sname = "at";
+                        arguments = [
+                          OnlyArguments { a = key_name };
+                          OnlyArguments { a = node_name };
+                        ];
+                      };
+                    ]
+                ) entries
+              )
+            ) expanded_rows
+          )
+          in
 
-            | MultRow _ ->
-                failwith
-                  "MultRow is not supported by :keylocations yet"
-          ) rows
-        )
-      in
 
       if !remaining_keys <> [] then
         failwith "More keys in :keys than symbols in :keylocations";
