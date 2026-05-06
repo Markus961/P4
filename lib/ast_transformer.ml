@@ -137,22 +137,26 @@ let locked_nodes_from_grid grid =
     matrix_to_nodes rows matrix_name shape
   | _ -> failwith "Expected LockedNodesMatrix in grid.locked"
 
-let transform_objects objects grid =
-  let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
-  
-  let normal_objects = 
-    match objects with
-    | NormalObjects obj -> obj
-    | _ -> failwith "Objects are not in correct format"
-  in
-  
-  let grid_objects =
-    match transform_grid_to_objects grid with
-    | NormalObjects nodes -> nodes
-    | _ -> failwith "Objects are not in correct format"
-  in
+let transform_objects objects grid_opt =
+  match grid_opt with
+    | Some grid -> (*if there are a grid*)
+        let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
+        
+        let normal_objects = 
+          match objects with
+          | NormalObjects obj -> obj
+          | _ -> failwith "Objects are not in correct format"
+        in
+        
+        let grid_objects =
+          match transform_grid_to_objects grid with
+          | NormalObjects nodes -> nodes
+          | _ -> failwith "Objects are not in correct format"
+        in
 
-  NormalObjects (normal_objects @ grid_objects @ grid.key_names @ shape_names)
+        NormalObjects (normal_objects @ grid_objects @ grid.key_names @ shape_names)
+    | None ->  (*if there are no grid*)
+        objects
   
 
 (* transform_init transforms the :init section of the PDDL problem.
@@ -179,20 +183,27 @@ let rec transform_init_states grid_data states =
       failwith ("Hi failure")
 
 (* Converts a grid into OnlyStates for the init-section *)
-let transform_init grid states =
-  (* grid_data packs grid information (rows, cols, name) into an option type for later validation.
-  Option type means the value may either be Some value or None if something is missing *)
-  let grid_data =
-    match grid.rows, grid.cols, grid.name with
-    | Some r, Some c, Some n -> Some (r, c, n)
-    | _ -> None
-  in
+let transform_init grid_opt states =
+  match grid_opt with
+    | Some grid ->
+      (* grid_data packs grid information (rows, cols, name) into an option type for later validation.
+      Option type means the value may either be Some value or None if something is missing *)
+      let grid_data =
+        match grid.rows, grid.cols, grid.name with
+        | Some r, Some c, Some n -> Some (r, c, n)
+        | _ -> None
+      in
 
-  let connections = transform_grid_to_connections grid in
-  let key_matrix_states = transform_keyloc grid in
-  let locked_from_grid = locked_nodes_from_grid grid in
+      let connections = transform_grid_to_connections grid in
+      let key_matrix_states = transform_keyloc grid in
+      let locked_from_grid = locked_nodes_from_grid grid in
 
-  connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
+      connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
+    | None ->
+        List.filter (function
+        | OnlyStates _ -> true (*only keep states which are onlystates*)
+        | _ -> false (*things we dont want could be: LockedNodesMatrix, KeylocationMatrix, OpenNodes. There should be in grid section and not directly in init*)
+      ) states
 
 let transform_program p =
   match p.defs with
@@ -200,18 +211,22 @@ let transform_program p =
   | ProblemDef problem_def ->
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
-      let grid = problem_def.grid in
-      let new_objects = transform_objects problem_def.objects problem_def.grid in
-      let new_init = transform_init problem_def.grid problem_def.init in
+      let grid_opt = problem_def.grid in
+      let new_objects = 
+        transform_objects problem_def.objects grid_opt
+      in
+      let new_init = 
+        transform_init grid_opt problem_def.init
+      in
       let goal = problem_def.goal in
 
   {
     defs =
-      ProblemDef {
+      ProblemDef {  
         problem;
         problemdomain;
         objects = new_objects;
-        grid;
+        grid = None; (*grid is none after transform, because we shall not have grid construct in the transformed ast*)
         init = new_init;
         goal;
       }
