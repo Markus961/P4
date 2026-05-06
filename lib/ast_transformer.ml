@@ -57,6 +57,89 @@ let matrix_to_nodes rows matrix_name shape =
     ) expanded_rows
   )
 
+(*
+    Converts a set of locked node coordinates into full PDDL state predicates for both locked and open nodes in the grid.
+
+    The function:
+    - Takes a list of locked nodes (Node (r, c)) and a shape
+    - Uses the grid dimensions (rows x cols) to construct all possible nodes
+    - Splits nodes into:
+      - Locked nodes (given in the input)
+      - Open nodes (all remianing nodes)
+    
+    For each locked node:
+     - Generates a unique node identifier using the grid name:
+        "<grid_name><row>-<col>" (e.g., "fileno3-2")
+      - Produces:
+        (locked <node>)
+        (lock-shape <node> <shape>)
+
+    For each open node:
+      - Produces:
+        (open <node>)
+
+    The result is a flat list of all generated predicates.
+
+*)
+let generate_locked_and_open_states grid_name grid locked_nodes shape =
+  match grid.rows, grid.cols with
+  | Some rows, Some cols ->
+
+      (* --- ALL NODES IN GRID --- *)
+      let all_nodes =
+        List.init rows (fun r ->
+          List.init cols (fun c -> Node (r, c))
+        )
+        |> List.concat
+      in
+
+      (* --- CHECK IF NODE IS LOCKED --- *)
+      let is_locked node =
+        List.exists (fun n -> n = node) locked_nodes
+      in
+
+      (* --- LOCKED STATES --- *)
+      let locked_states =
+        List.concat (
+          List.map (fun (Node (r, c)) ->
+            let node_name = Printf.sprintf "%s%d-%d" grid_name r c in
+            [
+              OnlyStates {
+                sname = "locked";
+                arguments = [OnlyArguments {a = node_name}]
+              };
+              OnlyStates {
+                sname = "lock-shape";
+                arguments = [
+                  OnlyArguments {a = node_name};
+                  OnlyArguments {a = Utils.string_of_state shape}
+                ]
+              }
+            ]
+          ) locked_nodes
+        )
+      in
+
+      (* --- OPEN STATES --- *)
+      let open_states =
+        List.filter (fun n -> not (is_locked n)) all_nodes
+        |> List.map (fun (Node (r, c)) ->
+          OnlyStates {
+            sname = "open";
+            arguments = [
+              OnlyArguments {
+                a = Printf.sprintf "%s%d-%d" grid_name r c
+              }
+            ]
+          }
+        )
+      in
+
+      locked_states @ open_states
+
+  | _ -> failwith "Grid missing rows/cols"
+
+
 let transform_keyloc (grid : Ast.grid) =
   let remaining_keys = ref grid.key_names in
   
@@ -133,9 +216,21 @@ let transform_keyloc (grid : Ast.grid) =
 let locked_nodes_from_grid grid = 
   match grid.locked with 
   | None -> []
+
   | Some (LockedNodesMatrix {rows; matrix_name; shape}) ->
     matrix_to_nodes rows matrix_name shape
-  | _ -> failwith "Expected LockedNodesMatrix in grid.locked"
+
+  | Some (LockedNodes (grid_name, nodes, shape)) ->
+      (match grid.name with
+       | Some name when name = grid_name ->
+           generate_locked_and_open_states name grid nodes shape
+       | Some name ->
+           failwith ("LockedNodesArray belongs to grid " ^ grid_name ^ " but current grid is " ^ name)
+       | None ->
+           failwith "Grid has no name defined")
+  
+  
+  | _ -> failwith "unexpected locked node format"
 
 let transform_objects objects grid_opt =
   match grid_opt with
@@ -167,8 +262,8 @@ let rec transform_init_states grid_data states =
   | [] -> []
   | (OnlyStates _ as s) :: tl -> 
       s :: transform_init_states grid_data tl
-  | (LockedNodesMatrix { rows; matrix_name; shape }) :: tl ->
-      matrix_to_nodes rows matrix_name shape @ transform_init_states grid_data tl
+  | (LockedNodesMatrix _) :: tl ->
+    transform_init_states grid_data tl
   (* | LockedNodes (nodes, st) as hd :: tl ->
       hd :: transform_init tl
   | OpenNodes (rc, st) as hd :: tl ->
