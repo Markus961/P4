@@ -43,9 +43,12 @@ type rc =
 
 type entry = string
 
+type multrow = 
+| MultRow of entry list * int
+
 type row = 
 | NormalRow of entry list
-| MultRow of entry list * int
+| MultRowOption of multrow list
 
 
 type argument = 
@@ -150,7 +153,7 @@ type problem_def = {
   problem : problem;
   problemdomain : problemdomain;
   objects : objects_decl;
-  grid : grid;
+  grid : grid option;
   init : state list;
   goal : expr;}
 
