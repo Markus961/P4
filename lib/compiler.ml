@@ -28,4 +28,4 @@ let run input_file =
 
   | ProblemDef p ->
     let content = Problem_generator.string_of_problem p in
-    Utils.write_file "transformed.pddl" content
+    Utils.write_file "transformed_problem.pddl" content
