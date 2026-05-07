@@ -89,9 +89,21 @@ let write_file filename content =
   (* Close the file to ensure all data is flushed and saved *)
   close_out oc
 
-let read_file filename =
+(*let read_file filename =
   let ic = open_in filename in
   let length = in_channel_length ic in
   let content = really_input_string ic length in
   close_in ic;
-  content 
+  content *)
+
+let read_file filename =
+  let ic = open_in filename in
+  let buf = Buffer.create 1024 in
+  (try
+     while true do
+       Buffer.add_string buf (input_line ic);
+       Buffer.add_char buf '\n'
+     done
+   with End_of_file ->
+     close_in ic);
+  Buffer.contents buf
