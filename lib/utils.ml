@@ -3,13 +3,28 @@ let generate_horizontal grid_name rows cols =
   let acc = ref [] in
   for i = 0 to rows - 1 do
     for j = 0 to cols - 2 do
+      let a = Printf.sprintf "%s%d-%d" grid_name i j in
+      let b = Printf.sprintf "%s%d-%d" grid_name i (j+1) in
+      
+      (*  Each pair is added in both directions so connections are bidirectional. *)
+      (* A -> B *)
+      acc := OnlyStates {
+        sname = "conn";
+        arguments = [
+          OnlyArguments {a = a};
+          OnlyArguments {a = b};
+        ];
+      } :: !acc;
 
-        let arg_list = ref [] in
-        arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name i (j+1)} :: !arg_list;
-        arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name i j} :: !arg_list;
-        
-        acc := OnlyStates {sname = "conn"; arguments = !arg_list} :: !acc
-        
+      (* B -> A *)
+      acc := OnlyStates {
+        sname = "conn";
+        arguments = [
+          OnlyArguments {a = b};
+          OnlyArguments {a = a};
+        ];
+      } :: !acc;
+
     done
   done;
   List.rev !acc
@@ -18,13 +33,28 @@ let generate_vertical grid_name rows cols =
   let acc = ref [] in
   for i = 0 to rows - 2 do
     for j = 0 to cols - 1 do
-      
-      let arg_list = ref [] in
-      arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name (i+1) j} :: !arg_list;
-      arg_list := OnlyArguments {a = Printf.sprintf "%s%d-%d" grid_name i j} :: !arg_list;
-        
-      acc := OnlyStates {sname = "conn"; arguments = !arg_list} :: !acc
-        
+      let a = Printf.sprintf "%s%d-%d" grid_name i j in
+      let b = Printf.sprintf "%s%d-%d" grid_name (i+1) j in
+
+      (*  Each pair is added in both directions so connections are bidirectional. *)
+      (* A -> B *)
+      acc := OnlyStates {
+        sname = "conn";
+        arguments = [
+          OnlyArguments {a = a};
+          OnlyArguments {a = b};
+        ];
+      } :: !acc;
+
+      (* B -> A *)
+      acc := OnlyStates {
+        sname = "conn";
+        arguments = [
+          OnlyArguments {a = b};
+          OnlyArguments {a = a};
+        ];
+      } :: !acc;
+
     done
   done;
   List.rev !acc

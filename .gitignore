@@ -398,6 +398,14 @@ FodyWeavers.xsd
 
 # VS Code files for those working on multiple tools
 .vscode/*
+
+# Ignore translator and planner generated files
+transformed_domain.pddl
+transformed_problem.pddl
+detailed_solution_plan.txt
+solution_plan.txt
+sas_plan 
+
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
