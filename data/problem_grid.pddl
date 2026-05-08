@@ -18,8 +18,8 @@
             ] (shape triangle))
 
       :keylocations fileno ([
-            [St 0 0 0 0 0]
-            [St 0 0 0 0 0]
+            [St]*1 + [0]*5
+            [St]*1 + [0]*5
             ])
    )
 
