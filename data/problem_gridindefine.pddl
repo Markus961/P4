@@ -33,7 +33,7 @@
    (:init (arm-empty)
          
         ;;virker ikke uden denne og goal
-        (at-robot node5-5))
+        (at-robot fileno5-5))
           
-   (:goal (at key8 node3-2))
+   (:goal (at key7 fileno3-2))
 )
