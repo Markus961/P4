@@ -2,7 +2,7 @@
  (name main)
  (public_name grid_extension)
  (modules main)
- (libraries unix grid_extension))
+ (libraries grid_extension))
 
 
 ;(executable
