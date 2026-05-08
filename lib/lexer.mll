@@ -40,6 +40,7 @@ rule token = parse
   | ":keys" {KEYS}
   | ":shapes" {SHAPES}
   | ":lockedlocations" {LOCKEDNODESMATRIX}
+  | ":lockednodesarray" {LOCKEDNODES}
   | ":keylocations" {KEYLOCATIONMATRIX}
   (*Logic*)
   | "not" {NOT} 

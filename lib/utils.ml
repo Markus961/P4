@@ -87,3 +87,23 @@ let string_of_state = function
   | OpenNodes _ -> ""
   | KeylocationMatrix _ -> ""
   | GridConnection _ -> ""
+
+(* Expands a list of MultRows (one MultRowOption) into entries*)
+let expand_multrows multrows =
+  List.concat (
+    List.map (fun (MultRow (entries, multiplicator)) ->
+      List.concat (List.init multiplicator (fun _ -> entries)) (* _ because we don't care about the index *)
+    ) multrows
+  )
+
+
+(* Expands a row into its entries *)
+let expand_row row = 
+  match row with
+  | NormalRow entries -> entries
+  | MultRowOption multrows ->
+    expand_multrows multrows 
+
+(* List.map uses a function on all elements of a list *)
+let expand_rows rows =
+  List.map expand_row rows

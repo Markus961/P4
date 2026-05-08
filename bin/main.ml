@@ -166,6 +166,7 @@ let () =
      This is a simple end-to-end flow used for automated tests. *)
   process_file "./data/domain.pddl";
   process_file "./data/problem_gridindefine.pddl";
+  process_file "./data/arrayconstructs.pddl";
 
     (* Ensure planner(fast downward) is available *)
   check_planner_installed ();

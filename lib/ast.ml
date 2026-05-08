@@ -43,9 +43,12 @@ type rc =
 
 type entry = string
 
+type multrow = 
+| MultRow of entry list * int
+
 type row = 
 | NormalRow of entry list
-| MultRow of entry list * int
+| MultRowOption of multrow list
 
 
 type argument = 
@@ -56,7 +59,7 @@ type argument =
 type state = 
 | OnlyStates of { sname : string; arguments : argument list}
 | LockedNodesMatrix of { rows : row list; matrix_name : string; shape : state}
-| LockedNodes of node list * state 
+| LockedNodes of string * node list * state 
 | OpenNodes of rc * state
 | KeylocationMatrix of { matrix_name : string; rows : row list}
 | GridConnection of string list
@@ -150,7 +153,7 @@ type problem_def = {
   problem : problem;
   problemdomain : problemdomain;
   objects : objects_decl;
-  grid : grid;
+  grid : grid option;
   init : state list;
   goal : expr;}
 
