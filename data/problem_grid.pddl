@@ -11,18 +11,6 @@
       :keys key0 key1
       :shapes ((St = star))
       
-      :lockedlocations fileno ([
-            [0]*2
-            [0]*2
-            [0]*2
-            
-            ] (shape triangle))
-
-      :keylocations fileno ([
-            [St 0]
-            [St 0]
-            [0 0]
-            ])
    )
 
    (:init (arm-empty)
