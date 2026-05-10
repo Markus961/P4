@@ -107,3 +107,8 @@ let expand_row row =
 (* List.map uses a function on all elements of a list *)
 let expand_rows rows =
   List.map expand_row rows
+
+let write_file filename content =
+  let oc = open_out filename in
+  output_string oc content; (* Write the entire string content into the file *)
+  close_out oc
