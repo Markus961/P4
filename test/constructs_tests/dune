@@ -1,9 +1,9 @@
 (test
- (name test_normal_rows)
+ (name test_row_conversion)
  (libraries grid_extension)
- (deps normal_rows.pddl expected.pddl))
+ (deps normal_rows.pddl expected_normal.pddl expected_mult.pddl))
 
  (test
  (name compiler_for_testing)
  (libraries grid_extension)
- (deps normal_rows.pddl expected.pddl))
+ (deps normal_rows.pddl expected_normal.pddl expected_mult.pddl))

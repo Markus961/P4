@@ -4,7 +4,7 @@
    (:objects test_object)
 
    (:grid 
-      :rows 1
+      :rows 2
       :columns 6
       :name test
       :connections 
@@ -12,7 +12,8 @@
       :shapes ()
       
       :lockedlocations test ([
-            [0 0 0 1 1 1]
+            [0]*3 + [1]*3
+            [0]*3 + [1]*3
             ] (shape triangle))
 
    )

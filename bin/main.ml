@@ -1,5 +1,5 @@
 
-let () = Compiler.run "./test/constructs_tests/normal_rows.pddl"
+let () = Compiler.run "./test/constructs_tests/mult_rows.pddl"
 
   (* before code used to print to terminal *)
   (* 
