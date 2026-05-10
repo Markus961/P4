@@ -8,4 +8,5 @@
 
 (library
  (name grid_extension)
- (wrapped false))
+ (wrapped false)
+ (libraries unix))

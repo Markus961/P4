@@ -7,10 +7,19 @@ let test_generate_horizontal () =
       {sname = "conn"; arguments = [
         OnlyArguments {a = "node0-0"}; 
         OnlyArguments {a = "node0-1"}]};
+    OnlyStates 
+      {sname = "conn"; arguments = [
+        OnlyArguments {a = "node0-1"}; 
+        OnlyArguments {a = "node0-0"}]};
     OnlyStates
       {sname = "conn"; arguments = [
         OnlyArguments {a = "node1-0"}; 
-        OnlyArguments {a = "node1-1"}]}; 
+        OnlyArguments {a = "node1-1"}]};
+    OnlyStates
+      {sname = "conn"; arguments = [
+        OnlyArguments {a = "node1-1"}; 
+        OnlyArguments {a = "node1-0"}]};
+    
   ]
   in
 
