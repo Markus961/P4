@@ -26,6 +26,15 @@ let validate_unique_shapes shapes =
       Hashtbl.add seen s.char_id ())
     shapes
 
+let validate_unique_keys keys =
+  let seen = Hashtbl.create 16 in
+  List.iter 
+    (fun key ->
+      if Hashtbl.mem seen key then
+        failwith ("Duplicate key-name identifier in :keys: " ^ key);
+        Hashtbl.add seen key ()
+  ) keys
+
   (*  matrix validator 'template' for both locked and keylocation matrices. *)
 let validate_matrix_basic expected_rows expected_cols expected_name rows matrix_name =
   if matrix_name <> expected_name then
@@ -128,6 +137,7 @@ let validate_grid grid =
   match grid.rows, grid.cols, grid.name with
  | Some expected_rows, Some expected_cols, Some expected_name ->
       validate_unique_shapes grid.shapes;
+      validate_unique_keys grid.key_names;
       (match grid.locked with
  | None -> ()
 
