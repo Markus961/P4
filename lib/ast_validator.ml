@@ -26,6 +26,12 @@ let validate_unique_shapes shapes =
       Hashtbl.add seen s.char_id ())
     shapes
 
+let validate_connections flags =
+  List.iter (fun flag ->
+    if flag <> "-H" && flag <> "-V" then
+      failwith "Invalid connection flag"
+  ) flags
+
 let validate_unique_keys keys =
   let seen = Hashtbl.create 16 in
   List.iter 
@@ -137,6 +143,7 @@ let validate_grid grid =
   match grid.rows, grid.cols, grid.name with
  | Some expected_rows, Some expected_cols, Some expected_name ->
       validate_unique_shapes grid.shapes;
+      validate_connections grid.connections;
       validate_unique_keys grid.key_names;
       (match grid.locked with
  | None -> ()
