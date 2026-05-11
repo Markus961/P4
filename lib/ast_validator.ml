@@ -16,10 +16,6 @@ let cols_count row =
   let expanded_row = Utils.expand_row row in
   List.fold_left (fun acc _ -> acc + 1) 0 expanded_row
 
-let has_name name =
-  if name = "" then
-    failwith "Grid must have a name"
-
 let positive_rows_cols rows cols =
   if rows <= 0 || cols <= 0 then
     failwith "Rows and columns must be positive"
@@ -147,7 +143,6 @@ let validate_grid grid =
       validate_unique_shapes grid.shapes;
       validate_unique_keys grid.key_names;
       positive_rows_cols expected_rows expected_cols;
-      has_name expected_name;
       (match grid.locked with
  | None -> ()
 
