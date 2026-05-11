@@ -22,6 +22,25 @@
             ])
    )
 
+   (:grid 
+      :rows 1
+      :columns 6
+      :name grid2
+      :connections -H -V
+      :keys key0
+      :shapes ((St = star))
+      
+      :lockedlocations fileno ([
+            [0]*3 + [1]*3 ;; problem at + tolkes som ny row tjek parser
+            [0]*3 + [1]*3
+            
+            ] (shape triangle))
+
+      :keylocations fileno ([
+            [St 0 0 0 0 0]
+            ])
+   )
+
    (:init (arm-empty)
          
         ;;virker ikke uden denne og goal

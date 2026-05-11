@@ -153,7 +153,7 @@ type problem_def = {
   problem : problem;
   problemdomain : problemdomain;
   objects : objects_decl;
-  grid : grid;
+  gl : grid list;
   init : state list;
   goal : expr;}
 

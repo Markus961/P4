@@ -39,8 +39,8 @@ define:
 (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
      { DomainDef { domain = d; requirements = r; predicates = p; actions = declarations } }
-| LPAREN DEFINE p = problem pd = problemdomain o = objects grid = grid i = init g = goal RPAREN 
-    { ProblemDef { problem = p; problemdomain = pd; objects = o; grid = grid; init = i; goal = g}  }
+| LPAREN DEFINE p = problem pd = problemdomain o = objects gl = gridlist i = init g = goal RPAREN 
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; gridlist = gl; init = i; goal = g}  }
 ;
 
 declaration_list:  
@@ -148,6 +148,10 @@ objects:
 (*| LPAREN OBJECTS LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN ob = ob_list RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
 | LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }*)
 ;
+
+gridlist:
+| { [] }
+| g = grid rest = gridlist { g :: rest }
 
 grid:
 | LPAREN GRID gas = gridargs RPAREN { build_grid gas }
