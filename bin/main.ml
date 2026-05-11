@@ -1,16 +1,16 @@
+<<<<<<< comments
 
 let () = Compiler.run "./test/constructs_tests/mult_rows.pddl"
+=======
 
-  (* before code used to print to terminal *)
-  (* 
-  match transformed_ast.defs with
-    | DomainDef _ ->
-      print_endline "DOMAIN"; (* Remove from final program *)
-      Pddl_printer.print_program transformed_ast
-    | ProblemDef _ ->
-      print_endline "PROBLEM";
-      Pddl_printer.print_program transformed_ast
-  *)
+let () =
+  Compiler.process_file "./data/domain.pddl";
+  Compiler.process_file "./data/problem_grid.pddl";
+
+  Planner.check_planner_installed ();
+  Planner.run_planner ()
+>>>>>>> main
+
 
 
 
