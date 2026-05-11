@@ -108,7 +108,25 @@ let expand_row row =
 let expand_rows rows =
   List.map expand_row rows
 
+(* helper function - Writes a string to a file *)
 let write_file filename content =
+  (* Open a file for writing and get an output channel *)
   let oc = open_out filename in
-  output_string oc content; (* Write the entire string content into the file *)
+
+  (* Write the entire string content into the file *)
+  output_string oc content;
+
+  (* Close the file to ensure all data is flushed and saved *)
   close_out oc
+
+let read_file filename =
+  let ic = open_in filename in
+  let buf = Buffer.create 1024 in
+  (try
+     while true do
+       Buffer.add_string buf (input_line ic);
+       Buffer.add_char buf '\n'
+     done
+   with End_of_file ->
+     close_in ic);
+  Buffer.contents buf
