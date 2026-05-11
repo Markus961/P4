@@ -11,12 +11,16 @@ let row_count rows =
   0
   rows
 
-    (* Count how many collums a matrix has*)
+(* Count how many collums a matrix has*)
 let cols_count row =
   let expanded_row = Utils.expand_row row in
   List.fold_left (fun acc _ -> acc + 1) 0 expanded_row
 
-  (* Validate if a shape key has already been assigned to another shape*)
+let positive_rows_cols rows cols =
+  if rows <= 0 || cols <= 0 then
+    failwith "Rows and columns must be positive"
+
+(* Validate if a shape key has already been assigned to another shape*)
 let validate_unique_shapes shapes =
   let seen = Hashtbl.create 16 in
   List.iter
@@ -145,6 +149,7 @@ let validate_grid grid =
       validate_unique_shapes grid.shapes;
       validate_connections grid.connections;
       validate_unique_keys grid.key_names;
+      positive_rows_cols expected_rows expected_cols;
       (match grid.locked with
  | None -> ()
 
