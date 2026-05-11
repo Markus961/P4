@@ -1,8 +1,0 @@
-(pickup fileno5-5 key7)
-(move fileno5-5 fileno4-5)
-(move fileno4-5 fileno3-5)
-(move fileno3-5 fileno3-4)
-(move fileno3-4 fileno3-3)
-(move fileno3-3 fileno3-2)
-(putdown fileno3-2 key7)
-; cost = 7 (unit cost)

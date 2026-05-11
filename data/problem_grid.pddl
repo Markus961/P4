@@ -15,7 +15,6 @@
 
    (:init (arm-empty)
          
-        ;;virker ikke uden denne og goal
         (at-robot fileno1-0))
           
    (:goal (at key1 fileno1-1))
