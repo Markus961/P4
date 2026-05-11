@@ -5,3 +5,7 @@
 (test
  (name test_generate_horizontal)
  (libraries grid_extension))
+
+(test
+ (name test_grid)
+ (libraries grid_extension))
