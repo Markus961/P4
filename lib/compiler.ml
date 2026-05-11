@@ -1,4 +1,3 @@
-
 (* Read one input file, transform it, and write the matching output file. *)
 let process_file input_path =
   print_endline "START"; (* Debug: did the function start *)
@@ -9,6 +8,7 @@ let process_file input_path =
 
   (* Only problem files need extra validation before transformation. *)
   (match ast.defs with
+
   | DomainDef _ -> ()
   | ProblemDef problem_def ->
       Ast_validator.validate_problem_def problem_def); (*Call the Ast_validator to check the input*)
