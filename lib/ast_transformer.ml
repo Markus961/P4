@@ -333,9 +333,19 @@ let transform_program p =
   | ProblemDef problem_def ->
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
-      let grid = problem_def.grid in
-      let new_objects = transform_objects problem_def.objects problem_def.grid in
-      let new_init = transform_init problem_def.grid problem_def.init in
+      let grids = problem_def.gl in
+      let new_objects =
+        List.fold_left
+          (fun objs grid -> transform_objects objs grid)
+          problem_def.objects
+          grids
+      in
+      let new_init =
+        List.fold_left
+          (fun init grid -> transform_init grid init)
+          problem_def.init
+          grids
+      in
       let goal = problem_def.goal in
 
   {
@@ -344,7 +354,7 @@ let transform_program p =
         problem;
         problemdomain;
         objects = new_objects;
-        grid;
+        gl = grids;
         init = new_init;
         goal;
       }
