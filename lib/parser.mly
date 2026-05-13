@@ -40,7 +40,7 @@ define:
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
      { DomainDef { domain = d; requirements = r; predicates = p; actions = declarations } }
 | LPAREN DEFINE p = problem pd = problemdomain o = objects gl = gridlist i = init g = goal RPAREN 
-    { ProblemDef { problem = p; problemdomain = pd; objects = o; gridlist = gl; init = i; goal = g}  }
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = gl; init = i; goal = g}  }
 ;
 
 declaration_list:  
