@@ -24,7 +24,7 @@
       :lockedlocations grid2 ([
             [0]*3 + [1]*3 ; problem at + tolkes som ny row tjek parser
             
-            ] (shape star))
+            ] (shape triangle))
 
       :keylocations grid2 ([
             [St 0 0 0 0 0]
