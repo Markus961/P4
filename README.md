@@ -20,7 +20,7 @@ Note: There can be zero or more grids
 
 *(:grid \*Grid Syntax\*)*
 
-(:init \*Initial State\*)
+(:init \*Inital State\*)
 
 ## Grid Parameters
 
