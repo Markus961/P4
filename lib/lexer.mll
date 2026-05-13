@@ -33,6 +33,7 @@ rule token = parse
   | "keylocation_matrix" {KEYLOCATIONMATRIX} (**)*)
   (*Grid Part Problem File*)
   | ":grid" {GRID}
+  | "( :grid" {LPAREN_GRID}
   | ":rows" {ROWS}
   | ":columns" {COLUMNS}
   | ":name" {GRIDNAME}
