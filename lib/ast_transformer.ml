@@ -154,6 +154,31 @@ let transform_grid_to_objects grid =
   | _ ->
     invalid_arg "grid lacks rows/cols/name"
 
+let transform_grid_to_places grid =
+  match grid.rows, grid.cols, grid.name with
+    | Some r, Some c, Some n ->
+        List.map
+          (fun node_name ->
+            OnlyStates {
+              sname = "place";
+              arguments = [OnlyArguments { a = node_name }];
+            })
+          (Utils.grid_to_strings r c n)
+    | _ -> []
+
+let extract_shape_names grid =
+  List.map (fun s -> s.shape_name) grid.shapes
+
+let extract_normal_objects objects =
+  match objects with
+    | NormalObjects obj -> obj
+    | _ -> failwith "Objects are not in correct format"
+
+let extract_grid_objects grid =
+  match transform_grid_to_objects grid with
+    | NormalObjects nodes -> nodes
+    | _ -> failwith "Objects are not in correct format"
+
 let matrix_to_nodes rows matrix_name shape =
   let expanded_rows = Utils.expand_rows rows in
   List.concat (
@@ -268,6 +293,9 @@ let generate_locked_and_open_states grid_name grid locked_nodes shape =
   | _ -> failwith "Grid missing rows/cols"
 
 
+
+
+  
 let transform_keyloc (grid : Ast.grid) =
   let remaining_keys = ref grid.key_names in
   
@@ -357,91 +385,35 @@ let locked_nodes_from_grid grid =
        | None ->
            failwith "Grid has no name defined")
   
-  
   | _ -> failwith "unexpected locked node format"
 
 let transform_objects objects grid_opt =
   match grid_opt with
-    | Some grid -> (*if there are a grid*)
-        let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
-        
-        let normal_objects = 
-          match objects with
-          | NormalObjects obj -> obj
-          | _ -> failwith "Objects are not in correct format"
-        in
-        
-        let grid_objects =
-          match transform_grid_to_objects grid with
-          | NormalObjects nodes -> nodes
-          | _ -> failwith "Objects are not in correct format"
-        in
+    | Some grid ->
+        let shape_names = extract_shape_names grid in
+        let normal_objects = extract_normal_objects objects in
+        let grid_objects = extract_grid_objects grid in
 
         NormalObjects (normal_objects @ grid_objects @ grid.key_names @ shape_names)
-    | None ->  (*if there are no grid*)
+
+    | None ->
         objects
   
+let only_states =
+  List.filter (function OnlyStates _ -> true | _ -> false)
 
-(* transform_init transforms the :init section of the PDDL problem.
-It processes each state, validates special structues like LockedNodesMatrix
-using grid_data, and converts them into standard PDDL predicates. *)
-let rec transform_init_states grid_data states =
-  match states with
-  | [] -> []
-  | (OnlyStates _ as s) :: tl -> 
-      s :: transform_init_states grid_data tl
-  | (LockedNodesMatrix _) :: tl ->
-    transform_init_states grid_data tl
-  (* | LockedNodes (nodes, st) as hd :: tl ->
-      hd :: transform_init tl
-  | OpenNodes (rc, st) as hd :: tl ->
-      hd :: transform_init tl
-  | Keys keys as hd :: tl ->
-      hd :: transform_init tl
-  | KeylocationMatrix { rows } as hd :: tl ->
-      hd :: transform_init tl
-  | GridConnection flags as hd :: tl ->
-      hd :: transform_init tl *)
-  | _ ->
-      failwith ("Hi failure")
-
-(* Converts a grid into OnlyStates for the init-section *)
 let transform_init grid_opt states =
   match grid_opt with
-    | Some grid ->
-      (* grid_data packs grid information (rows, cols, name) into an option type for later validation.
-      Option type means the value may either be Some value or None if something is missing *)
-      let grid_data =
-        match grid.rows, grid.cols, grid.name with
-        | Some r, Some c, Some n -> Some (r, c, n)
-        | _ -> None
-      in
-
-  (*Adds place to each node in the grid*)
-  let place_states =
-    match grid.rows, grid.cols, grid.name with
-    | Some r, Some c, Some n ->
-        List.map
-          (fun node_name ->
-            OnlyStates {
-              sname = "place";
-              arguments = [OnlyArguments { a = node_name }];
-            })
-          (Utils.grid_to_strings r c n)
-    | _ -> []
-  in
-
-
+  | Some grid ->
+      let place_states = transform_grid_to_places grid in
       let connections = transform_grid_to_connections grid in
       let key_matrix_states = transform_keyloc grid in
       let locked_from_grid = locked_nodes_from_grid grid in
 
-     place_states @ connections @ key_matrix_states @ locked_from_grid @ transform_init_states grid_data states
-    | None ->
-        List.filter (function
-        | OnlyStates _ -> true (*only keep states which are onlystates*)
-        | _ -> false (*things we dont want could be: LockedNodesMatrix, KeylocationMatrix, OpenNodes. There should be in grid section and not directly in init*)
-      ) states
+      place_states @ connections @ key_matrix_states @ locked_from_grid @ only_states states
+
+  | None ->
+      only_states states
 
 let transform_program p =
   match p.defs with

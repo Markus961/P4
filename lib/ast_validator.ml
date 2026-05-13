@@ -84,8 +84,6 @@ let validate_locked_matrix expected_rows expected_cols expected_name rows matrix
       if entry <> "0" && entry <> "1" then
         invalid_arg (Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry) 
   ) entries
-
-
     
 (*Validate key matrix using the function 2 times above. check keys *)
 let validate_keylocation_matrix expected_rows expected_cols expected_name key_names shapes rows matrix_name =
