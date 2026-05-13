@@ -1,7 +1,6 @@
 # P4
 Software P4 Project
-<<<<<<< HEAD
-OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and less repetitive.
+OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and repetetive.
 WE DID NOT MAKE PDDL, RATHER THE :grid SYNTAX EXTENSION.
 
 **UNFINISHED README**
@@ -21,7 +20,7 @@ Note: There can be zero or more grids
 
 *(:grid \*Grid Syntax\*)*
 
-(:init \*Initial State\*)
+(:init \*Inital State\*)
 
 ## Grid Parameters
 
@@ -53,10 +52,10 @@ A grid is placed and used with the parameters below:
 
 
 ### :rows
-The Rows parameter must be a *positive integer*
+The Rows parameter can be *any non-negative number*
 
 ### :columns
-The Columns parameter must be a *positive integer*
+The Columns parameter can be *any non-negative number*
 
 ### :name
 The Name parameter can be *any name, including numbers, except with a number as the first character*
@@ -66,6 +65,8 @@ The Connections parameter has "flags" which generate certain connections upon co
 
 -V adds vertical lines (node0-0 to node0-1 and node0-1 to node0-2)
 -H adds horizontal lines (node0-0 to node1-0 and node1-0 to node2-0)
+-D adds diagonal lines (node0-0 to node1-1 and node1-1 to node2-2)
+-W makes all lines wrap around, so from the last node to the first. If combined with -H and a 2x2 grid (node2-0 to node0-0)
 
 ### :keys
 **Not Done**
@@ -127,5 +128,3 @@ Example Grid Definitions could Look as Follows:
             [0 0 0 0 T 0]
             ])
    )
-=======
->>>>>>> parent of bb5d74a (Update README.md)
