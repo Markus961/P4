@@ -65,8 +65,6 @@ The Connections parameter has "flags" which generate certain connections upon co
 
 -V adds vertical lines (node0-0 to node0-1 and node0-1 to node0-2)
 -H adds horizontal lines (node0-0 to node1-0 and node1-0 to node2-0)
--D adds diagonal lines (node0-0 to node1-1 and node1-1 to node2-2)
--W makes all lines wrap around, so from the last node to the first. If combined with -H and a 2x2 grid (node2-0 to node0-0)
 
 ### :keys
 **Not Done**
