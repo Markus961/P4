@@ -52,10 +52,10 @@ A grid is placed and used with the parameters below:
 
 
 ### :rows
-The Rows parameter must be a *positive integer*
+The Rows parameter can be *any non-negative number*
 
 ### :columns
-The Columns parameter must be a *positive integer*
+The Columns parameter can be *any non-negative number*
 
 ### :name
 The Name parameter can be *any name, including numbers, except with a number as the first character*
