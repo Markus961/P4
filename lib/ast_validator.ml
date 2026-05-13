@@ -1,4 +1,4 @@
-(* open Ast
+open Ast
 
 (* Count how many rows a matrix has*)
 let row_count rows =
@@ -6,18 +6,21 @@ let row_count rows =
     fun acc row ->
       match row with
       | NormalRow _ -> acc + 1
-      | MultRow _ -> acc +1
+      | MultRowOption _ -> acc +1
   )
   0
   rows
 
-    (* Count how many collums a matrix has*)
-let cols_count = function
-  | NormalRow entries -> List.length entries
-  | MultRow (_, num_of_entries) -> 
-    print_endline "HUSK fix så man kan have liste af multrow"; num_of_entries
+(* Count how many collums a matrix has*)
+let cols_count row =
+  let expanded_row = Utils.expand_row row in
+  List.fold_left (fun acc _ -> acc + 1) 0 expanded_row
 
-  (* Validate if a shape key has already been assigned to another shape*)
+let positive_rows_cols rows cols =
+  if rows <= 0 || cols <= 0 then
+    failwith "Rows and columns must be positive"
+
+(* Validate if a shape key has already been assigned to another shape*)
 let validate_unique_shapes shapes =
   let seen = Hashtbl.create 16 in
   List.iter
@@ -26,6 +29,21 @@ let validate_unique_shapes shapes =
         failwith ("Duplicate shape identifier in :shapes: " ^ s.char_id);
       Hashtbl.add seen s.char_id ())
     shapes
+
+let validate_connections flags =
+  List.iter (fun flag ->
+    if flag <> "-H" && flag <> "-V" then
+      failwith "Invalid connection flag"
+  ) flags
+
+let validate_unique_keys keys =
+  let seen = Hashtbl.create 16 in
+  List.iter 
+    (fun key ->
+      if Hashtbl.mem seen key then
+        failwith ("Duplicate key-name identifier in :keys: " ^ key);
+        Hashtbl.add seen key ()
+  ) keys
 
   (*  matrix validator 'template' for both locked and keylocation matrices. *)
 let validate_matrix_basic expected_rows expected_cols expected_name rows matrix_name =
@@ -52,33 +70,24 @@ let validate_matrix_basic expected_rows expected_cols expected_name rows matrix_
              actual_cols
              expected_cols))
     rows
-        (*Validate locked matrix using the function above. check entries. only 0 and 1's allowed *)
+
+(*Validate locked matrix using the function above. check entries. only 0 and 1's allowed *)
 let validate_locked_matrix expected_rows expected_cols expected_name rows matrix_name =
   validate_matrix_basic expected_rows expected_cols expected_name rows matrix_name;
-  List.iter
-    (fun row ->
-      match row with
-      | NormalRow entries ->
-          List.iter
-            (fun entry ->
-              if entry <> "0" && entry <> "1" then
-                invalid_arg
-                  (Printf.sprintf
-                     "locked_nodes_matrix may only contain 0 or 1, but found '%s'"
-                     entry)
-            )
-            entries
-      | MultRow (entries, _) -> 
-          List.iter
-              (fun entry ->
-                if entry <> "0" && entry <> "1" then
-                  invalid_arg (
-                    Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry
-                    )
-              ) entries
-    ) rows
+  
+  (* Expand rows into entries to avoid matching NormalRow and MultRowOption *)
+  let entries = List.concat(Utils.expand_rows rows) in
+
+  (* Iterate over entries *)
+  List.iter (
+    fun entry ->
+      if entry <> "0" && entry <> "1" then
+        invalid_arg (Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry) 
+  ) entries
+
+
     
-        (*Validate key matrix using the function 2 times above. check keys *)
+(*Validate key matrix using the function 2 times above. check keys *)
 let validate_keylocation_matrix expected_rows expected_cols expected_name key_names shapes rows matrix_name =
   validate_matrix_basic expected_rows expected_cols expected_name rows matrix_name;
   let remaining_keys = ref key_names in
@@ -94,37 +103,87 @@ let validate_keylocation_matrix expected_rows expected_cols expected_name key_na
     | Some s -> s.shape_name
     | None -> failwith ("Unknown symbol in the matrix: "  ^ char_id)
   in
-  List.iter
-    (fun row ->
-      match row with
-      | NormalRow entries ->
-          List.iter
-            (fun entry ->
-              if entry <> "0" then (
-                ignore (get_next_key ());
-                ignore (find_shape entry)))
-            entries
-      | MultRow _ -> failwith "MultRow is not supported by :keylocations yet")
-    rows;
+
+  (* Expand rows into entries to avoid matching NormalRow and MultRowOption *)
+  let entries = List.concat(Utils.expand_rows rows) in
+  (* Iterate over entries *)
+  List.iter (
+    fun entry ->
+      if entry <> "0" then (
+        ignore (get_next_key ());
+        ignore (find_shape entry))
+  ) entries;
+
   if !remaining_keys <> [] then
     failwith "Amount of keys doesn't match with amount of keylocations in matrix"
     
-    (*Tnis Function collects all the above grid definition functions into one big check*)
+let validate_locked_array expected_rows expected_cols nodes =
+  List.iter
+    (fun (Node (r, c)) ->
+      if r < 0 || c < 0 then
+        invalid_arg "Invalid node coordinates";
+      if r >= expected_rows || c >= expected_cols then
+        invalid_arg "Node outside grid bounds")
+    nodes
+   
+let shape_exists shapes shape =
+  List.exists (fun s -> s.shape_name = shape) shapes
+
+(* It extracts the shape name from a state of the form:
+(shape X)
+- If the input matches OnlyStates with sname="shape" and exactly one argument, it returns that argument (the shape name).
+- If it is an OnlyStates but not "shape", it fails with an error.
+- And if it is none of the above it fails because the format is invalid.
+*)  
+let extract_shape_name = function
+  | OnlyStates { sname = "shape"; arguments = [OnlyArguments { a }] } -> a
+  | OnlyStates { sname; _ } ->
+      failwith ("Expected (shape X) but got (" ^ sname ^ " ...)")
+  | _ ->
+      failwith "Invalid shape structure"
+
+(* This Function collects all the above grid definition functions into one big check*)
 let validate_grid grid =
   match grid.rows, grid.cols, grid.name with
-  | Some expected_rows, Some expected_cols, Some expected_name ->
+ | Some expected_rows, Some expected_cols, Some expected_name ->
       validate_unique_shapes grid.shapes;
+      validate_connections grid.connections;
+      validate_unique_keys grid.key_names;
+      positive_rows_cols expected_rows expected_cols;
       (match grid.locked with
-       | None -> ()
-     | Some (LockedNodesMatrix { rows = locked_rows; matrix_name; _ }) ->
-       validate_locked_matrix expected_rows expected_cols expected_name locked_rows matrix_name
-       | _ -> failwith "Expected LockedNodesMatrix in grid.locked");
+ | None -> ()
+
+ | Some (LockedNodesMatrix { rows = locked_rows; matrix_name; _ }) ->
+     validate_locked_matrix
+       expected_rows
+       expected_cols
+       expected_name
+       locked_rows
+       matrix_name
+
+ | Some (LockedNodes (grid_name, nodes, shape)) ->
+     if grid_name <> expected_name then
+      invalid_arg "LockedNodes belongs to wrong grid";
+
+     let shape_name = extract_shape_name shape in
+
+     if not (shape_exists grid.shapes shape_name) then
+      invalid_arg ("Unknown shape used in lockednodesarray: " ^ shape_name);
+
+     validate_locked_array
+       expected_rows
+       expected_cols
+       nodes
+
+ | _ ->
+     failwith "Unknown locked nodes format");
+
       (match grid.keyloc with
        | None -> ()
      | Some (KeylocationMatrix { matrix_name; rows = key_rows }) ->
        validate_keylocation_matrix expected_rows expected_cols expected_name grid.key_names grid.shapes key_rows matrix_name
        | _ -> failwith "Expected KeylocationMatrix in grid.keyloc")
-  | _ -> invalid_arg "grid lacks rows/cols/name"
+ | _ -> invalid_arg "grid lacks rows/cols/name"
         (* Checks that all matrixes defined in :grid sections are transformed properly in the :init section. *)
 let rec validate_init_states grid_data states =
   match states with
@@ -146,10 +205,18 @@ let rec validate_init_states grid_data states =
 
   (*function that is sent to main. validates the entire problem *)
 let validate_problem_def problem_def =
-  validate_grid problem_def.grid;
+  (match problem_def.grid with
+   | Some grid -> validate_grid grid
+   | None -> ());
+   
   let grid_data =
-    match problem_def.grid.rows, problem_def.grid.cols, problem_def.grid.name with
-    | Some rows, Some cols, Some name -> Some (rows, cols, name, problem_def.grid.key_names, problem_def.grid.shapes)
-    | _ -> None
+    match problem_def.grid with
+    | Some grid ->
+        (match grid.rows, grid.cols, grid.name with
+         | Some rows, Some cols, Some name ->
+             Some (rows, cols, name, grid.key_names, grid.shapes)
+         | _ -> None)
+    | None -> None
   in
-  validate_init_states grid_data problem_def.init *)
+
+  validate_init_states grid_data problem_def.init

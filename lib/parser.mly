@@ -6,7 +6,7 @@
 
 %token DEFINE DOMAIN REQUIREMENTS STRIPS
 %token PREDICATES ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX LOCKEDNODES
 (*%token LOCKEDNODES OPENNODES DASH -- Unused atm*)
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS SHAPES
 
@@ -42,6 +42,7 @@ define:
 | LPAREN DEFINE p = problem pd = problemdomain o = objects gl = gridlist i = init g = goal RPAREN 
     { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = gl; init = i; goal = g}  }
 ;
+
 
 declaration_list:  
   | { [] }   
@@ -172,6 +173,7 @@ gridarg:
 | KEYS ns = simple_name_list {GP_key_names ns }
 | SHAPES LPAREN sl = shape_mapping_list RPAREN { GP_shapes sl }
 | LOCKEDNODESMATRIX ln = NAME LPAREN LBRACKET r = grid_rows RBRACKET s = state RPAREN { GP_lnm (LockedNodesMatrix { matrix_name = ln; rows = r; shape = s }) }
+| LOCKEDNODES ln = NAME LPAREN LBRACKET nl = node_list RBRACKET s = state RPAREN { GP_lnm (LockedNodes (ln, nl, s)) }
 | KEYLOCATIONMATRIX km = NAME LPAREN LBRACKET r = grid_rows RBRACKET RPAREN { GP_klm (KeylocationMatrix { matrix_name = km; rows = r }) }
 ;
 
@@ -204,14 +206,9 @@ state_list:
 | s = state rest = state_list { s :: rest }
 ;
 
+(*it will only be possible to have onlystates in init, and not anything related to grid, as lockednodes or something like that*)
 state:
 | LPAREN name = NAME args = arg_list RPAREN { OnlyStates { sname = name; arguments = args } } 
-(*| l = locked_nodes_matrix { l }
-| ln = locked_nodes { ln }
-| o = open_nodes { o }
-| k = keys { k }
-| km = keylocation_matrix { km }
-| gc = gridconnection { gc }*)
 ;
 
 arg_list:
@@ -276,13 +273,12 @@ flag:
 grid_rows:
 | { [] }
 | r = row rest = grid_rows { r :: rest }
-| m = repeat_notation_option rest = grid_rows {print_endline "Hit repeat_notation_option"; m :: rest }
+| m = repeat_notation_option rest = grid_rows { m :: rest }
 ;
 
 repeat_notation_option:
-| p = row_part { MultRowOption [p] }
-| p = row_part PLUS m = repeat_notation_option { 
-  print_endline "Hit MultRowOption"; 
+| p = row_part { MultRowOption [p] } 
+| p = row_part PLUS m = repeat_notation_option {  
   (match m with
   | MultRowOption lst -> MultRowOption (p :: lst)
   | _ -> assert false)
@@ -290,7 +286,7 @@ repeat_notation_option:
 ;
 
 row_part:
-| LBRACKET en = entries RBRACKET MULT n = CONST { print_endline "Hit MultRow"; MultRow (en, n) }
+| LBRACKET en = entries RBRACKET MULT n = CONST { MultRow (en, n) }
 ;
 
 row:

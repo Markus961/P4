@@ -4,22 +4,13 @@
    (:objects test_object)
 
    (:grid 
-      :rows 1
-      :columns 6
+      :rows 3
+      :columns 2
       :name fileno
-      :connections -H -V
-      :keys key0
+      :connections -H
+      :keys key0 key1
       :shapes ((St = star))
       
-      :lockedlocations fileno ([
-            [0]*3 + [1]*3 ;; problem at + tolkes som ny row tjek parser
-            [0]*3 + [1]*3
-            
-            ] (shape triangle))
-
-      :keylocations fileno ([
-            [St 0 0 0 0 0]
-            ])
    )
 
    (:grid 
@@ -43,8 +34,7 @@
 
    (:init (arm-empty)
          
-        ;;virker ikke uden denne og goal
-        (at-robot node5-5))
+        (at-robot fileno1-0))
           
-   (:goal (at key8 node3-2))
+   (:goal (at key1 fileno1-1))
 )
