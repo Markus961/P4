@@ -1,6 +1,6 @@
 # P4
 Software P4 Project
-OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and less repetitive.
+OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and repetitive.
 WE DID NOT MAKE PDDL, RATHER THE :grid SYNTAX EXTENSION.
 
 **UNFINISHED README**
@@ -52,10 +52,10 @@ A grid is placed and used with the parameters below:
 
 
 ### :rows
-The Rows parameter must be a *positive integer*
+The Rows parameter can be *any positive number*
 
 ### :columns
-The Columns parameter must be a *positive integer*
+The Columns parameter can be *any positive number*
 
 ### :name
 The Name parameter can be *any name, including numbers, except with a number as the first character*
