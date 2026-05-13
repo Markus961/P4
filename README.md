@@ -20,7 +20,7 @@ Note: There can be zero or more grids
 
 *(:grid \*Grid Syntax\*)*
 
-(:init \*Inital State\*)
+(:init \*Initial State\*)
 
 ## Grid Parameters
 
@@ -52,10 +52,10 @@ A grid is placed and used with the parameters below:
 
 
 ### :rows
-The Rows parameter can be *any non-negative number*
+The Rows parameter can be *any positive number*
 
 ### :columns
-The Columns parameter can be *any non-negative number*
+The Columns parameter can be *any positive number*
 
 ### :name
 The Name parameter can be *any name, including numbers, except with a number as the first character*
