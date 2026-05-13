@@ -39,10 +39,10 @@ define:
 (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
      { DomainDef { domain = d; requirements = r; predicates = p; actions = declarations } }
-(*this is for problem files WITH grid*)
-| LPAREN DEFINE p = problem pd = problemdomain o = objects gl = gridlist i = init g = goal RPAREN 
-    { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = gl; init = i; goal = g}  }
-(*this is for problem files WITHOUT grid*)
+(* problem WITH one or more grids *)
+| LPAREN DEFINE p = problem pd = problemdomain o = objects gl = nonempty_gridlist i = init g = goal RPAREN
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = gl; init = i; goal = g } }
+(* problem WITHOUT any grid *)
 | LPAREN DEFINE p = problem pd = problemdomain o = objects i = init g = goal RPAREN
     { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = []; init = i; goal = g } }
 ;
@@ -154,9 +154,14 @@ objects:
 | LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }*)
 ;
 
-gridlist:
+nonempty_gridlist:
+| g = grid rest = gridtail { g :: rest }
+;
+
+gridtail:
 | { [] }
-| g = grid rest = gridlist { g :: rest }
+| g = grid rest = gridtail { g :: rest }
+;
 
 grid:
 | LPAREN GRID gas = gridargs RPAREN { build_grid gas }

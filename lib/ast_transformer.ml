@@ -457,13 +457,13 @@ let transform_program p =
       let grids = problem_def.gl in
       let new_objects =
         List.fold_left
-          (fun objs grid -> transform_objects objs grid)
+          (fun objs grid -> transform_objects objs (Some grid))
           problem_def.objects
           grids
       in
       let new_init =
         List.fold_left
-          (fun init grid -> transform_init grid init)
+          (fun init grid -> transform_init (Some grid) init)
           problem_def.init
           grids
       in
