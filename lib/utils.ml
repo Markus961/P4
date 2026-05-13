@@ -130,3 +130,12 @@ let read_file filename =
    with End_of_file ->
      close_in ic);
   Buffer.contents buf
+
+let get_all_nodes rows cols =
+  List.init rows (fun r ->
+    List.init cols (fun c -> Node (r, c))
+  )
+  |> List.concat
+
+let is_locked node locked_nodes =
+  List.exists (fun n -> n = node) locked_nodes
