@@ -1,5 +1,6 @@
 # P4
 Software P4 Project
+<<<<<<< HEAD
 OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and less repetitive.
 WE DID NOT MAKE PDDL, RATHER THE :grid SYNTAX EXTENSION.
 
@@ -126,3 +127,5 @@ Example Grid Definitions could Look as Follows:
             [0 0 0 0 T 0]
             ])
    )
+=======
+>>>>>>> parent of bb5d74a (Update README.md)
