@@ -39,8 +39,12 @@ define:
 (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
      { DomainDef { domain = d; requirements = r; predicates = p; actions = declarations } }
+(*this is for problem files WITH grid*)
 | LPAREN DEFINE p = problem pd = problemdomain o = objects gl = gridlist i = init g = goal RPAREN 
     { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = gl; init = i; goal = g}  }
+(*this is for problem files WITHOUT grid*)
+| LPAREN DEFINE p = problem pd = problemdomain o = objects i = init g = goal RPAREN
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = []; init = i; goal = g } }
 ;
 
 

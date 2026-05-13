@@ -205,18 +205,16 @@ let rec validate_init_states grid_data states =
 
   (*function that is sent to main. validates the entire problem *)
 let validate_problem_def problem_def =
-  (match problem_def.grid with
-   | Some grid -> validate_grid grid
-   | None -> ());
-   
+  List.iter validate_grid problem_def.gl;
+
   let grid_data =
-    match problem_def.grid with
-    | Some grid ->
-        (match grid.rows, grid.cols, grid.name with
-         | Some rows, Some cols, Some name ->
-             Some (rows, cols, name, grid.key_names, grid.shapes)
-         | _ -> None)
-    | None -> None
+    match problem_def.gl with
+    | [] -> None
+    | grid :: _ ->
+        match grid.rows, grid.cols, grid.name with
+        | Some rows, Some cols, Some name ->
+            Some (rows, cols, name, grid.key_names, grid.shapes)
+        | _ -> None
   in
 
   validate_init_states grid_data problem_def.init
