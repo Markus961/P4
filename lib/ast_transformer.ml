@@ -165,6 +165,9 @@ let generate_locked_and_open_states grid_name grid locked_nodes shape =
   | _ -> failwith "Grid missing rows/cols"
 
 
+
+
+  
 let transform_keyloc (grid : Ast.grid) =
   let remaining_keys = ref grid.key_names in
   
