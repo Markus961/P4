@@ -38,6 +38,19 @@ let transform_grid_to_places grid =
           (Utils.grid_to_strings r c n)
     | _ -> []
 
+let extract_shape_names grid =
+  List.map (fun s -> s.shape_name) grid.shapes
+
+let extract_normal_objects objects =
+  match objects with
+    | NormalObjects obj -> obj
+    | _ -> failwith "Objects are not in correct format"
+
+let extract_grid_objects grid =
+  match transform_grid_to_objects grid with
+    | NormalObjects nodes -> nodes
+    | _ -> failwith "Objects are not in correct format"
+
 let matrix_to_nodes rows matrix_name shape =
   let expanded_rows = Utils.expand_rows rows in
   List.concat (
@@ -241,34 +254,23 @@ let locked_nodes_from_grid grid =
        | None ->
            failwith "Grid has no name defined")
   
-  
   | _ -> failwith "unexpected locked node format"
 
 let transform_objects objects grid_opt =
   match grid_opt with
-    | Some grid -> (*if there are a grid*)
-        let shape_names = List.map (fun s -> s.shape_name) grid.shapes in
-        
-        let normal_objects = 
-          match objects with
-          | NormalObjects obj -> obj
-          | _ -> failwith "Objects are not in correct format"
-        in
-        
-        let grid_objects =
-          match transform_grid_to_objects grid with
-          | NormalObjects nodes -> nodes
-          | _ -> failwith "Objects are not in correct format"
-        in
+    | Some grid ->
+        let shape_names = extract_shape_names grid in
+        let normal_objects = extract_normal_objects objects in
+        let grid_objects = extract_grid_objects grid in
 
         NormalObjects (normal_objects @ grid_objects @ grid.key_names @ shape_names)
-    | None ->  (*if there are no grid*)
+
+    | None ->
         objects
   
 let only_states =
   List.filter (function OnlyStates _ -> true | _ -> false)
 
-(* Converts a grid into OnlyStates for the init-section *)
 let transform_init grid_opt states =
   match grid_opt with
   | Some grid ->
@@ -277,8 +279,7 @@ let transform_init grid_opt states =
       let key_matrix_states = transform_keyloc grid in
       let locked_from_grid = locked_nodes_from_grid grid in
 
-      place_states
-      @ connections @ key_matrix_states @ locked_from_grid @ only_states states
+      place_states @ connections @ key_matrix_states @ locked_from_grid @ only_states states
 
   | None ->
       only_states states
