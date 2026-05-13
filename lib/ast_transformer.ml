@@ -266,10 +266,7 @@ let transform_objects objects grid_opt =
         objects
   
 let only_states =
-  List.filter (
-    function OnlyStates _ -> true 
-    | _ -> false
-  )
+  List.filter (function OnlyStates _ -> true | _ -> false)
 
 (* Converts a grid into OnlyStates for the init-section *)
 let transform_init grid_opt states =
