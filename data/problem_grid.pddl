@@ -21,13 +21,12 @@
       :keys key0
       :shapes ((St = star))
       
-      :lockedlocations fileno ([
-            [0]*3 + [1]*3 ;; problem at + tolkes som ny row tjek parser
-            [0]*3 + [1]*3
+      :lockedlocations grid2 ([
+            [0]*3 + [1]*3 ; problem at + tolkes som ny row tjek parser
             
             ] (shape triangle))
 
-      :keylocations fileno ([
+      :keylocations grid2 ([
             [St 0 0 0 0 0]
             ])
    )
