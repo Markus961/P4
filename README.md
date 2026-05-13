@@ -1,6 +1,6 @@
 # P4
 Software P4 Project
-OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and repetetive.
+OCaml Compiler, adding extra functionality to PDDL with :grid syntax to make PDDL with a lot of places less time-intensive and less repetitive.
 WE DID NOT MAKE PDDL, RATHER THE :grid SYNTAX EXTENSION.
 
 **UNFINISHED README**
