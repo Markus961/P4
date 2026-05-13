@@ -12,7 +12,7 @@ let inferred_predicates = [
   { pname = "lock-shape"; variables = ["?x"; "?s"] };
   { pname = "shape"; variables = ["?s"] };
   { pname = "place"; variables = ["?p"] };
-  { pname = "arm_empty"; variables = [] };
+  { pname = "arm-empty"; variables = [] };
   { pname = "at-robot"; variables = ["?x"] };
   { pname = "holding"; variables = ["?k"] };
   (* Add more below *)
