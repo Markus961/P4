@@ -30,9 +30,10 @@ rule token = parse
   | "locked_nodes" {LOCKEDNODES} (**)
   | "grid_connection" {GRIDCONNECTION} (**)
   | "open_nodes" {OPENNODES} (**)
-  | "keylocation_matrix" {KEYLOCATIONMATRIX} (**)*)
+  | "keylocation_matrix" {KEYLOCATIONMATRIX} (**)
   (*Grid Part Problem File*)
-  | ":grid" {GRID}
+  | ":grid" {GRID}*)
+  | "("  { lparen_or_grid lexbuf }
   | ":rows" {ROWS}
   | ":columns" {COLUMNS}
   | ":name" {GRIDNAME}
@@ -46,7 +47,7 @@ rule token = parse
   | "not" {NOT} 
   | "and" {AND}
   | "exists" {EXISTS}
-  | "(" {LPAREN}
+  (* LPAREN is defined further in lparen_or_grid below to fix new ambiguity related to GRID token ambiguity fix *)
   | ")" {RPAREN}  
   | "[" {LBRACKET}
   | "]" {RBRACKET}
@@ -64,3 +65,7 @@ rule token = parse
   | space+ { token lexbuf }
   | _ as c { raise (Lexing_error (Printf.sprintf "Unexpected character: %c" c)) } (* Golden *)
   | eof {EOF}
+
+and lparen_or_grid = parse
+  | space* ":grid" { LPAREN_GRID }
+  | ""              { LPAREN }

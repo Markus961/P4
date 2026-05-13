@@ -6,9 +6,10 @@
 
 %token DEFINE DOMAIN REQUIREMENTS STRIPS
 %token PREDICATES ACTION PARAMETERS PRECONDITION EFFECT
-%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL GRID LOCKEDNODESMATRIX  KEYLOCATIONMATRIX LOCKEDNODES
-(*%token LOCKEDNODES OPENNODES DASH -- Unused atm*)
+%token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL LOCKEDNODESMATRIX KEYLOCATIONMATRIX LOCKEDNODES
+(*%token LOCKEDNODES OPENNODES DASH GRID -- Unused atm*)
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS SHAPES
+%token LPAREN_GRID
 
 %token AND EXISTS NOT PLUS MULT COMMA EQUALS
 %token LPAREN RPAREN LBRACKET RBRACKET 
@@ -39,14 +40,8 @@ define:
 (*this descibes how it looks in the domain file, domain, requirements, and predicates will be expanded below*)
 | LPAREN DEFINE d = domain r = requirements p = predicates declarations = declaration_list RPAREN
      { DomainDef { domain = d; requirements = r; predicates = p; actions = declarations } }
-(*this is for problem files WITH grid*)
-| LPAREN DEFINE p = problem pd = problemdomain o = objects gr = grid i = init g = goal RPAREN 
-    { ProblemDef { problem = p; problemdomain = pd; objects = o; grid = Some gr; init = i; goal = g } }
-(*this is for problem files WITHOUT grid*)
-| LPAREN DEFINE p = problem pd = problemdomain o = objects i = init g = goal RPAREN
-    { ProblemDef { problem = p; problemdomain = pd; objects = o; grid = None; init = i; goal = g } }
-;
-
+| LPAREN DEFINE p = problem pd = problemdomain o = objects gl = gridlist i = init g = goal RPAREN
+    { ProblemDef { problem = p; problemdomain = pd; objects = o; gl = gl; init = i; goal = g } }
 
 declaration_list:  
   | { [] }   
@@ -154,8 +149,13 @@ objects:
 | LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }*)
 ;
 
+gridlist:
+| { [] }
+| g = grid rest = gridlist { g :: rest }
+;
+
 grid:
-| LPAREN GRID gas = gridargs RPAREN { build_grid gas }
+| LPAREN_GRID gas = gridargs RPAREN { build_grid gas }
 ;
 
 (* Filled backwards to avoid ambiguity, shouldn't mess up grid arguments in the AST *)
@@ -218,7 +218,7 @@ arg_list:
 
 argument:
 | a = NAME { OnlyArguments { a } }
-| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }
+(*| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }*)
 | LBRACKET n = node_list RBRACKET { OpenNodesArgs ( n ) }
 ;
 

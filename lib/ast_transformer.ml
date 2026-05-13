@@ -1,5 +1,133 @@
 open Ast
 
+
+(* These are predicates that will be injected into the domain file, since our grid extension is dependent on these predicates*)
+let inferred_predicates = [
+  { pname = "conn"; variables = ["?x"; "?y"] };
+  { pname = "key"; variables = ["?k"] };
+  { pname = "key-shape"; variables = ["?k"; "?s"] };
+  { pname = "at"; variables = ["?r"; "?x"] };
+  { pname = "open"; variables = ["?x"] };
+  { pname = "locked"; variables = ["?x"] };
+  { pname = "lock-shape"; variables = ["?x"; "?s"] };
+  { pname = "shape"; variables = ["?s"] };
+  { pname = "place"; variables = ["?p"] };
+  { pname = "arm-empty"; variables = [] };
+  { pname = "at-robot"; variables = ["?x"] };
+  { pname = "holding"; variables = ["?k"] };
+  (* Add more below *)
+]
+
+
+(* These are actions that will be injected into the domain file, our grid extension is not dependent on these actions but it makes the extension more user-friendly *)
+let move_action = {
+  aname = "move";
+  parameters = ["?from"; "?to"];
+  precondition =
+    And [
+      Atom ("place", ["?from"]);
+      Atom ("place", ["?to"]);
+      Atom ("at-robot", ["?from"]);
+      Atom ("conn", ["?from"; "?to"]);
+    ];
+  effects =
+    And [
+      Not (Atom ("at-robot", ["?from"]));
+      Atom ("at-robot", ["?to"]);
+    ];
+}
+
+let unlock_action = {
+  aname = "unlock";
+  parameters = ["?curpos"; "?lockpos"; "?key"; "?shape"];
+  precondition =
+    And [
+      Atom ("place", ["?curpos"]);
+      Atom ("place", ["?lockpos"]);
+      Atom ("key", ["?key"]);
+      Atom ("shape", ["?shape"]);
+      Atom ("conn", ["?curpos"; "?lockpos"]);
+      Atom ("key-shape", ["?key"; "?shape"]);
+      Atom ("lock-shape", ["?lockpos"; "?shape"]);
+      Atom ("at-robot", ["?curpos"]);
+      Atom ("locked", ["?lockpos"]);
+      Atom ("holding", ["?key"]);
+    ];
+  effects =
+    And [
+      Atom ("open", ["?lockpos"]);
+      Not (Atom ("locked", ["?lockpos"]));
+    ];
+}
+
+let pickup_action = {
+  aname = "pickup";
+  parameters = ["?curpos"; "?key"];
+  precondition =
+    And [
+      Atom ("place", ["?curpos"]);
+      Atom ("key", ["?key"]);
+      Atom ("at-robot", ["?curpos"]);
+      Atom ("at", ["?key"; "?curpos"]);
+      Atom ("arm-empty", []);
+    ];
+  effects =
+    And [
+      Atom ("holding", ["?key"]);
+      Not (Atom ("at", ["?key"; "?curpos"]));
+      Not (Atom ("arm-empty", []));
+    ];
+}
+
+let pickup_and_loose_action = {
+  aname = "pickup-and-loose";
+  parameters = ["?curpos"; "?newkey"; "?oldkey"];
+  precondition =
+    And [
+      Atom ("place", ["?curpos"]);
+      Atom ("key", ["?newkey"]);
+      Atom ("key", ["?oldkey"]);
+      Atom ("at-robot", ["?curpos"]);
+      Atom ("holding", ["?oldkey"]);
+      Atom ("at", ["?newkey"; "?curpos"]);
+    ];
+  effects =
+    And [
+      Atom ("holding", ["?newkey"]);
+      Atom ("at", ["?oldkey"; "?curpos"]);
+      Not (Atom ("holding", ["?oldkey"]));
+      Not (Atom ("at", ["?newkey"; "?curpos"]));
+    ];
+}
+
+let putdown_action = {
+  aname = "putdown";
+  parameters = ["?curpos"; "?key"];
+  precondition =
+    And [
+      Atom ("place", ["?curpos"]);
+      Atom ("key", ["?key"]);
+      Atom ("at-robot", ["?curpos"]);
+      Atom ("holding", ["?key"]);
+    ];
+  effects =
+    And [
+      Atom ("arm-empty", []);
+      Atom ("at", ["?key"; "?curpos"]);
+      Not (Atom ("holding", ["?key"]));
+    ];
+}
+
+let inferred_actions = [
+  move_action;
+  unlock_action;
+  pickup_action;
+  pickup_and_loose_action;
+  putdown_action;
+]
+
+
+
 let generate_connections flags rows cols grid_name =
   match rows, cols, grid_name with
   | Some r, Some c, Some n ->
@@ -289,16 +417,27 @@ let transform_init grid_opt states =
 
 let transform_program p =
   match p.defs with
-  | DomainDef _ -> p
+  | DomainDef d -> 
+      let new_domain = { d with
+        predicates = inferred_predicates @ d.predicates;
+        actions = inferred_actions @ d.actions; } in
+      { defs = DomainDef new_domain }
+
   | ProblemDef problem_def ->
       let problem = problem_def.problem in
       let problemdomain = problem_def.problemdomain in
-      let grid_opt = problem_def.grid in
-      let new_objects = 
-        transform_objects problem_def.objects grid_opt
+      let grids = problem_def.gl in
+      let new_objects =
+        List.fold_left
+          (fun objs grid -> transform_objects objs (Some grid))
+          problem_def.objects
+          grids
       in
-      let new_init = 
-        transform_init grid_opt problem_def.init
+      let new_init =
+        List.fold_left
+          (fun init grid -> transform_init (Some grid) init)
+          problem_def.init
+          grids
       in
       let goal = problem_def.goal in
 
@@ -308,7 +447,7 @@ let transform_program p =
         problem;
         problemdomain;
         objects = new_objects;
-        grid = None; (*grid is none after transform, because we shall not have grid construct in the transformed ast*)
+        gl = grids;
         init = new_init;
         goal;
       }

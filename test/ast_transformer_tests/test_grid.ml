@@ -27,10 +27,10 @@ let test_grid_prog () =
 
   let ast = parse_program_string input in
 
-  match ast.defs with
-  | ProblemDef {grid = Some grid; _ } ->
-    
-    (* count adds 1 each time there's an error *)
+match ast.defs with
+| ProblemDef { gl; _ } when gl <> [] ->
+    let grid = List.hd gl in
+
     let count = ref [] in
 
     if grid.rows <> Some 3 then begin
@@ -66,7 +66,7 @@ let test_grid_prog () =
     if List.length !count = 0 then
       print_endline "PASSED"
 
-  | _ -> failwith "Expected grid"
+| _ -> failwith "Expected grid"
 
 let () =
   print_endline "Testing if grid-construct is parsed";
