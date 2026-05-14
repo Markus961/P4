@@ -379,8 +379,8 @@ let transform_objects objects grid_opt =
     | None ->
         objects
   
-let only_states =
-  List.filter (function OnlyStates _ -> true | _ -> false)
+let only_states states =
+  List.filter (function OnlyStates _ -> true | _ -> false) states
 
 let transform_init grid_opt states =
   match grid_opt with
