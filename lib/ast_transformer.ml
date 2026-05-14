@@ -18,7 +18,6 @@ let inferred_predicates = [
   (* Add more below *)
 ]
 
-
 (* These are actions that will be injected into the domain file, our grid extension is not dependent on these actions but it makes the extension more user-friendly *)
 let move_action = {
   aname = "move";
@@ -125,8 +124,6 @@ let inferred_actions = [
   pickup_and_loose_action;
   putdown_action;
 ]
-
-
 
 let generate_connections flags rows cols grid_name =
   match rows, cols, grid_name with
@@ -280,72 +277,75 @@ let generate_locked_and_open_states grid_name grid locked_nodes shape =
 
   | _ -> failwith "Grid missing rows/cols"
 
+let get_next_key remaining_keys =
+  match !remaining_keys with
+  | [] -> failwith "More symbols in the matrix than keys in :keys"
+  | hd :: tl -> 
+    remaining_keys := tl; 
+    hd
+
+let find_shape shapes char_id =
+  match List.find_opt (fun s -> s.char_id = char_id) shapes with
+  | Some s -> s.shape_name 
+  | None -> failwith ("Unknown symbol in the matrix: " ^ char_id)
+
+let make_keylocation_states key_name shape_name node_name =
+  [
+    OnlyStates {
+      sname = "key";
+      arguments = [
+        OnlyArguments { a = key_name }
+      ];
+    };
+
+    OnlyStates {
+      sname = "key-shape";
+      arguments = [
+        OnlyArguments { a = key_name };
+        OnlyArguments { a = shape_name };
+      ];
+    };
+
+    OnlyStates {
+      sname = "at";
+      arguments = [
+        OnlyArguments { a = key_name };
+        OnlyArguments { a = node_name };
+      ];
+    };
+  ]
+
+let transform_keylocation_entries remaining_keys shapes matrix_name rows =
+  List.concat (
+    List.mapi (fun i entries ->
+      List.concat (
+        List.mapi (fun j entry ->
+          if entry = "0" then []
+          else
+            let key_name = get_next_key remaining_keys in
+            let shape_name = find_shape shapes entry in
+            let node_name = Printf.sprintf "%s%d-%d" matrix_name i j in
+
+            make_keylocation_states key_name shape_name node_name
+                
+        ) entries
+      )
+    ) rows
+  )
+                      
+
 let transform_keyloc grid =
   let remaining_keys = ref grid.key_names in
-  
-  let get_next_key () =
-    match !remaining_keys with
-    | [] -> failwith "More symbols in the matrix than keys in :keys"
-    | hd :: tl -> remaining_keys := tl; hd in
-
-  let find_shape char_id =
-    match List.find_opt (fun s -> s.char_id = char_id) grid.shapes with
-    | Some s -> s.shape_name
-    | None -> failwith ("Unknown symbol in the matrix: " ^ char_id) in
-
+ 
   match grid.keyloc with
-
   | Some (KeylocationMatrix { matrix_name; rows }) ->
     
-      let result =
-        let expanded_rows = Utils.expand_rows rows in
-          List.concat (
-            List.mapi (fun i entries ->
-              List.concat (
-                List.mapi (fun j entry ->
-                  if entry = "0" then
-                    []
-                  else
-                    let key_name = get_next_key () in
-                    let shape_name = find_shape entry in
-                    let node_name =
-                      Printf.sprintf "%s%d-%d" matrix_name i j
-                    in
-                    [
-                      OnlyStates {
-                        sname = "key";
-                        arguments = [
-                        OnlyArguments { a = key_name }
-                        ];
-                      };
+    let expanded_rows = Utils.expand_rows rows in
+    let keylocation_states = transform_keylocation_entries remaining_keys grid.shapes matrix_name expanded_rows in
 
-                      OnlyStates {
-                        sname = "key-shape";
-                        arguments = [
-                          OnlyArguments { a = key_name };
-                          OnlyArguments { a = shape_name };
-                        ];
-                      };
+    if !remaining_keys <> [] then failwith "More keys in :keys than symbols in :keylocations";
 
-                      OnlyStates {
-                        sname = "at";
-                        arguments = [
-                          OnlyArguments { a = key_name };
-                          OnlyArguments { a = node_name };
-                        ];
-                      };
-                    ]
-                ) entries
-              )
-            ) expanded_rows
-          )
-          in
-
-
-      if !remaining_keys <> [] then
-        failwith "More keys in :keys than symbols in :keylocations";
-
-      result
+    keylocation_states
 
   | _ -> []
 
