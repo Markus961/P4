@@ -234,26 +234,9 @@ let matrix_to_nodes rows matrix_name shape =
     The result is a flat list of all generated predicates.
 
 *)
-let generate_locked_and_open_states grid_name grid locked_nodes shape =
-  match grid.rows, grid.cols with
-  | Some rows, Some cols ->
 
-      (* --- ALL NODES IN GRID --- *)
-      let all_nodes =
-        List.init rows (fun r ->
-          List.init cols (fun c -> Node (r, c))
-        )
-        |> List.concat
-      in
-
-      (* --- CHECK IF NODE IS LOCKED --- *)
-      let is_locked node =
-        List.exists (fun n -> n = node) locked_nodes
-      in
-
-      (* --- LOCKED STATES --- *)
-      let locked_states =
-        List.concat (
+let generate_locked_states locked_nodes grid_name shape =
+  List.concat (
           List.map (fun (Node (r, c)) ->
             let node_name = Printf.sprintf "%s%d-%d" grid_name r c in
             [
@@ -271,11 +254,9 @@ let generate_locked_and_open_states grid_name grid locked_nodes shape =
             ]
           ) locked_nodes
         )
-      in
 
-      (* --- OPEN STATES --- *)
-      let open_states =
-        List.filter (fun n -> not (is_locked n)) all_nodes
+let generate_open_states locked_nodes all_nodes grid_name =
+  List.filter (fun n -> not (Utils.is_locked n locked_nodes)) all_nodes
         |> List.map (fun (Node (r, c)) ->
           OnlyStates {
             sname = "open";
@@ -286,32 +267,31 @@ let generate_locked_and_open_states grid_name grid locked_nodes shape =
             ]
           }
         )
-      in
+
+let generate_locked_and_open_states grid_name grid locked_nodes shape =
+  match grid.rows, grid.cols with
+  | Some rows, Some cols ->
+
+      let all_nodes = Utils.get_all_nodes rows cols in
+      let locked_states = generate_locked_states locked_nodes grid_name shape in
+      let open_states = generate_open_states locked_nodes all_nodes grid_name in
 
       locked_states @ open_states
 
   | _ -> failwith "Grid missing rows/cols"
 
-
-
-
-  
-let transform_keyloc (grid : Ast.grid) =
+let transform_keyloc grid =
   let remaining_keys = ref grid.key_names in
   
   let get_next_key () =
     match !remaining_keys with
-
     | [] -> failwith "More symbols in the matrix than keys in :keys"
-    | hd :: tl -> remaining_keys := tl; hd
-  in
+    | hd :: tl -> remaining_keys := tl; hd in
 
   let find_shape char_id =
     match List.find_opt (fun s -> s.char_id = char_id) grid.shapes with
-
     | Some s -> s.shape_name
-    | None -> failwith ("Unknown symbol in the matrix: " ^ char_id)
-  in
+    | None -> failwith ("Unknown symbol in the matrix: " ^ char_id) in
 
   match grid.keyloc with
 
