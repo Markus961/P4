@@ -52,8 +52,7 @@ type row =
 
 
 type argument = 
-| OnlyArguments of {a : string}
-| GridArguments of int * int 
+| OnlyArguments of {a : string} 
 | OpenNodesArgs of node list
 
 type state = 
@@ -68,9 +67,6 @@ type init = state list
 
 type goal = expr
 
-(* type stmt = {
-  name : string list;
-} *)
 
 type grid_param =
   | GP_rows of int
