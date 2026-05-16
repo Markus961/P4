@@ -29,7 +29,7 @@
 (* grammar rules *)
 (* the program starts by evaluating define *)
 prog:
-| defs = define EOF (*men det program start it reads the define block in the domain file, and when its done with it, it is done=EOF*)
+| defs = define EOF (* The program starts by parsing <prog> then it parses the define block, and when its done with it, it is done=EOF*)
 { {defs = defs} } (*record, is used for ast. The purple bracket is a node/ocaml record for our ast*)
 ;
 
@@ -51,7 +51,7 @@ declaration_list:
 
 
 domain:
-| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } } (*reasds domain part of domain file, and adds node to ast*)
+| LPAREN DOMAIN name = NAME RPAREN { { domain_name = name } } (*reads domain part of domain file, and adds node to ast*)
 
 
 (*  below, params gets defined as a list *)
@@ -145,8 +145,6 @@ problemdomain:
 
 objects:
 | LPAREN OBJECTS ob = ob_list RPAREN { NormalObjects ob }
-(*| LPAREN OBJECTS LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN ob = ob_list RPAREN { GridAndObjects (rows, columns, grid_name, ob) }
-| LPAREN OBJECTS ob = ob_list LPAREN GRID rows = CONST columns = CONST grid_name = NAME RPAREN RPAREN { GridAndObjects (rows, columns, grid_name, ob) }*)
 ;
 
 gridlist:
@@ -218,25 +216,8 @@ arg_list:
 
 argument:
 | a = NAME { OnlyArguments { a } }
-(*| GRID i1 = CONST i2 = CONST { GridArguments ( i1, i2 ) }*)
 | LBRACKET n = node_list RBRACKET { OpenNodesArgs ( n ) }
 ;
-
-
-
-(*SKAL NOK BRUGES SENERE MEN GIVER WARNING NU, ALLE 5 locked_nodes til node*)
-
-(*locked_nodes:
-| LPAREN LOCKEDNODES LBRACKET n = node_list RBRACKET s = state RPAREN { LockedNodes ( n, s ) }
-;*)
-
-(*open_nodes:
-| LPAREN OPENNODES LPAREN rc = rc_list RPAREN s = state RPAREN { OpenNodes ( rc, s ) }
-;
-
-rc_list:
-| rows = NAME r1 = CONST DASH r2 = CONST cols = NAME c1 = CONST DASH c2 = CONST { RowsColumns ( rows, r1, r2, cols, c1, c2 ) }
-;*)
 
 
 node_list:
@@ -248,13 +229,6 @@ node:
 | LPAREN i1 = CONST COMMA i2 = CONST RPAREN { Node ( i1, i2 ) }
 ;
 
-(*locked_nodes_matrix:
-| LPAREN LOCKEDNODESMATRIX LBRACKET r = rows RBRACKET s = state RPAREN { LockedNodesMatrix { rows = r; shape = s } }
-;*)
-
-(*gridconnection:
-| LPAREN GRIDCONNECTION fl = flag_list RPAREN { GridConnection fl }
-;*)
 
 flag_list:
 | { [] }
@@ -265,9 +239,6 @@ flag:
 | f = FLAG { f }
 ;
 
-(*keylocation_matrix:
-| LPAREN KEYLOCATIONMATRIX LBRACKET r = rows RBRACKET RPAREN { KeylocationMatrix { rows = r } }
-;*)
 
 (* supports use of classic matrix notation OR mult-notation but not both simultaneousely *)
 grid_rows:
