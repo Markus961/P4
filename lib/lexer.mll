@@ -26,13 +26,7 @@ rule token = parse
   | ":objects" {OBJECTS}
   | ":init" {INIT}
   | ":goal" {GOAL}
-  (*| "locked_nodes_matrix" {LOCKEDNOTESMATRIX} (**)
-  | "locked_nodes" {LOCKEDNODES} (**)
-  | "grid_connection" {GRIDCONNECTION} (**)
-  | "open_nodes" {OPENNODES} (**)
-  | "keylocation_matrix" {KEYLOCATIONMATRIX} (**)
   (*Grid Part Problem File*)
-  | ":grid" {GRID}*)
   | "("  { lparen_or_grid lexbuf }
   | ":rows" {ROWS}
   | ":columns" {COLUMNS}
@@ -53,11 +47,9 @@ rule token = parse
   | "]" {RBRACKET}
   | "," {COMMA}
   | "=" {EQUALS}
-  (*| "-" {DASH}*)
   | "+" {PLUS}
   | "*" {MULT}
   | integer as c { CONST (int_of_string c) }
-  (*| ['a'-'z' 'A'-'Z' '0'-'9' '-'] as id {CHARACTER id}  Giver alt for mange problemer med andre typer som bliver lavet om til character token og omvendt*)
   | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { NAME id }  
   | '?' ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']* as id { VAR id } (* Because all variables start with '?' *)
   | '-' ['a'-'z' 'A'-'Z'] as id {FLAG id}

@@ -8,8 +8,8 @@
       :columns 2
       :name fileno
       :connections -H
-      :keys key0 key1
-      :shapes ((St = star))
+      :keys key1
+      :shapes ((D = diamond))
       
    )
 
@@ -33,7 +33,7 @@
 
    (:init (arm-empty)
          
-        (at-robot fileno1-0))
+        (at-robot grid20-1))
           
-   (:goal (at key1 fileno1-1))
+   (:goal (at key0 grid20-5))
 )
