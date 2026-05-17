@@ -142,66 +142,105 @@ let extract_shape_name = function
 
 (* This Function collects all the above grid definition functions into one big check*)
 let validate_grid grid =
+  let expected_rows, expected_cols, expected_name =
   match grid.rows, grid.cols, grid.name with
- | Some expected_rows, Some expected_cols, Some expected_name ->
-      validate_unique_shapes grid.shapes;
-      validate_connections grid.connections;
-      validate_unique_keys grid.key_names;
-      positive_rows_cols expected_rows expected_cols;
-      (match grid.locked with
- | None -> ()
+  | Some r, Some c, Some n -> r, c, n
+  | _ -> invalid_arg "grid lacks rows/cols/name"
+  in
 
- | Some (LockedNodesMatrix { rows = locked_rows; matrix_name; _ }) ->
-     validate_locked_matrix
-       expected_rows
-       expected_cols
-       expected_name
-       locked_rows
-       matrix_name
+  (* basic grid validation *)
+  validate_unique_shapes grid.shapes;
+  validate_connections grid.connections;
+  validate_unique_keys grid.key_names;
+  positive_rows_cols expected_rows expected_cols;
 
- | Some (LockedNodes (grid_name, nodes, shape)) ->
-     if grid_name <> expected_name then
-      invalid_arg "LockedNodes belongs to wrong grid";
+  (* lockedlocations validation *)
+  (match grid.locked with
+  | None -> ()
+  
+  | Some (LockedNodesMatrix { rows = locked_rows; matrix_name; _ }) ->
+    validate_locked_matrix
+      expected_rows
+      expected_cols
+      expected_name
+      locked_rows
+      matrix_name
 
-     let shape_name = extract_shape_name shape in
+  | Some (LockedNodes (grid_name, nodes, shape)) ->
+    if grid_name <> expected_name then invalid_arg "LockedNodes belongs to wrong grid";
 
-     if not (shape_exists grid.shapes shape_name) then
+    let shape_name = extract_shape_name shape in
+
+    if not (shape_exists grid.shapes shape_name) then
       invalid_arg ("Unknown shape used in lockednodesarray: " ^ shape_name);
 
-     validate_locked_array
-       expected_rows
-       expected_cols
-       nodes
+      validate_locked_array 
+        expected_rows 
+        expected_cols 
+        nodes
 
- | _ ->
-     failwith "Unknown locked nodes format");
+  | _ -> failwith "Unknown locked nodes format"
+  );
 
-      (match grid.keyloc with
-       | None -> ()
-     | Some (KeylocationMatrix { matrix_name; rows = key_rows }) ->
-       validate_keylocation_matrix expected_rows expected_cols expected_name grid.key_names grid.shapes key_rows matrix_name
-       | _ -> failwith "Expected KeylocationMatrix in grid.keyloc")
- | _ -> invalid_arg "grid lacks rows/cols/name"
-        (* Checks that all matrixes defined in :grid sections are transformed properly in the :init section. *)
+  (* keylocation validation *)
+  (match grid.keyloc with
+   None -> ()
+     
+   | Some (KeylocationMatrix { matrix_name; rows = key_rows }) ->
+       validate_keylocation_matrix 
+       expected_rows 
+       expected_cols 
+       expected_name 
+       grid.key_names 
+       grid.shapes 
+       key_rows 
+       matrix_name
+       
+   | _ -> failwith "Expected KeylocationMatrix in grid.keyloc"
+  )
+
+(* Checks that all matrixes defined in :grid sections are transformed properly in the :init section. *)
 let rec validate_init_states grid_data states =
+  let expected_rows, expected_cols, expected_name, key_names, shapes =
+  match grid_data with
+  | Some data -> data
+  | None -> invalid_arg "init states without grid data"
+  in
+
   match states with
   | [] -> ()
+
   | OnlyStates _ :: tl -> validate_init_states grid_data tl
+
   | LockedNodesMatrix { rows; matrix_name; _ } :: tl ->
-      (match grid_data with
-       | Some (expected_rows, expected_cols, expected_name, _, _) ->
-           validate_locked_matrix expected_rows expected_cols expected_name rows matrix_name
-       | None -> invalid_arg "locked_nodes_matrix doesn't match :objects (:grid ...)");
-      validate_init_states grid_data tl
+      validate_locked_matrix 
+      expected_rows 
+      expected_cols 
+      expected_name 
+      rows 
+      matrix_name;
+
+      validate_init_states 
+      grid_data 
+      tl
+
   | KeylocationMatrix { rows; matrix_name; _ } :: tl ->
-      (match grid_data with
-       | Some (expected_rows, expected_cols, expected_name, key_names, shapes) ->
-           validate_keylocation_matrix expected_rows expected_cols expected_name key_names shapes rows matrix_name
-       | None -> invalid_arg "keylocation_matrix doesn't match :objects (:grid ...)");
-      validate_init_states grid_data tl
+      validate_keylocation_matrix 
+      expected_rows 
+      expected_cols 
+      expected_name 
+      key_names 
+      shapes 
+      rows 
+      matrix_name;
+       
+      validate_init_states 
+      grid_data 
+      tl
+
   | _ :: _ -> failwith "validate_init_states failure"
 
-  (*function that is sent to main. validates the entire problem *)
+(*function that is sent to main. validates the entire problem *)
 let validate_problem_def problem_def =
   List.iter validate_grid problem_def.gl;
 
