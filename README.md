@@ -81,7 +81,7 @@ The Connections parameter has "flags" which generate certain connections upon co
 ## Grid Syntax Example
 Example Grid Definitions could Look as Follows:
 
-      '''
+      ```
       (:grid 
             :rows 1
             :columns 6
@@ -99,11 +99,11 @@ Example Grid Definitions could Look as Follows:
                   [St 0 0 0 0 0]
                   ])
       )
-      '''
+      ```
 
 Another example with slightly different but correct syntax:
 
-      '''
+      ```
       (:grid 
             :rows 6
             :columns 6
@@ -131,14 +131,14 @@ Another example with slightly different but correct syntax:
                   [0 0 0 0 T 0]
                   ])
       )
-      '''
+      ```
 
 # Injected / Inferred Predicates and Actions
 
 The compiler automatically adds some predicates and actions that are usable without the user manually typing them. The predicates are added to make sure the compiler runs correctly with the correctly defined names and number of arguments. The actions are added for ease of use, and to also give a set of default instructions for the AI planner to find a valid solution. *The following predicates and actions can and should be used in the user's PDDL files.*
 
 The intjected / inferred predicates are:
-            '''
+            ```
             (conn ?x ?y)
             (key-shape ?k ?s)
             (lock-shape ?x ?s)
@@ -152,36 +152,91 @@ The intjected / inferred predicates are:
             (open ?x)
             (arm-empty )
             (reachable ?x)
-            '''
+            ```
 
 The intjected / inferred actions are:
-            '''
+            ```
+            (:action move
+                  :parameters (?from ?to)
+                  :precondition (and
+                        (place ?from)
+                        (place ?to)
+                        (at-robot ?from)
+                        (conn ?from ?to)
+                  )
+                  :effect (and
+                        (not (at-robot ?from))
+                        (at-robot ?to)
+                  )
+            )
+
             (:action unlock
-            :parameters (?curpos ?lockpos ?key ?shape)
-            :precondition (and (place ?curpos) (place ?lockpos) (key ?key) (shape ?shape)
-                  (conn ?curpos ?lockpos) (key-shape ?key ?shape)
-                              (lock-shape ?lockpos ?shape) (reachable ?curpos)
-                              (locked ?lockpos) (holding ?key))
-            :effect (and  (open ?lockpos) (at-robot ?curpos) (not (locked ?lockpos))))
+                  :parameters (?curpos ?lockpos ?key ?shape)
+                  :precondition (and
+                        (place ?curpos)
+                        (place ?lockpos)
+                        (key ?key)
+                        (shape ?shape)
+                        (conn ?curpos ?lockpos)
+                        (key-shape ?key ?shape)
+                        (lock-shape ?lockpos ?shape)
+                        (at-robot ?curpos)
+                        (locked ?lockpos)
+                        (holding ?key)
+                  )
+                  :effect (and
+                        (open ?lockpos)
+                        (not (locked ?lockpos))
+                  )
+            )
 
             (:action pickup
-            :parameters (?curpos ?key)
-            :precondition (and (place ?curpos) (key ?key) 
-                              (reachable ?curpos) (at ?key ?curpos) (arm-empty ))
-            :effect (and (holding ?key) (at-robot ?curpos)
-            (not (at ?key ?curpos)) (not (arm-empty ))))
-
+                  :parameters (?curpos ?key)
+                  :precondition (and
+                        (place ?curpos)
+                        (key ?key)
+                        (at-robot ?curpos)
+                        (at ?key ?curpos)
+                        (arm-empty)
+                  )
+                  :effect (and
+                        (holding ?key)
+                        (not (at ?key ?curpos))
+                        (not (arm-empty))
+                  )
+            )
 
             (:action pickup-and-loose
-            :parameters (?curpos ?newkey ?oldkey)
-            :precondition (and (place ?curpos) (key ?newkey) (key ?oldkey)
-                              (reachable ?curpos) (holding ?oldkey) (at ?newkey ?curpos))
-            :effect (and (holding ?newkey) (at ?oldkey ?curpos) (at-robot ?curpos)
-                  (not (holding ?oldkey)) (not (at ?newkey ?curpos))))
+                  :parameters (?curpos ?newkey ?oldkey)
+                  :precondition (and
+                        (place ?curpos)
+                        (key ?newkey)
+                        (key ?oldkey)
+                        (at-robot ?curpos)
+                        (holding ?oldkey)
+                        (at ?newkey ?curpos)
+                  )
+                  :effect (and
+                        (holding ?newkey)
+                        (at ?oldkey ?curpos)
+                        (not (holding ?oldkey))
+                        (not (at ?newkey ?curpos))
+                  )
+            )
 
             (:action putdown
-            :parameters (?curpos ?key)
-            :precondition (and (place ?curpos) (key ?key) 
-                              (reachable ?curpos) (holding ?key))
-            :effect (and (arm-empty ) (at-robot ?curpos) (at ?key ?curpos) (not (holding ?key))))
-            '''
+                  :parameters (?curpos ?key)
+                  :precondition (and
+                        (place ?curpos)
+                        (key ?key)
+                        (at-robot ?curpos)
+                        (holding ?key)
+                  )
+                  :effect (and
+                        (arm-empty)
+                        (at ?key ?curpos)
+                        (not (holding ?key))
+                  )
+            )
+
+            ```
