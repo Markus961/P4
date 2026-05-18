@@ -135,23 +135,23 @@ Another example with slightly different but correct syntax:
 
 # Injected / Inferred Predicates and Actions
 
-The compiler automatically adds some predicates and actions that are usable without the user manually typing them. The predicates are added to make sure the compiler runs correctly with the correctly defined names and number of arguments. The actions are added for ease of use, and to also give a set of default instructions for the AI planner to find a valid solution. *The following predicates and actions can and should be used in the user's PDDL files.*
+The compiler automatically adds some predicates and actions that are usable without the user manually typing them. The predicates are added to make sure the compiler runs correctly with the correctly defined names and number of arguments. The actions are added for ease of use, and to also give a set of default instructions for the AI planner to find a valid solution.
 
 The intjected / inferred predicates are:
 ```
-(conn ?x ?y)\
-(key-shape ?k ?s)\
-(lock-shape ?x ?s)\
-(at ?r ?x)\
-(at-robot ?x)\
-(place ?p)\
-(key ?k)\
-(shape ?s)\
-(locked ?x)\
-(holding ?k)\
-(open ?x)\
-(arm-empty )\
-(reachable ?x)\
+(conn ?x ?y)
+(key-shape ?k ?s)
+(lock-shape ?x ?s)
+(at ?r ?x)
+(at-robot ?x)
+(place ?p)
+(key ?k)
+(shape ?s)
+(locked ?x)
+(holding ?k)
+(open ?x)
+(arm-empty )
+(reachable ?x)
 ```
 
 The intjected / inferred actions are:
