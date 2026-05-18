@@ -81,48 +81,48 @@ The Connections parameter has "flags" which generate certain connections upon co
 ## Grid Syntax Example
 Example Grid Definitions could Look as Follows:
 
-   (:grid 
-      :rows 1
-      :columns 6
-      :name gridexample
-      :connections -H
-      :keys key0
-      :shapes ((St = star))
-      
-      :lockedlocations gridexample ([
-            [0 0 0 1 1 1]
+      (:grid 
+            :rows 1
+            :columns 6
+            :name gridexample
+            :connections -H
+            :keys key0
+            :shapes ((St = star))
             
-            ] (shape star))
+            :lockedlocations gridexample ([
+                  [0 0 0 1 1 1]
+                  
+                  ] (shape star))
 
-      :keylocations gridexample ([
-            [St 0 0 0 0 0]
-            ])
-   )
+            :keylocations gridexample ([
+                  [St 0 0 0 0 0]
+                  ])
+      )
 
-   (:grid 
-      :rows 6
-      :columns 6
-      :name gridexample2
-      :connections -H -V
-      :keys key0 key1 key2 key3 key4 key5
-      :shapes ((T = triangle))
-      
-      :lockedlocations gridexample2 ([
-            [0]*3 + [1]*3
-            [0]*6
-            [0]*6
-            [0]*3 + [1] + [0]*2
-            [0]*6
-            [0]*6
+      (:grid 
+            :rows 6
+            :columns 6
+            :name gridexample2
+            :connections -H -V
+            :keys key0 key1 key2 key3 key4 key5
+            :shapes ((T = triangle))
             
-            ] (shape triangle))
+            :lockedlocations gridexample2 ([
+                  [0]*3 + [1]*3
+                  [0]*6
+                  [0]*6
+                  [0]*3 + [1] + [0]*2
+                  [0]*6
+                  [0]*6
+                  
+                  ] (shape triangle))
 
-      :keylocations gridexample2 ([
-            [T T T 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 0 0 0 0]
-            [0 0 0 0 T 0]
-            ])
-   )
+            :keylocations gridexample2 ([
+                  [T T T 0 0 0]
+                  [0 0 0 0 0 0]
+                  [0 0 0 0 0 0]
+                  [0 0 0 0 0 0]
+                  [0 0 0 0 0 0]
+                  [0 0 0 0 T 0]
+                  ])
+      )
