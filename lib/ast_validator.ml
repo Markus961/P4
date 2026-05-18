@@ -204,7 +204,7 @@ let rec validate_init_states grid_data states =
   let expected_rows, expected_cols, expected_name, key_names, shapes =
   match grid_data with
   | Some data -> data
-  | None -> invalid_arg "init states without grid data"
+  | None -> (0, 0, "", [], [])
   in
 
   match states with
