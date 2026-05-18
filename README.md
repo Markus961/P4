@@ -81,6 +81,7 @@ The Connections parameter has "flags" which generate certain connections upon co
 ## Grid Syntax Example
 Example Grid Definitions could Look as Follows:
 
+      '''
       (:grid 
             :rows 1
             :columns 6
@@ -98,9 +99,11 @@ Example Grid Definitions could Look as Follows:
                   [St 0 0 0 0 0]
                   ])
       )
+      '''
 
 Another example with slightly different but correct syntax:
 
+      '''
       (:grid 
             :rows 6
             :columns 6
@@ -128,12 +131,14 @@ Another example with slightly different but correct syntax:
                   [0 0 0 0 T 0]
                   ])
       )
+      '''
 
 # Injected / Inferred Predicates and Actions
 
 The compiler automatically adds some predicates and actions that are usable without the user manually typing them. The predicates are added to make sure the compiler runs correctly with the correctly defined names and number of arguments. The actions are added for ease of use, and to also give a set of default instructions for the AI planner to find a valid solution. *The following predicates and actions can and should be used in the user's PDDL files.*
 
 The intjected / inferred predicates are:
+            '''
             (conn ?x ?y)
             (key-shape ?k ?s)
             (lock-shape ?x ?s)
@@ -147,8 +152,10 @@ The intjected / inferred predicates are:
             (open ?x)
             (arm-empty )
             (reachable ?x)
+            '''
 
 The intjected / inferred actions are:
+            '''
             (:action unlock
             :parameters (?curpos ?lockpos ?key ?shape)
             :precondition (and (place ?curpos) (place ?lockpos) (key ?key) (shape ?shape)
@@ -177,3 +184,4 @@ The intjected / inferred actions are:
             :precondition (and (place ?curpos) (key ?key) 
                               (reachable ?curpos) (holding ?key))
             :effect (and (arm-empty ) (at-robot ?curpos) (at ?key ?curpos) (not (holding ?key))))
+            '''
