@@ -63,5 +63,5 @@ let () =
   test_lexer "test var" "?abc" [VAR "?abc"]; 
   (* test_lexer "xxr" "(define (problem testname) (:domain problemname) (:objects xx) (:init) (:goal (xx)))" [EOF]; *)
   let tokens = [ LPAREN; DEFINE; LPAREN; PROBLEM; NAME "testname"; RPAREN; LPAREN; PROBLEMDOMAIN; NAME "problemname"; RPAREN; LPAREN; OBJECTS; NAME "obj"; RPAREN; LPAREN; INIT; RPAREN; LPAREN; GOAL; LPAREN; NAME "xx"; RPAREN; RPAREN; RPAREN ] in
-  let expected = ProblemDef { problem = {problem_name = "testname"}; problemdomain = {problemdomain_name = "problemname"}; objects = NormalObjects ["obj"]; grid = None; init = []; goal = Atom ("xx", [])} in
+  let expected = ProblemDef { problem = {problem_name = "testname"}; problemdomain = {problemdomain_name = "problemname"}; objects = NormalObjects ["obj"]; gl = []; init = []; goal = Atom ("xx", [])} in
   test_parser "minimal parser test" tokens expected;
