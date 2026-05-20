@@ -1,4 +1,3 @@
-
 let () =
   Compiler.process_file "./data/domain.pddl";
   Compiler.process_file "./data/repeatmultoption.pddl";
