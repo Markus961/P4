@@ -82,7 +82,7 @@ let validate_locked_matrix expected_rows expected_cols expected_name rows matrix
   List.iter (
     fun entry ->
       if entry <> "0" && entry <> "1" then
-        invalid_arg (Printf.sprintf "locked_nodes_matrix may only contain 0 or 1, but found '%s'" entry) 
+        invalid_arg (Printf.sprintf "The locked_locations matrix may only contain 0 or 1, but found '%s'" entry) 
   ) entries
     
 (*Validate key matrix using the function 2 times above. check keys *)
