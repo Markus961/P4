@@ -57,7 +57,7 @@ let test_parser test_name tokens expected =
     else print_endline ("test " ^ test_name ^ " passed :-)")
 
 let () =
-  print_endline "**MAYA TEST";
+  print_endline "**TEST";
   test_lexer "simple test" "domain :strips" [DOMAIN; STRIPS]; 
   test_lexer "test2" "domain :init" [DOMAIN; INIT]; 
   test_lexer "test var" "?abc" [VAR "?abc"]; 
