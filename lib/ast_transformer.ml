@@ -427,7 +427,7 @@ let transform_program p =
         problem;
         problemdomain;
         objects = new_objects;
-        gl = grids;
+        gl = [];
         init = new_init;
         goal;
       }
