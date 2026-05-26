@@ -207,31 +207,6 @@ let matrix_to_nodes rows matrix_name shape =
     ) expanded_rows
   )
 
-(*
-    Converts a set of locked node coordinates into full PDDL state predicates for both locked and open nodes in the grid.
-
-    The function:
-    - Takes a list of locked nodes (Node (r, c)) and a shape
-    - Uses the grid dimensions (rows x cols) to construct all possible nodes
-    - Splits nodes into:
-      - Locked nodes (given in the input)
-      - Open nodes (all remianing nodes)
-    
-    For each locked node:
-     - Generates a unique node identifier using the grid name:
-        "<grid_name><row>-<col>" (e.g., "fileno3-2")
-      - Produces:
-        (locked <node>)
-        (lock-shape <node> <shape>)
-
-    For each open node:
-      - Produces:
-        (open <node>)
-
-    The result is a flat list of all generated predicates.
-
-*)
-
 let generate_locked_states locked_nodes grid_name shape =
   List.concat (
           List.map (fun (Node (r, c)) ->

@@ -26,19 +26,6 @@ let rec print_init_section state_list =
   | OnlyStates { sname; arguments } :: tl ->
       print_onlystates sname arguments;
       print_init_section tl
-(*| LockedNodesMatrix { rows; shape } ->
-      ()
-  
-  | LockedNodes { ; state } ->
-      ()
-  | OpenNodes ->
-      ()
-  | Keys ->
-      ()
-  | KeylocationMatrix ->
-      ()
-  | GridConnection ->
-      () *)
   | _ -> ()
 (* Used for printing predicate definitions from domain.pddl *)
 let print_pdefinition pdefs =
@@ -123,7 +110,6 @@ let print_program p =
     print_endline ("(:goal");
     print_goal pd.goal;
     print_endline (")");
-
-
+    
     (* define end parenthesis *)
     print_endline (")"); 

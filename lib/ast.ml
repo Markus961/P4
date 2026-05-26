@@ -160,4 +160,4 @@ type define =
   | ProblemDef of problem_def
 
   (* This is our 'main' type. we need to put all the rest of the types in here*)
-type program = {defs : define} (*in the parser we said that the program is "defs", so here we declare the type, which is define, which is declared above*)
+type program = {defs : define} 

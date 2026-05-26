@@ -7,7 +7,6 @@
 %token DEFINE DOMAIN REQUIREMENTS STRIPS
 %token PREDICATES ACTION PARAMETERS PRECONDITION EFFECT
 %token INIT OBJECTS PROBLEM PROBLEMDOMAIN GOAL LOCKEDNODESMATRIX KEYLOCATIONMATRIX LOCKEDNODES
-(*%token LOCKEDNODES OPENNODES DASH GRID -- Unused atm*)
 %token ROWS COLUMNS GRIDNAME CONNECTIONS KEYS SHAPES
 %token LPAREN_GRID
 
@@ -19,18 +18,18 @@
 %token <string> FLAG
 %token EOF
 
-(* Here the program starts *)
+
 %start prog
 
-(* Here we parse the values from the syntacs tree *)
+
 %type <Ast.program> prog
 
 %%
 (* grammar rules *)
-(* the program starts by evaluating define *)
+
 prog:
 | defs = define EOF (* The program starts by parsing <prog> then it parses the define block, and when its done with it, it is done=EOF*)
-{ {defs = defs} } (*record, is used for ast. The purple bracket is a node/ocaml record for our ast*)
+{ {defs = defs} } 
 ;
 
 (* domain = d, requirements = r, predicates = p etc.. are children of define *)
@@ -46,7 +45,7 @@ define:
 declaration_list:  
   | { [] }   
   | a = action rest = declaration_list { a :: rest }
-    (*hvis vi møder action: tilføjer a foran rest*)
+    
 
 
 
@@ -156,7 +155,7 @@ grid:
 | LPAREN_GRID gas = gridargs RPAREN { build_grid gas }
 ;
 
-(* Filled backwards to avoid ambiguity, shouldn't mess up grid arguments in the AST *)
+(* Filled backwards to avoid ambiguity *)
 gridargs:
 | { [] }
 | tl = gridargs ga = gridarg { ga :: tl }
