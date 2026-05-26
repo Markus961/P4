@@ -67,16 +67,12 @@ The Connections parameter has "flags" which generate certain connections upon co
 -H adds horizontal lines (node0-0 to node1-0 and node1-0 to node2-0)
 
 ### :keys
-**Not Done**
 
 ### :shapes
-**Not Done**
 
 ### :lockedlocations
-**Not Done**
 
 ### :keylocations
-**Not Done**
 
 ## Grid Syntax Example
 Example Grid Definitions could Look as Follows:
@@ -240,3 +236,7 @@ The intjected / inferred actions are:
 )
 
 ```
+
+# Running the Compiler
+To run the compiler, place yourself in the "P4" folder (The outermost folder) and execute **"dune build"** followed by **"dune exec grid_extension"**. The output files are called **"transformed_domain.pddl"** and **"transformed_problem.pddl"**
+To run tests type "dune runtest"
